@@ -154,6 +154,19 @@ Appending a byte leaves the sig hash unchanged and moves the transaction hash
    (`0xcbb6534e…`) was sent just after the setup block. The node accepted it and simulation passed,
    but it never reached a block. Within 90 s, `txpool_status` showed it gone and there was no
    receipt. The same transaction re-signed mined at once, and so did the three that followed. This
-   did not reproduce, and its cause is unknown. Experiment 10's silent drops had a cause (a
-   deadline within one slot of the head); this one did not. A wallet should treat "accepted by
+   did not reproduce. Experiment 10's silent drops had a cause (a deadline within one slot of the
+   head); this one did not, at the time. A wallet should treat "accepted by
    `eth_sendRawTransaction`" as provisional and resend when the receipt does not come.
+
+   *Amended after experiment 16.* Block 305126, which held the setup, is 12 s after its parent
+   instead of 6, so the slot before it was missed. Experiment 15's one drop follows a block with
+   the same gap. Experiment 16 then caught a receipt for a block that was rebuilt a slot later,
+   with transactions sent after the receipt (its observation 6). The working hypothesis is
+   this:
+   - the setup's receipt came from a payload built for the missed slot;
+   - the pool revalidated the transfer against the parent state, where the FROST account was
+     not yet deployed, and evicted it;
+   - nothing readmitted it when the block was rebuilt.
+
+   Experiment 19 tests this deliberately. Until then: before sending a transaction whose
+   validity depends on another, wait for a block that builds on the other's receipt.
