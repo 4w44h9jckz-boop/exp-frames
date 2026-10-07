@@ -60,6 +60,12 @@ The tests pin the encoder to ethrex's golden vector and to transactions mined on
 must re-encode to its on-chain hash, its signatures must recover over our signature hash, and the gas
 model must reproduce its receipt's `gasUsed`.
 
+Thirteen of those transactions were built and signed in Rust, by
+[kohaku-rs](https://github.com/4w44h9jckz-boop/kohaku-rs) (branch `experiment/frames`), whose
+`kohaku-frame-kit` and `kohaku-frame-accounts` crates port this library and experiments 01 to 05.
+Its tests do the same checks on the transactions mined from here, so each implementation checks the
+other's output.
+
 ## Experiments
 
 Each experiment lives on its own `exp/NN-name` branch and is merged here when done. Its folder has a
