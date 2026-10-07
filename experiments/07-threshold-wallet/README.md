@@ -170,3 +170,8 @@ Appending a byte leaves the sig hash unchanged and moves the transaction hash
 
    Experiment 19 tests this deliberately. Until then: before sending a transaction whose
    validity depends on another, wait for a block that builds on the other's receipt.
+
+   *Tested since.* Experiment 19 tested it (observation 6). Over 80 rounds, one receipt
+   named a block that a rebuilt block replaced at the same height, which confirms the first half.
+   The transaction sent on that receipt survived, and none of 80 was dropped, so the second half
+   holds only sometimes. The wait-for-a-child-block rule stands.
