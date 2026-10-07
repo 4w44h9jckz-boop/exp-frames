@@ -90,6 +90,16 @@ v2 account `0xFc47a15216A85242705355eF416c25018A179D68`, v1 account
    refuse such a transaction outright. That is a candidate for feedback on the EIP, not something
    tested here.
 
+   *Amended after experiment 19.* On ethrex, VERIFY can bound time from below after all. ethrex
+   allows `TIMESTAMP` wherever the expiry verifier's code runs, including in a call from the
+   account's own VERIFY, so the account can require the verifier to revert. Experiment 19's
+   probe 30 did this: refused before its time, mined after. Here VERIFY would read the unlock time
+   from the sender's own storage (allowed) and pass it to `0x8141`. The finish would then be refused
+   before the unlock rather than included and reverted. The EIP's wording allows `TIMESTAMP` only in
+   an expiry verifier *frame*, so the design stays in execution here, and the feedback stands. A
+   lower bound is harmless to the pool, because it only ever turns invalid into valid. The EIP
+   could allow it explicitly.
+
 2. **Clearing a slot is expensive when it will be written again.** v1 clears the pending owner and
    unlock time when a recovery ends, so the next start writes two fresh slots: 195,840 state gas,
    247,246 gas in all. v2 packs both into one slot that holds 1 when idle, and never lets it reach
