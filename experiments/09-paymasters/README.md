@@ -146,14 +146,17 @@ exactly.
    policy code. It also answers experiment 04's open problem: a token sponsor that cannot check a
    balance during validation can instead decline to sign. The PR's own security note applies: a
    stolen signer key drains the instance through self-sponsored transactions. Payments are not
-   timelocked, only withdrawals and rotations are. Any protocol-verified scheme can be the signer,
-   so a threshold-held key (experiment 07) or a P256 device key (experiment 11) works without a new
-   canonical version.
+   timelocked, only withdrawals and rotations are. Any protocol-verified scheme can be the signer.
+   A P256 device key (experiment 11) works without a new canonical version, and so does a
+   threshold-ECDSA group, whose output is an ordinary SECP256K1 signature. A FROST group key does
+   not: experiment 07 carries its Schnorr signature in an ARBITRARY entry, and the pay frame
+   refuses an ARBITRARY signer entry. (Amended after experiment 07; this note first named that
+   experiment's threshold key as a possible signer.)
 6. **A multisig treasury pays for one member at a time.** Its pay frame costs 4,413 gas for two
    owners and reads only its own code. As a non-canonical payer, however, it holds one pending
    transaction. To serve many members at once, the treasury would fund a canonical instance whose
-   signer is a single key, for example one held by the owners as a threshold key (experiment 07).
-   Changing that key is a signer rotation, which also waits `DELAY`.
+   signer is a single key, for example one held by the owners as a threshold-ECDSA key (not FROST,
+   see observation 5). Changing that key is a signer rotation, which also waits `DELAY`.
 7. **The payer can change on replacement.** A pending self-paid transaction was replaced by a
    sponsored one at the same nonce, as the EIP allows. The bump has to be at least 10% on both fees,
    and a wallet that rounds down by one wei gets "underpriced".
