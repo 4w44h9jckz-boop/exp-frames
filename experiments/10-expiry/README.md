@@ -135,3 +135,11 @@ A transaction can wait past its deadline only between admission and the next blo
    `TIMESTAMP` in the prefix, which is banned, so it can only run after payment is approved, at the
    payer's risk. ERC-4337's `validAfter` has no frame equivalent. Experiments on subscriptions and
    session keys have to work around this.
+
+   *Amended after experiment 19.* This holds for the EIP and not for ethrex. The EIP allows
+   `TIMESTAMP` only in an expiry verifier frame, and a frame qualifies when its target is
+   `0x8141`. ethrex allows it whenever the code running is the verifier's, at any call depth. An
+   account's own VERIFY can therefore `STATICCALL` the verifier and require it to **revert**,
+   which passes only once `block.timestamp > deadline`: a `validAfter`. Experiment 19 (probe 30)
+   showed it end to end. The transaction was refused before its time, then mined after it. Code
+   that relies on this is not portable to a client that follows the EIP's wording.
