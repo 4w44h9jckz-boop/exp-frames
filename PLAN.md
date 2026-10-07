@@ -13,27 +13,41 @@
 | `exp/NN-name` | One experiment: scripts, contracts, `experiments/NN-name/README.md` with results | `main` |
 
 - Branch each experiment from `main` once `tooling` has merged. Until then, stack it on `tooling`.
-  `exp/01-simple-tx` is stacked that way. After `tooling` merges with a merge commit, the PR shows
-  only its own commit. If `tooling` is squash-merged, rebase the experiment branch onto `main` first.
-- Library changes an experiment needs go to `tooling` (or a `tooling/*` follow-up branch) rather than
-  into the experiment branch. That keeps experiment PRs about the experiment.
+  Experiments 01–04 are stacked that way. After `tooling` merges with a merge commit, each PR shows
+  only its own commits. If `tooling` is squash-merged, rebase the experiment branches onto `main` first.
+- Library changes an experiment needs go to `tooling` rather than into the experiment branch. That
+  keeps experiment PRs about the experiment. Once `tooling` has merged, use `tooling-<topic>` follow-up
+  branches. **Not** `tooling/<topic>`: git cannot hold a branch `tooling` and a branch `tooling/x` at once.
 - Each experiment README records: the EIP section it reproduces, how to run it, tx hashes with explorer
   links, per-frame gas, and observations, including any divergence from the spec text.
 - Mined txs worth keeping go in `test/fixtures/chain/` via `scripts/capture-fixture.ts`. The tests
-  then pin the encoder and gas model to them, offline, so they survive a testnet relaunch.
+  then pin the encoder and gas model to them, offline, so they survive a testnet relaunch. A fixture
+  whose tx earned an EIP-3529 refund records it in `meta.refund`, because the RPC does not expose it.
+- **Guiding principle (owner, 2026-10-07):** anything that uses ERC-4337 today is a candidate
+  experiment here. Port it to frames, then measure what changes.
 
-## Target: ethrex Hegotá testnet
+## Networks
 
-- Chain `8141`, RPC `https://rpc1.privacy.ethrex.xyz`, explorer `https://dora.privacy.ethrex.xyz`,
+| Network | Chain | Clients | Spec | Use |
+|---|---|---|---|---|
+| **ethrex Hegotá testnet** | `8141` | ethrex `v23.0.0-hegota-testnet-hotfix-4738681` | 8141@`b75cbe6115` + 8250 + 8272 (8-field envelope) | ✅ everything so far |
+| **ethpandaops frames-devnet-0** | `7034189865` | geth, Nethermind (`v2.1.0-unstable+3c210d3c`), reth, ethrex behind one eRPC balancer | 8141@`b75cbe61`, **no 8250** (7-field envelope with a plain `nonce`) | ⏳ cross-client runs |
+| ethpandaops frames-devnet-1 | not set yet | geth, Nethermind, reth, ethrex | 8141@`88fa3e4` + 8250 + 8272 + 7906 | 💡 planned launch ~2026-10-15 (tests 10-12) |
+| ethrex "Frames" testnet | `81410` | ethrex | 8141 only | 💡 used by the `aa` repo in Sept; liveness unchecked |
+| JARDIN demo devnet | `1729` (stated) | ethrex | ? | 💡 `https://demo.eip-8141.ethrex.xyz/rpc`, unverified |
+| Local Kurtosis | any | any | any | 💡 for spam/relaunch-heavy work |
+
+### Hegotá (current target)
+
+- RPC `https://rpc1.privacy.ethrex.xyz` (JSON-RPC batch limit 100), explorer `https://dora.privacy.ethrex.xyz`,
   faucet `https://faucet.privacy.ethrex.xyz` (`POST /api/claim {address}`, 1 ETH/hour/address).
-- Client: ethrex `hegota-testnet` branch; `web3_clientVersion` on 2026-10-07 reported
-  `v23.0.0-hegota-testnet-hotfix-4738681`. Network spec: `docs/hegota-testnet-spec.md` in that branch.
+- Client: ethrex `hegota-testnet` branch. Network spec: `docs/hegota-testnet-spec.md` in that branch.
+  `debug_traceTransaction` is not available.
 - Pins: EIP-8141 `b75cbe6115`, EIP-8250 `f3079a09e8`, EIP-8272 `824cbc0b0e`, EIP-7805 `9a345f96c2`,
-  EIP-8369 `51dc7b939a`. All on top of Glamsterdam (EIP-8037 two-dimensional gas, EIP-7928 BALs, …).
+  EIP-8369 `51dc7b939a`. All on top of Glamsterdam: EIP-8037 two-dimensional gas, EIP-7928 BALs, and
+  Amsterdam cold account access of 3,000.
 - **A relaunch voids everything.** This is the fourth genesis (2026-09-14). Balances, deployed
   contracts and tx hashes do not carry over. Re-run scripts rather than relying on addresses.
-
-### What differs from EIP-8141 master
 
 | Topic | Testnet | EIP-8141 master |
 |---|---|---|
@@ -41,26 +55,54 @@
 | Expiry verifier | predeploy at `0x…8141` | keyless deploy at `0x81413f0c…FfFf` |
 | Calldata floor | cites EIP-7623; same numbers as master (64 gas per data byte at the floor) | cites EIP-7976 |
 | `MAX_VERIFY_GAS` (mempool) | 500,000 (node flag) | 100,000 |
-| Mempool concurrency | keyed-nonce senders may have several pending txs (EIPs#12039) | one pending tx per sender |
+| Mempool concurrency | spec text (EIPs#12039) allows several pending txs on disjoint keys. **The `aa` repo measured one pending tx per sender, even on disjoint keys** (2026-09-18). Re-check. | one pending tx per sender |
+| Code-less payer | the client caps it at one pending tx per payer, like a non-canonical paymaster (`aa`, measured on 81410) | exempt from the cap; per-payer exposure rule only |
 | Recent roots | leading VERIFY frame to `0x…8272` (EIP-8272) | n/a |
 
 ethrex keeps a consensus divergence ledger in `docs/hegota-testnet-divergences.md`. Check it before
-relying on an edge case. The node build seen on 2026-10-07 already has the `SIGPARAM(0x03)` and
-`value_cost` fixes listed there.
+relying on an edge case.
+
+### frames-devnet-0 (next)
+
+- RPC `https://rpc.frames-devnet-0.ethpandaops.io`. Each request goes to a random client, so a run
+  gets cross-client coverage, but you cannot pick the client. `debug_*` and `txpool_*` are blocked.
+  Explorer `https://dora.frames-devnet-0.ethpandaops.io`.
+- Faucet `https://faucet.frames-devnet-0.ethpandaops.io`: proof-of-work plus **hCaptcha**, so a human
+  must claim. A GitHub login gives 100 ETH a day.
+- Tooling needed (`tooling` follow-up):
+  - An envelope variant: `0x06 || rlp([chain_id, nonce, sender, frames, signatures, fees, blob_versioned_hashes])`.
+    The sig hash follows it, and there is no EIP-8250 nonce calldata in the data cost.
+  - `nonce` from `eth_getTransactionCount`.
+  - No `ethrex_simulateFrameTransaction` unless the balancer happens to pick an ethrex node, so
+    probe for it and fall back to send-and-read-receipt.
+  - Cross-check against [spamoor `txtypes/frame.go`](https://github.com/ethpandaops/spamoor/blob/master/txtypes/frame.go)
+    (encodes both shapes) and EELS `tests-frames-devnet@v0.3.0` transaction tests.
+- Known: geth issue #35783 (frame fields in RPC, receipt status) is still open. Receipts seen on
+  2026-10-07 did carry `frameReceipts` and `payer`.
 
 ### Traps worth remembering
 
 - secp256k1 signature bytes are `yParity ‖ r ‖ s` with yParity 0/1, never 27/28, and low s.
-- `fees` is a nested 3-list and `limits` is a nested `[execution, state]` pair. Older encoders send flat
-  fields and get `MalformedData`.
+- `fees` is a nested 3-list and `limits` is a nested `[execution, state]` pair. Older encoders send
+  flat fields and get `MalformedData`.
 - State growth draws only from `limits.state`. When a frame "runs out of gas" with `stateGasUsed = 0`,
-  the missing budget is usually state, not execution. Costs: new account 183,600; fresh slot 97,920;
-  code deposit 1,530/byte.
-- The RPC cannot estimate frame gas. Use `ethrex_simulateFrameTransaction` (per-frame execution gas)
-  and the state numbers above.
+  the missing budget is usually state, not execution. Costs:
+  - new account 183,600, charged to the frame whose `APPROVE(PAYMENT)` creates the sender;
+  - fresh slot 97,920;
+  - code deposit 1,530/byte.
+- `ethrex_simulateFrameTransaction`'s `gasUsed` is before the EIP-3529 refund. A skipped frame reads
+  `succeeded: false, gasUsed: 0`. A frame rolled back with its batch reads `succeeded: true`.
+- A frame rolled back by its atomic batch keeps receipt `status = SUCCESS`: logs and state are gone,
+  the status is not. Anything that trusts `FRAMEPARAM(status)` of a batched frame is fooled.
+- Price fees on the *signed* tx: a 65-byte signature is up to 1,040 gas of calldata.
 - Simple txs are often calldata-floor bound (64 gas per data byte at the floor; the 65-byte signature dominates).
-- The chain is quiet. On 2026-10-07 the latest ~3,000 blocks held no frame tx, so there is
-  little traffic to learn from. The 14 historical txs in `test/fixtures/chain` cover most shapes.
+- Yul: a helper that uses memory 0..32 (e.g. `CODECOPY` of a constant) clobbers calldata built there,
+  if it is evaluated as an argument of the `call`. Yul evaluates arguments right to left, after the
+  preceding statements. This cost one stranded sponsor in experiment 04.
+- A contract whose code starts with `APPROVE` cannot receive plain ETH. Dispatch on `caller() == 0xaa`
+  and the frame mode first.
+- A pay frame declared at exactly its gas use can be admitted, given a hash, and never included
+  ("silent drop", `aa` repo, measured on 81410). Keep a margin on VERIFY limits.
 
 ## Roadmap
 
@@ -69,69 +111,88 @@ Status: ✅ done · 🔄 in progress · ⏳ next · 💡 idea
 ### Tooling
 
 - ✅ Encode/decode, sig hash, tx hash, gas model, secp256k1 signing, simulate/send/receipt, faucet,
-  inspector. Tests: ethrex golden vector plus mined txs (hash, signature recovery, `gasUsed`).
-- ⏳ Contract compilation: `solc` (npm) for Solidity and for Yul with `verbatim_*` for the new opcodes
-  (`APPROVE 0xaa`, `TXPARAM 0xb0`, `FRAMEDATALOAD 0xb1`, `FRAMEDATACOPY 0xb2`, `FRAMEPARAM 0xb3`,
-  `SIGPARAM 0xb4`, `SIGDATACOPY 0xb5`). Needed from experiment 02 on.
-- 💡 Gas-limit estimation: run the simulation with generous limits, then tighten to the observed
-  per-frame usage plus a margin. State budget comes from a rule-of-thumb table.
+  inspector. Tests: the ethrex golden vector plus mined txs (hash, signature recovery, `gasUsed`): 14 on
+  `tooling`, plus each experiment branch's own.
+- ✅ Contract compilation (`solc` npm: Solidity, plus Yul with `verbatim_*` for `0xaa`, `0xb0–0xb5`)
+  and CREATE2 deployment frames.
+- ⏳ Network profiles: the frames-devnet-0 envelope (no 8250), RPC feature probing, per-network fixtures.
+- 💡 P256 signing (scheme `0x2`; signer = `keccak(qx‖qy)[12:]`); ARBITRARY entries + `SIGDATACOPY` helpers.
+- 💡 Gas-limit estimation: simulate with generous limits, tighten to observed usage plus a margin.
 - 💡 Receipt log decoding against ABIs; EIP-7708 transfer logs (`0xff…fe`).
 
-### Experiments: the EIP's own examples first
+### Track A: the EIP's own examples ✅
 
-| # | Branch | EIP example | Shape | Status |
-|---|---|---|---|---|
-| 01 | `exp/01-simple-tx` | 1, 1a | `[VERIFY(3), SENDER]` from an EOA via default code | ✅ ETH transfer (new/existing account), CREATE2 deploy, probe call (CALLER/ORIGIN per mode), 9 simulated rule violations |
-| 02 | `exp/02-account-deployment` | 1b | `[DEFAULT(deploy), VERIFY(3), SENDER]` | ⏳ |
-| 03 | `exp/03-atomic-batch` | 2 | `[VERIFY(3), SENDER(atomic), SENDER]` | ⏳ |
-| 04 | `exp/04-sponsored-erc20` | 3 | `[VERIFY(2), VERIFY(1)→sponsor, SENDER, SENDER, DEFAULT(post-op)]` | ⏳ |
+| # | Branch | EIP example | Result |
+|---|---|---|---|
+| 01 | `exp/01-simple-tx` | 1, 1a | ✅ ETH transfer (new/existing account), CREATE2 deploy, probe call (CALLER/ORIGIN per mode), 9 rule violations. Simple transfers are calldata-floor bound. |
+| 02 | `exp/02-account-deployment` | 1b | ✅ 77-byte Yul account deployed *at* `tx.sender` and used in the same tx (`DeploySelfVerify`). Validates from the protocol signature list with `SIGPARAM`, at 288 gas. Nonce 0 → 2. 7 rule violations. |
+| 03 | `exp/03-atomic-batch` | 2 | ✅ Approve + swap. A failed batch rolls back and marks later frames SKIPPED, but rolled-back frames keep `SUCCESS`. Approve + exact swap nets 0 state gas plus a 10,000 refund. All 6 static batch rules enforced. |
+| 04 | `exp/04-sponsored-erc20` | 3 | ✅ A user with zero ETH: EOA sponsor via default code (two signatures), then TokenSponsor (Yul) is paid in tUSD and refunds exactly in a post-op. Frontrun risk confirmed: an empty-wallet sender is still valid and the sponsor eats 218,760 gas. 12 cases. |
 
-**02 — Account deployment (Example 1b).** A minimal smart account (Yul) whose VERIFY path checks an
-owner signature over `TXPARAM(0x08)` and calls `APPROVE`. The owner is fixed in the initcode, so
-anyone may deploy it. Deploy it *at `tx.sender`* in a DEFAULT frame through the CREATE2 deployer
-(`0x4e59…956c` exists on the testnet; the EIP-7997 predeploy does not). The counterfactual address
-has no code and no key, so prefund it with ETH first. Check: prefix shape `DeploySelfVerify`; the
-front-running note (a replayed deploy frame fails once code exists, so the follow-up tx drops the
-deploy frame); state gas for code deposit.
+### Track B: multisig and MPC wallets ⏳
 
-**03 — Atomic approve + swap (Example 2).** A toy ERC-20 and a toy DEX. Run the happy path, then make
-the swap revert and confirm the approve is rolled back: frame statuses, `0x2` SKIPPED for frames
-after the failure, the `gas_used.state` rollback and empty logs. Also check that APPROVE-scope flags
-inside a batch are statically rejected.
+Background from the owner's other repos (`aa`, `pmpc`, `crops-frame`):
+- Threshold signing (FROST, threshold ECDSA) yields "a single ordinary signature; the chain cannot
+  tell" (`pmpc/docs/01-background/12-…`).
+- FROST cannot complete if a member stays silent (R32 not met), and resharing does not retire old
+  shares (R35) (`pmpc/docs/02-requirements/03-disclosure-and-custody.md`).
+- `pmpc` still owes "a k-of-n signature-set check, both naively and aggregated", inside a VERIFY frame.
+- `aa` picked one t-of-n threshold blind-Schnorr key over per-funder keys, because which subset
+  signed links spends (`aa/decisions/0026`).
+- Fee fields are inside the sig hash, so a fee bump needs every signer again (`aa` Q13).
+- ERC-8286 names two routes to authorisation material: `SIGPARAM` on protocol-validated entries,
+  or a self-contained envelope in `data`.
 
-**04 — Sponsored tx paying in ERC-20 (Example 3).** A sponsor contract whose `pay` frame
-inspects the next frame (`FRAMEPARAM`, `FRAMEDATALOAD`), checks it is `transfer(sponsor, fee)`,
-then calls `APPROVE(PAYMENT)`. A DEFAULT post-op frame reads `FRAMEPARAM(0x0A/0x0B)` (gas used) to
-refund unused tokens. Mempool angle: the trace rules forbid reading the token's storage in VERIFY, so
-the sponsor must trust the frame data (front-running risk noted in the EIP). A non-canonical
-paymaster is limited to 1 pending tx. The on-chain tx `0xbd73cb7e…` (fixture) is a real instance of
-this shape to compare against.
+| # | Branch (proposed) | Experiment | Measures |
+|---|---|---|---|
+| 05 | `exp/05-multisig` | **k-of-n multisig account** with owners in its code. VERIFY counts distinct protocol-validated SECP256K1 entries via `SIGPARAM` (signer, scheme, empty `msg`). No `ecrecover`, no storage. Then mixed secp256k1 + P256 owners. | Validation gas per signer against 100k (spec) and 500k (testnet). Calldata: 4,148 gas/secp256k1 signer (`aa`). Which signers signed is public. |
+| 06 | `exp/06-threshold-wallet` | **MPC wallet as one key**. (a) Threshold ECDSA or a FROST-like 2-of-3 producing one SECP256K1 entry. (b) FROST Schnorr in an `ARBITRARY` entry, verified with the `ecrecover` trick. Compare against 05. | On-chain cost and indistinguishability against the multisig. Off-chain rounds. A silent signer. |
+| 07 | `exp/07-multisig-ops` | **Multisig ergonomics**: one keyed nonce per proposal (Safe-style queue), fee bumps needing re-signing, an expiry frame per proposal, owner rotation (ERC-8403 tiers 1/2). | Mempool: one pending tx per sender? Fresh key cost 97,920 state gas. Revocation timing. |
+| 08 | `exp/08-shared-payer` | **A multisig or MPC treasury as paymaster** for its members (pay frame checks k-of-n co-signatures), and a verifying-paymaster variant of TokenSponsor (sponsor co-signs, which closes the experiment 04 frontrun). | Payer caps (non-canonical: 1 pending); silent drop at an exact gas limit. |
 
-### After the examples (ideas, unordered)
+### Track C: ERC-4337 use cases ported to frames 💡
 
-- 💡 **EOA as paymaster** via default code: `[VERIFY(2)→sender, VERIFY(1)→gas-EOA, SENDER]` with the
-  payer's signature at index 1. Two EOAs, no contracts.
-- 💡 **Expiry verifier frame** `[VERIFY→0x8141 deadline, VERIFY(3), SENDER]`: before and after the
-  deadline, and mempool eviction.
-- 💡 **Keyed nonces (EIP-8250)**: several pending txs from one sender on disjoint keys; first-use state
-  gas (97,920 per key); `TXPARAM 0x0D–0x10`.
-- 💡 **P256 / passkey account**: scheme `0x2`, signer = `keccak(qx‖qy)[12:]`, protocol-verified (6,700 gas).
-- 💡 **Post-quantum-ish custom verifier**: `ARBITRARY` signature + `SIGDATACOPY` + Lamport/hash-based
-  check in VERIFY. Measure gas against `MAX_VERIFY_GAS`.
-- 💡 **Introspection playground**: a contract that dumps every `TXPARAM`/`FRAMEPARAM`/`SIGPARAM` value
-  from each mode, checked against the encoder's view of the tx.
+Most of what a 4337 bundle does is a frame list. Port each one, then compare gas and trust
+assumptions with a 4337 run where useful. `aa` measured a 4337 self-paid transfer at 120,162 against
+47,573 as frames on 81410.
+
+- ✅ smart account + counterfactual deploy (02); ✅ batching (03); ✅ ERC-20 paymaster (04)
+- 💡 **Verifying paymaster** (off-chain approval via co-signature): see 08.
+- 💡 **Passkey (P256) account**: scheme `0x2` validated by the protocol (6,700 gas). No P256 entry has
+  been measured on chain yet (`aa`).
+- 💡 **Session keys / spending limits**: a validator that allows a second key only for given targets,
+  selectors and values. Needs sender storage reads in VERIFY.
+- 💡 **Social recovery / guardians**: rotate the owner after m-of-n guardian co-signatures plus a delay.
+- 💡 **Modular accounts (ERC-7579-like)**: a validator module called from VERIFY (`DELEGATECALL` is
+  allowed if the trace stays clean).
+- 💡 **EIP-7702-delegated EOA** as sender: delegation code doing the VERIFY.
+- 💡 **Subscriptions / recurring pulls**: keyed nonces + expiry frame + a merchant-paid fee.
+- 💡 **Post-quantum verifier**: an `ARBITRARY` signature + `SIGDATACOPY` + a hash-based check, against
+  `MAX_VERIFY_GAS`.
+
+### Track D: protocol probing 💡
+
+- 💡 **Expiry verifier frame**: before and after the deadline, and mempool eviction.
+- 💡 **Keyed nonces (EIP-8250)**: several pending txs on disjoint keys (re-check `aa`'s one-per-sender
+  finding); first-use state gas; `TXPARAM 0x0D–0x10`; the 5-fresh-keys-per-tx limit.
+- 💡 **Introspection playground**: a contract that dumps every `TXPARAM`/`FRAMEPARAM`/`SIGPARAM`
+  value from each mode, checked against the encoder's view of the tx.
 - 💡 **Mempool rule probing**: banned opcodes in the prefix, storage reads outside the sender, prefix
-  gas caps; compare simulation verdicts with `eth_sendRawTransaction`.
-- 💡 **Local devnet**: ethrex + kurtosis (`fixtures/networks/hegota-testnet.yaml`) for experiments that
-  would spam the shared testnet or need a controlled relaunch.
+  gas caps, silent drop. Compare simulation verdicts with `eth_sendRawTransaction`.
+- 💡 **Cross-client**: replay experiments 01–04 on frames-devnet-0 (7-field) and devnet-1 (8-field)
+  once tooling supports them, and diff receipts and gas.
 
 ## Status log
 
-- **2026-10-07**: Researched the wire format against ethrex source (`crates/common/types/transaction.rs`,
-  `scripts/hegota-testnet/frametx.py`) and the pinned EIP texts. Built `tooling` (60 tests passing,
-  including 18 mined txs). Ran experiment 01 on the testnet: 4 txs mined, all frames as expected; plain
-  transfers are calldata-floor bound. Test account `0xa93CEe06b1e4fFACdf920BD500cb301a39DdEB74`
-  (key only in a local, gitignored `.env`; make your own with `npm run account`).
+- **2026-10-07 (a)**: Researched the wire format against ethrex source and the pinned EIP texts.
+  Built `tooling`. Ran experiment 01: 4 txs mined, all frames as expected. Test account
+  `0xa93CEe06b1e4fFACdf920BD500cb301a39DdEB74` (key only in a local, gitignored `.env`; make your
+  own with `npm run account`).
+- **2026-10-07 (b)**: Added contract compilation and CREATE2 helpers to `tooling`. Ran experiments 02,
+  03 and 04 (their mined txs kept as fixtures on each branch; tests pass). Read the `aa`, `pmpc`
+  and `crops-frame` repos for MPC and multisig background (Track B). Found frames-devnet-0 (four
+  clients including Nethermind; needs a 7-field envelope and a human faucet claim). Roadmap gained
+  Tracks B–D.
 
 ## References
 
@@ -140,5 +201,12 @@ this shape to compare against.
 - ethrex testnet docs: https://github.com/lambdaclass/ethrex/tree/hegota-testnet/docs (`hegota-testnet-*.md`, `eip-8141.md`)
 - Reference encoder/submitters: `ethrex/scripts/hegota-testnet/frametx*.py`
 - Faucet and EIP guide: https://faucet.privacy.ethrex.xyz (`/eips`)
-- Other implementations to cross-check: `JustaLab-co/frametx-kit` (TS), `polus-arcticus/awesome-frames` (Yul accounts, PQ toys)
-- EELS implementation and tests: ethereum/execution-specs PR 3047
+- frames devnets: https://github.com/ethpandaops/frames-devnets, https://notes.ethereum.org/@ethpandaops/frames-devnet-0,
+  https://notes.ethereum.org/@ethpandaops/frames-devnet-1; EELS tracker ethereum/execution-specs#3727
+- Client work: Nethermind PR 12526 (merged 2026-09-24: 8141/8250/8272/7906), geth PR 35666 (draft),
+  reth `frames-devnet-0` branch and PR 27528 (8250), Besu draft PR 11305
+- Other implementations to cross-check: spamoor `txtypes/frame.go` (Go, both envelopes),
+  `JustaLab-co/frametx-kit` (TS), `polus-arcticus/awesome-frames` (Yul accounts, PQ toys)
+- The owner's related research: `4w44h9jckz-boop/aa` (frames gas measurements, paymasters, spec
+  questions), `4w44h9jckz-boop/pmpc` (MPC custody requirements), `4w44h9jckz-boop/crops-frame`
+  (privacy seams on frames; P0001 nonce-key visibility, P0005 shared-sender mempool ceiling)
