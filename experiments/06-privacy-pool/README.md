@@ -91,6 +91,8 @@ npx tsx experiments/06-privacy-pool/withdraw.ts     # the four layouts, mined
 npx tsx experiments/06-privacy-pool/concurrency.ts  # two withdrawals at once, five ways (mined)
 npx tsx experiments/06-privacy-pool/ring.ts         # ring history vs append-only (one shot, mined)
 npx tsx experiments/06-privacy-pool/negative.ts     # simulations only
+# the keyed deposit and withdrawal again, all in Rust (reads PRIVATE_KEY from the environment):
+cargo run --release -p kohaku-frame-pool --example keyed_withdrawal --manifest-path ../kohaku-rs/crates/Cargo.toml
 ```
 
 ## Results (2026-10-07, ethrex `v23.0.0-hegota-testnet-hotfix-4738681`)
@@ -127,6 +129,24 @@ Each recipient received 0.001 ETH − 10^10 wei (the fee). Every `gasUsed` is in
 12,000, plus 475 per frame, plus 6.5–8.1k of calldata for the 516-byte `W` and the 72-byte
 recent-root tuple. State gas is the same in both modes: 97,920 for the nullifier slot in mode 0,
 or for the first use of the nonce key in mode 1, which the frame that approves payment pays.
+
+### The same flow from Rust (kohaku-rs, mined)
+
+kohaku-rs `experiment/frames` now carries the transaction side as well as the prover. The crate
+`kohaku-frame-kit` covers the envelope, the signature hash, gas, secp256k1 and P256 signing, and
+simulation and submission. `kohaku-frame-pool` adds a withdrawal builder, and its test rebuilds
+every withdrawal in the table above byte for byte. Its example `keyed_withdrawal` runs a deposit
+and a withdrawal on the keyed pool with no TypeScript involved:
+
+| Tx | What | Frames: execution / state gas | `gasUsed` |
+|---|---|---|---|
+| [`0x2e1062ef…`](https://dora.privacy.ethrex.xyz/tx/0x2e1062eff41081693e9f1e5c0c30831be92e716e5eb43d104fce677d290d90fd) | deposit, signed in Rust by the funder | VERIFY 100/0 · SENDER 1,003,810/195,840 | 1,223,152 |
+| [`0x7fa5825c…`](https://dora.privacy.ethrex.xyz/tx/0x7fa5825c354120258bde7201b5a9d9342b04d1cfbea8fb99b80f27362f029017) | keyed, pool pays, built in Rust | 8272 5,579/0 · VERIFY **244,808**/97,920 · W 14,381/183,600 | 567,821 |
+
+Every frame's gas matches `0x7c36ba99…`. The `gasUsed` is 24 lower because the calldata differs:
+a different proof, root, nullifier and recipient, and calldata is priced per byte. Both
+transactions are in `test/fixtures/chain/`, so the TypeScript encoder checks the Rust-built ones,
+and kohaku-rs keeps the same fixtures for its own checks.
 
 ### Two withdrawals at once (`concurrency.ts`, mined)
 
