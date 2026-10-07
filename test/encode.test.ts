@@ -77,11 +77,20 @@ describe('mined testnet transactions', () => {
   const dir = new URL('./fixtures/chain/', import.meta.url)
   const fixtures = readdirSync(dir)
     .filter((f) => f.endsWith('.json'))
-    .map((f) => JSON.parse(readFileSync(new URL(f, dir), 'utf8')) as { tx: FrameTxJson; receipt: FrameTxReceiptJson })
+    .map(
+      (f) =>
+        JSON.parse(readFileSync(new URL(f, dir), 'utf8')) as {
+          // The RPC does not expose the EIP-3529 refund counter. Fixtures whose execution clears
+          // storage record it in meta.refund (derived from ethrex's SSTORE rules) with a note.
+          meta?: { refund?: string }
+          tx: FrameTxJson
+          receipt: FrameTxReceiptJson
+        },
+    )
 
   it('has fixtures', () => expect(fixtures.length).toBeGreaterThan(0))
 
-  for (const { tx: json, receipt } of fixtures) {
+  for (const { meta, tx: json, receipt } of fixtures) {
     describe(`${json.hash.slice(0, 10)} (${json.frames.length} frames)`, () => {
       const tx = frameTxFromJson(json)
 
@@ -103,7 +112,7 @@ describe('mined testnet transactions', () => {
           execution: hexToBigInt(f.gasUsed),
           state: hexToBigInt(f.stateGasUsed),
         }))
-        expect(settledGasUsed(tx, frames)).toBe(hexToBigInt(receipt.gasUsed))
+        expect(settledGasUsed(tx, frames, BigInt(meta?.refund ?? 0))).toBe(hexToBigInt(receipt.gasUsed))
       })
     })
   }
