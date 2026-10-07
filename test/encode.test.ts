@@ -32,6 +32,7 @@ import {
   senderFrame,
   serializeFrameTx,
   settledGasUsed,
+  signAll,
   signFrameTx,
   signFrameTxP256,
   signWith,
@@ -217,7 +218,7 @@ describe('P256 signing', () => {
   })
 
   it('fills only its own entry, with a low-s signature over the sig hash', async () => {
-    const signed = signFrameTxP256(tx, passkey)
+    const signed = await signFrameTxP256(tx, passkey)
     expect(signed.signatures[0].signature).toBe('0x')
     const sig = signed.signatures[1].signature
     expect(size(sig)).toBe(128)
@@ -233,7 +234,22 @@ describe('P256 signing', () => {
     expect(p256Verifies(frameSigHash(tx), signed.signatures[1].signature, p256Address(passkey))).toBe(true)
   })
 
-  it('refuses a key that matches no entry', () => {
-    expect(() => signFrameTxP256(tx, generateP256Key())).toThrow(/no P256/)
+  it('refuses a key that matches no entry', async () => {
+    await expect(signFrameTxP256(tx, generateP256Key())).rejects.toThrow(/no P256/)
+  })
+
+  it('fills explicit-digest entries before anyone signs the sig hash', async () => {
+    const bob = generatePrivateKey()
+    const digest = keccak256('0x1234')
+    const twoKinds: FrameTx = {
+      ...tx,
+      signatures: [secp256k1Placeholder(privateKeyToAddress(owner)), secp256k1Placeholder(privateKeyToAddress(bob), digest)],
+    }
+    // Only empty-msg signatures are elided, so bob's explicit-digest signature is in the sig hash.
+    const naive = await signWith(await signWith(twoKinds, owner), bob)
+    expect(isAddressEqual(await recover(frameSigHash(naive), naive.signatures[0].signature), privateKeyToAddress(owner))).toBe(false)
+    const signed = await signAll(twoKinds, [owner, bob])
+    expect(isAddressEqual(await recover(frameSigHash(signed), signed.signatures[0].signature), privateKeyToAddress(owner))).toBe(true)
+    expect(isAddressEqual(await recover(digest, signed.signatures[1].signature), privateKeyToAddress(bob))).toBe(true)
   })
 })

@@ -30,26 +30,9 @@ export function secp256k1Placeholder(signer: FrameSignature['signer'] = null, ms
   return { scheme: Scheme.SECP256K1, signer, msg, signature: '0x' }
 }
 
-/**
- * Fill every SECP256K1 entry whose resolved signer is this key's address.
- * Empty-`msg` entries sign the canonical sig hash; others sign their explicit digest.
- * Entries for other signers are left alone, so several keys can sign in turn.
- */
+/** Fill this key's SECP256K1 entries (empty-msg ones sign the sig hash). See `signAll` for several keys. */
 export async function signFrameTx(tx: FrameTx, privateKey: Hex): Promise<FrameTx> {
-  const me = privateKeyToAddress(privateKey)
-  // The sig hash elides every empty-msg signature, so it is stable while we fill them in.
-  const sigHash = frameSigHash(tx)
-  let matched = 0
-  const signatures = await Promise.all(
-    tx.signatures.map(async (s) => {
-      if (s.scheme !== Scheme.SECP256K1) return s
-      if (!isAddressEqual(s.signer ?? tx.sender, me)) return s
-      matched++
-      return { ...s, signature: await secp256k1Sign(s.msg === '0x' ? sigHash : s.msg, privateKey) }
-    }),
-  )
-  if (matched === 0) throw new Error(`no SECP256K1 signature entry resolves to ${me}`)
-  return { ...tx, signatures }
+  return signAll(tx, [privateKey])
 }
 
 // ---- P256 (secp256r1, scheme 0x2) ----
@@ -85,18 +68,9 @@ export function p256Placeholder(signer: FrameSignature['signer'], msg: Hex = '0x
   return { scheme: Scheme.P256, signer, msg, signature: '0x' }
 }
 
-/** Fill every P256 entry whose resolved signer is this key's address. */
-export function signFrameTxP256(tx: FrameTx, key: P256Key): FrameTx {
-  const me = p256Address(key)
-  const sigHash = frameSigHash(tx)
-  let matched = 0
-  const signatures = tx.signatures.map((s) => {
-    if (s.scheme !== Scheme.P256 || !isAddressEqual(s.signer ?? tx.sender, me)) return s
-    matched++
-    return { ...s, signature: p256Sign(s.msg === '0x' ? sigHash : s.msg, key) }
-  })
-  if (matched === 0) throw new Error(`no P256 signature entry resolves to ${me}`)
-  return { ...tx, signatures }
+/** Fill this key's P256 entries (empty-msg ones sign the sig hash). See `signAll` for several keys. */
+export async function signFrameTxP256(tx: FrameTx, key: P256Key): Promise<FrameTx> {
+  return signAll(tx, [key])
 }
 
 /** A secp256k1 private key (hex) or a P256 key. */
@@ -104,5 +78,48 @@ export type AnyKey = Hex | P256Key
 
 /** Sign with either kind of key. */
 export async function signWith(tx: FrameTx, key: AnyKey): Promise<FrameTx> {
-  return typeof key === 'string' ? signFrameTx(tx, key) : signFrameTxP256(tx, key)
+  return signAll(tx, [key])
+}
+
+const schemeOf = (key: AnyKey) => (typeof key === 'string' ? Scheme.SECP256K1 : Scheme.P256)
+const addressOfKey = (key: AnyKey): Address => (typeof key === 'string' ? privateKeyToAddress(key) : p256Address(key))
+
+/** Fill the entries of one kind (explicit digest, or sig hash) that resolve to this key. */
+async function fill(tx: FrameTx, key: AnyKey, sigHashEntries: boolean): Promise<{ tx: FrameTx; filled: number }> {
+  const me = addressOfKey(key)
+  const sigHash = frameSigHash(tx)
+  let filled = 0
+  const signatures = await Promise.all(
+    tx.signatures.map(async (s) => {
+      if (s.scheme !== schemeOf(key) || !isAddressEqual(s.signer ?? tx.sender, me)) return s
+      if ((s.msg === '0x') !== sigHashEntries) return s
+      filled++
+      const digest = sigHashEntries ? sigHash : s.msg
+      return { ...s, signature: typeof key === 'string' ? await secp256k1Sign(digest, key) : p256Sign(digest, key) }
+    }),
+  )
+  return { tx: { ...tx, signatures }, filled }
+}
+
+/**
+ * Fill every SECP256K1 / P256 entry that resolves to one of `keys`. The sig hash elides only
+ * empty-`msg` signatures, so an explicit-digest signature is part of what the others sign:
+ * every key fills its explicit-digest entries first, then every key signs the sig hash.
+ * Entries for other signers are left alone.
+ */
+export async function signAll(tx: FrameTx, keys: AnyKey[]): Promise<FrameTx> {
+  const filled = keys.map(() => 0)
+  for (const sigHashEntries of [false, true]) {
+    for (const [i, key] of keys.entries()) {
+      const r = await fill(tx, key, sigHashEntries)
+      tx = r.tx
+      filled[i] += r.filled
+    }
+  }
+  const idle = filled.indexOf(0)
+  if (idle >= 0) {
+    const key = keys[idle]
+    throw new Error(`no ${schemeOf(key) === Scheme.P256 ? 'P256' : 'SECP256K1'} signature entry resolves to ${addressOfKey(key)}`)
+  }
+  return tx
 }

@@ -8,7 +8,7 @@ import {
   describeSimulation,
   describeTx,
   sendFrameTx,
-  signWith,
+  signAll,
   simulateFrameTx,
   waitForFrameTxReceipt,
 } from './frametx/index.js'
@@ -29,7 +29,7 @@ export async function execute(
 ): Promise<Executed> {
   if (label) console.log(`\n=== ${label} ===`)
   let tx = unsigned
-  for (const key of keys) tx = await signWith(tx, key)
+  tx = await signAll(tx, keys)
   console.log(describeTx(tx))
   const sim = await simulateFrameTx(client, tx)
   console.log(describeSimulation(sim))
