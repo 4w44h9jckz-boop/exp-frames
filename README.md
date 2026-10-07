@@ -72,3 +72,4 @@ README with the frame layout, how to run it, mined tx hashes and observations. P
 | 02 | `exp/02-account-deployment` | [Account deployment](experiments/02-account-deployment/): deploy a smart account at `tx.sender` and use it in the same tx | Example 1b |
 | 03 | `exp/03-atomic-batch` | [Atomic approve + swap](experiments/03-atomic-batch/): all-or-nothing frame batches | Example 2 |
 | 04 | `exp/04-sponsored-erc20` | [Sponsored transaction](experiments/04-sponsored-erc20/): a sponsor pays gas, the user pays it back in an ERC-20 | Example 3 |
+| 05 | `exp/05-multisig` | [k-of-n multisig](experiments/05-multisig/): owners' secp256k1 and P256 (passkey) signatures validated by the protocol, counted by the account | Signatures, `SIGPARAM` |
