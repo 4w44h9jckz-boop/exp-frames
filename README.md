@@ -56,3 +56,7 @@ model must reproduce its receipt's `gasUsed`.
 
 Each experiment lives on its own `exp/NN-name` branch and is merged here when done. Planning
 lives on the `plan` branch, which is never merged.
+
+| # | Experiment | EIP section |
+|---|---|---|
+| 01 | [Simple transaction](experiments/01-simple-tx/) — ETH transfer, contract deploy + call, rule violations | Examples 1, 1a |
