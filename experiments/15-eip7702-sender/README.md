@@ -121,6 +121,18 @@ Gas estimates for the same type-4 against the head state, from [`estimate.ts`](e
    once, also on the first transaction after the sender's code changed, and it did not reproduce
    there either. The pattern is suggestive, not established.
 
+   *Amended after experiment 16.* Block 305424, which held B, is 12 s after its parent instead
+   of 6, so the slot before it was missed. Experiment 07's drop follows a block with the same
+   gap. Experiment 16 then caught a receipt for a block that was rebuilt a slot later, with
+   transactions sent after the receipt (its observation 6). The working hypothesis is this:
+   - B's receipt came from a payload built for the missed slot;
+   - the pool revalidated C against the parent state, where dana was not yet delegated, and
+     evicted it;
+   - nothing readmitted it when the block was rebuilt.
+
+   The sender's code changing is then incidental: what matters is that C's validity depended on
+   the vanished block. Experiment 19 tests this deliberately.
+
 7. **Each authorization costs the authority a nonce.** Dana's nonce went from 6 to 7 at B without
    her sending anything, and frame transactions on nonce key 0 continued from there. A wallet that
    pre-signs frame transactions for an EOA must re-sign them after any delegation change.
