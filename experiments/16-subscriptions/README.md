@@ -192,6 +192,12 @@ approves both scopes, so the prefix ends there, and frame 1, a second VERIFY, is
    a wallet should treat a receipt as provisional until a block builds on it, before it sends a
    transaction whose validity depends on it.
 
+   *Tested in experiment 19 (observation 6).* Over 80 rounds of a transaction and a dependent one, a
+   single receipt named a block that never became canonical: a rebuilt block at the same height, one
+   slot later, held the same transaction. That confirms the first half of the hypothesis. The
+   dependent transaction survived, and none of the 80 was dropped, so the eviction happens only
+   sometimes, and what decides it is still open. The advice above stands.
+
 7. **A design note, not tested: entry 0 is redundant.** Frame 1 approves payment only if the
    merchant signed entry 1 over the canonical hash, which covers the pull frame. So the account
    could take the merchant from frame 1's target, and leave entry 0 as a 100-gas ARBITRARY
