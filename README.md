@@ -48,11 +48,27 @@ npm test          # encoder/gas tests against ethrex's golden vector and mined t
 | `rpc.ts` | Nonce sequence, fees, `prepareFrameTx`, simulate, send, receipts, faucet |
 | `format.ts` | Human-readable tx, simulation and receipt output |
 
+Outside the library: `src/execute.ts` (sign → simulate → send → receipt, `--dry-run` aware),
+`src/contracts.ts` (solc-js for Solidity, and Yul with `verbatim` for the new opcodes),
+`src/deploy.ts` (CREATE2 deployment frames) and `contracts/TestToken.sol` (a mint-anyone ERC-20).
+
+Solidity cannot emit `APPROVE`, `TXPARAM`, `FRAMEPARAM` and the rest, so contracts that use them are
+written in Yul with `verbatim_<n>i_<m>o(hex"…", args…)`. The first argument ends up on top of the stack,
+matching the EIP's stack tables. For example, `verbatim_3i_0o(hex"aa", offset, length, scope)` is `APPROVE`.
+
 The tests pin the encoder to ethrex's golden vector and to transactions mined on the testnet: each one
 must re-encode to its on-chain hash, its signatures must recover over our signature hash, and the gas
 model must reproduce its receipt's `gasUsed`.
 
 ## Experiments
 
-Each experiment lives on its own `exp/NN-name` branch and is merged here when done. Planning
-lives on the `plan` branch, which is never merged.
+Each experiment lives on its own `exp/NN-name` branch and is merged here when done. Its folder has a
+README with the frame layout, how to run it, mined tx hashes and observations. Planning lives on the
+`plan` branch, which is never merged.
+
+| # | Branch | Experiment | EIP-8141 section |
+|---|---|---|---|
+| 01 | `exp/01-simple-tx` | [Simple transaction](experiments/01-simple-tx/): ETH transfer, contract deploy and call, rule violations | Examples 1, 1a |
+| 02 | `exp/02-account-deployment` | [Account deployment](experiments/02-account-deployment/): deploy a smart account at `tx.sender` and use it in the same tx | Example 1b |
+| 03 | `exp/03-atomic-batch` | [Atomic approve + swap](experiments/03-atomic-batch/): all-or-nothing frame batches | Example 2 |
+| 04 | `exp/04-sponsored-erc20` | [Sponsored transaction](experiments/04-sponsored-erc20/): a sponsor pays gas, the user pays it back in an ERC-20 | Example 3 |
