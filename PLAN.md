@@ -116,7 +116,8 @@ Status: ✅ done · 🔄 in progress · ⏳ next · 💡 idea
 - ✅ Contract compilation (`solc` npm: Solidity, plus Yul with `verbatim_*` for `0xaa`, `0xb0–0xb5`)
   and CREATE2 deployment frames.
 - ⏳ Network profiles: the frames-devnet-0 envelope (no 8250), RPC feature probing, per-network fixtures.
-- 💡 P256 signing (scheme `0x2`; signer = `keccak(qx‖qy)[12:]`); ARBITRARY entries + `SIGDATACOPY` helpers.
+- ✅ P256 signing (scheme `0x2`; signer = `keccak(qx‖qy)[12:]`) and ordered multi-key signing (`signAll`).
+- 💡 ARBITRARY entries + `SIGDATACOPY` helpers.
 - 💡 Gas-limit estimation: simulate with generous limits, tighten to observed usage plus a margin.
 - 💡 Receipt log decoding against ABIs; EIP-7708 transfer logs (`0xff…fe`).
 
@@ -143,13 +144,15 @@ Background from the owner's other repos (`aa`, `pmpc`, `crops-frame`):
 - ERC-8286 names two routes to authorisation material: `SIGPARAM` on protocol-validated entries,
   or a self-contained envelope in `data`.
 
+Numbers 06 onward were shifted by one when the privacy pool (Track E) took 06.
+
 | # | Branch (proposed) | Experiment | Measures |
 |---|---|---|---|
 | 05 | `exp/05-multisig` | ✅ **k-of-n multisig account**, owners in its code; VERIFY counts distinct protocol-validated SECP256K1/P256 entries via `SIGPARAM`. 2-of-3 secp256k1 and 2-of-3 secp256k1 + **P256** transfers mined. | VERIFY 1,129 gas for 2 signers. Under 100k: ~20 secp256k1 or ~10 P256 signers. **`MAX_VERIFY_STATE_GAS` caps a self-deployed account at 206 B of code** (326 B prefunded), so counterfactual multisigs need a proxy + owner commitment. Explicit-digest co-signatures are inside the sig hash (sign them first). |
 | 05b | `exp/05b-multisig-proxy` | 💡 Counterfactual multisig through the public mempool: 45-byte proxy + owner-set commitment, owners in the VERIFY frame's data; signers in ascending order (linear VERIFY). | Fits 206 B? VERIFY gas vs 05. |
-| 06 | `exp/06-threshold-wallet` | **MPC wallet as one key**. (a) Threshold ECDSA or a FROST-like 2-of-3 producing one SECP256K1 entry. (b) FROST Schnorr in an `ARBITRARY` entry, verified with the `ecrecover` trick. Compare against 05. | On-chain cost and indistinguishability against the multisig. Off-chain rounds. A silent signer. |
-| 07 | `exp/07-multisig-ops` | **Multisig ergonomics**: one keyed nonce per proposal (Safe-style queue), fee bumps needing re-signing, an expiry frame per proposal, owner rotation (ERC-8403 tiers 1/2). | Mempool: one pending tx per sender? Fresh key cost 97,920 state gas. Revocation timing. |
-| 08 | `exp/08-shared-payer` | **A multisig or MPC treasury as paymaster** for its members (pay frame checks k-of-n co-signatures), and a verifying-paymaster variant of TokenSponsor (sponsor co-signs, which closes the experiment 04 frontrun). | Payer caps (non-canonical: 1 pending); silent drop at an exact gas limit. |
+| 07 | `exp/07-threshold-wallet` | **MPC wallet as one key**. (a) Threshold ECDSA or a FROST-like 2-of-3 producing one SECP256K1 entry. (b) FROST Schnorr in an `ARBITRARY` entry, verified with the `ecrecover` trick. Compare against 05. | On-chain cost and indistinguishability against the multisig. Off-chain rounds. A silent signer. |
+| 08 | `exp/08-multisig-ops` | **Multisig ergonomics**: one keyed nonce per proposal (Safe-style queue), fee bumps needing re-signing, an expiry frame per proposal, owner rotation (ERC-8403 tiers 1/2). | Mempool: one pending tx per sender? Fresh key cost 97,920 state gas. Revocation timing. |
+| 09 | `exp/09-shared-payer` | **A multisig or MPC treasury as paymaster** for its members (pay frame checks k-of-n co-signatures), and a verifying-paymaster variant of TokenSponsor (sponsor co-signs, which closes the experiment 04 frontrun). | Payer caps (non-canonical: 1 pending); silent drop at an exact gas limit. |
 
 ### Track C: ERC-4337 use cases ported to frames 💡
 
@@ -158,9 +161,9 @@ assumptions with a 4337 run where useful. `aa` measured a 4337 self-paid transfe
 47,573 as frames on 81410.
 
 - ✅ smart account + counterfactual deploy (02); ✅ batching (03); ✅ ERC-20 paymaster (04)
-- 💡 **Verifying paymaster** (off-chain approval via co-signature): see 08.
-- 💡 **Passkey (P256) account**: scheme `0x2` validated by the protocol (6,700 gas). No P256 entry has
-  been measured on chain yet (`aa`).
+- 💡 **Verifying paymaster** (off-chain approval via co-signature): see 09.
+- 🔄 **Passkey (P256) account**: scheme `0x2` validated by the protocol (6,700 gas). The first P256
+  entry was mined in 05, as a multisig co-signer; a P256-only account is still to do.
 - 💡 **Session keys / spending limits**: a validator that allows a second key only for given targets,
   selectors and values. Needs sender storage reads in VERIFY.
 - 💡 **Social recovery / guardians**: rotate the owner after m-of-n guardian co-signatures plus a delay.
@@ -177,38 +180,45 @@ Owner's question (2026-10-07): beyond 4337's capability, what can 8141 demonstra
 
 | Capability | Why 4337 can't | Demo | Status |
 |---|---|---|---|
-| **Privacy-pool withdrawal with the pool as `tx.sender`** | A 4337 paymaster that checks roots/nullifiers reads pool storage. kohaku-rs's Tornado paymaster runs `Tornado.withdraw` inside validation, and its tests run the alto bundler with `--safe-mode false`. | Layout from Nero_eth's *Frame transactions and the three gates to privacy* (ethresear.ch/t/24666): `VERIFY(EXECUTION)→pool` reads its own `acceptedRoots`/`nullifierHashes` and checks Groth16; `VERIFY(PAYMENT)→sponsor`; `SENDER→pool` marks the nullifier and pays out. Reference contract: `nerolation/eip-8141-pseudo-privacy-pool-contract`. Groth16 is ~250k gas: over the spec's 100k, under the testnet's 500k, so testable here. Also test the post's root-rotation mass-invalidation claim (ring buffer vs append-only roots), and nullifier-as-nonce-key for parallel withdrawals (crops-frame P0001/P0005). | ⏳ flagship, exp/06 |
+| **Privacy-pool withdrawal with the pool as `tx.sender`** | A 4337 paymaster that checks roots/nullifiers reads pool storage. kohaku-rs's Tornado paymaster runs `Tornado.withdraw` inside validation, and its tests run the alto bundler with `--safe-mode false`. | Layout from Nero_eth's *Frame transactions and the three gates to privacy* (ethresear.ch/t/24666): `VERIFY(EXECUTION)→pool` reads its own `acceptedRoots`/`nullifierHashes` and checks Groth16; `VERIFY(PAYMENT)→sponsor`; `SENDER→pool` marks the nullifier and pays out. Reference contract: `nerolation/eip-8141-pseudo-privacy-pool-contract`. Groth16 is ~250k gas: over the spec's 100k, under the testnet's 500k, so testable here. Also test the post's root-rotation mass-invalidation claim (ring buffer vs append-only roots), and nullifier-as-nonce-key for parallel withdrawals (crops-frame P0001/P0005). | ✅ exp/06: all four layouts mined; VERIFY 244,808 (keyed) to 248,991 (storage); two keyed withdrawals in one block; storage-pool users evict each other; with a 2-root ring, a pending proof turned invalid once 2 more deposits rotated its root out; the stock Tornado verifier is refused for `GAS` (patched to forward all gas). Rust path in kohaku-rs. |
 | **AA for plain EOAs, no migration, no 7702** | needs a smart account | Default code: batching, sponsorship by an EOA, gas in ERC-20 | ✅ 01, 03, 04 |
 | **Protocol-validated signatures as a service** | signatures checked in EVM by each contract | Any contract checks "signer X signed digest D" with `SIGPARAM` on an explicit-`msg` entry: permits/orders/votes without `ecrecover`/`P256VERIFY`, passkey-signed DEX orders | 💡 (05 shows the account side) |
 | **Cross-frame introspection** | `postOp` sees only its own op | Contracts read other frames' data, status and gas (`FRAMEDATALOAD`, `FRAMEPARAM 0x05/0x0A/0x0B`): exact token refunds (04), pay-on-success, intent settlement checked against the user's own frames | 🔄 04 done |
 | **Mixed atomic and independent steps, with per-frame receipts** | one `executeBatch`: all or nothing | Batches + SKIPPED + independent frames in one tx | ✅ 03 |
 | **No bundler, no EntryPoint, no deposits** | the bundler re-simulates; paymasters stake | `eth_sendRawTransaction`; replacement may change payer; canonical-paymaster code match | 💡 |
-| **Native deadline and recent-root anchoring** | `validUntil` only via a paymaster or the account | Expiry verifier frame (only place `TIMESTAMP` is allowed); EIP-8272 recent roots | 💡 Track D |
+| **Native deadline and recent-root anchoring** | `validUntil` only via a paymaster or the account | Expiry verifier frame (only place `TIMESTAMP` is allowed); EIP-8272 recent roots | 🔄 8272 roots used by the keyed pool (06); expiry in Track D |
 | **Gas** | EntryPoint overhead | `aa` (81410): 4337 self-paid transfer 120,162 vs 47,573 with frames. Re-measure on 8141 | 💡 |
 
 ### Wallet integration: kohaku-rs
 
 The owner's direction: integrate these experiments into `4w44h9jckz-boop/kohaku-rs`, the wallet reference
-implementation (Rust). Status: cloned read-only; **push access not granted yet**.
+implementation (Rust). Status: push access granted; work is on kohaku-rs branch `experiment/frames`
+(its CONTRIBUTING puts experiments on `experiment/*`), not merged.
 
 - What is there: `kohaku-userop-kit` (EntryPoint v0.8, Simple7702Account, Pimlico bundler, EIP-712 userop
   hash, ECDSA only) and the Tornado crates. The only 4337 flow is a withdrawal whose gas is paid by the
   note through Robert-MacWha's `privacy-paymaster` (TornadoFeeAdapter). `fork-kit` runs anvil, which has no
   type-`0x06` support, so tests need ethrex or a Kurtosis devnet instead.
 - Proposed crates:
-  1. `kohaku-frame-kit`: a port of `src/frametx` (envelope with and without 8250, sig hash, gas model,
-     secp256k1 + P256 signing with `signAll` ordering, `ethrex_simulateFrameTransaction`, receipts).
-     Test against the same golden vector and `test/fixtures/chain`.
+  1. ✅ `kohaku-frame-kit`: a port of `src/frametx` (8250 envelope, sig hash, gas model, secp256k1 +
+     P256 signing with `signAll` ordering, `ethrex_simulateFrameTransaction`, receipts). Offline tests:
+     the ethrex golden vector and 42 mined transactions from every branch (hash, signatures,
+     `gasUsed`). Like `tooling`, it does not yet speak the 7-field devnet envelope.
   2. A frame account and sponsor layer on top: default-code EOA, the 05 multisig, the 04 token
      sponsor and post-op refund, an EOA sponsor.
-  3. Tornado and privacy pool on frames: (b) relayer-EOA-as-payer, which complies with mempool rules
-     today; then (c) pool-as-sender once the Track E contract exists.
+  3. Tornado and privacy pool on frames: ✅ (c) pool-as-sender. `kohaku-frame-pool` holds the prover
+     CLI that 06 calls, and a withdrawal builder whose test rebuilds every mined 06 withdrawal byte for
+     byte. Its `keyed_withdrawal` example ran a deposit and a withdrawal on the testnet from Rust alone
+     (`0x7fa5825c…`, same frame gas as the TypeScript one). 💡 (b) relayer-EOA-as-payer for the
+     stock Tornado contract is still open.
 
 ### Track D: protocol probing 💡
 
 - 💡 **Expiry verifier frame**: before and after the deadline, and mempool eviction.
-- 💡 **Keyed nonces (EIP-8250)**: several pending txs on disjoint keys (re-check `aa`'s one-per-sender
-  finding); first-use state gas; `TXPARAM 0x0D–0x10`; the 5-fresh-keys-per-tx limit.
+- 🔄 **Keyed nonces (EIP-8250)**: several pending txs on disjoint keys (re-check `aa`'s one-per-sender
+  finding); first-use state gas; `TXPARAM 0x0D–0x10`; the 5-fresh-keys-per-tx limit. 06 mined two
+  pending txs from one sender in one block under the keyed-concurrency rule (no sender storage in
+  the prefix, contract sender, disjoint keys), and measured first use at 97,920 state gas.
 - 💡 **Introspection playground**: a contract that dumps every `TXPARAM`/`FRAMEPARAM`/`SIGPARAM`
   value from each mode, checked against the encoder's view of the tx.
 - 💡 **Mempool rule probing**: banned opcodes in the prefix, storage reads outside the sender, prefix
@@ -226,6 +236,12 @@ implementation (Rust). Status: cloned read-only; **push access not granted yet**
   experiment 05 (multisig): the first P256 entry among our fixtures; MAX_VERIFY_STATE_GAS bounds
   counterfactual deploys to 206 B. Mapped kohaku-rs's 4337 usage onto frames. Added Track E
   (8141-only capabilities) around the three-gates privacy-pool design.
+- **2026-10-07 (d)**: Ran experiment 06 (privacy pool as its own sender, two designs): 16
+  withdrawals mined from TypeScript and one from Rust; 30 cases simulated, 26 of them refused.
+  Push access to kohaku-rs: branch `experiment/frames` has `kohaku-frame-pool` (prover CLI,
+  withdrawal builder, testnet example) and `kohaku-frame-kit`, plus a one-line clippy fix the new
+  toolchain needed. Both repos now check each other's mined transactions. Track B's proposed 06-08
+  became 07-09.
 - **2026-10-07 (b)**: Added contract compilation and CREATE2 helpers to `tooling`. Ran experiments 02,
   03 and 04 (their mined txs kept as fixtures on each branch; tests pass). Read the `aa`, `pmpc`
   and `crops-frame` repos for MPC and multisig background (Track B). Found frames-devnet-0 (four
