@@ -17,6 +17,7 @@
     "inspect": "tsx scripts/inspect.ts"
   },
   "dependencies": {
+    "@noble/curves": "^1.9.1",
     "viem": "^2.57.3"
   },
   "devDependencies": {

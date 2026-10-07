@@ -1,5 +1,6 @@
 import type { Hex, PublicClient } from 'viem'
 import {
+  type AnyKey,
   type FrameTx,
   type FrameTxReceiptJson,
   type SimulateResult,
@@ -7,7 +8,7 @@ import {
   describeSimulation,
   describeTx,
   sendFrameTx,
-  signFrameTx,
+  signWith,
   simulateFrameTx,
   waitForFrameTxReceipt,
 } from './frametx/index.js'
@@ -23,12 +24,12 @@ export type Executed = { tx: FrameTx; sim: SimulateResult; hash?: Hex; receipt?:
 export async function execute(
   client: PublicClient,
   unsigned: FrameTx,
-  keys: Hex[],
+  keys: AnyKey[],
   { label, dryRun = DRY_RUN }: { label?: string; dryRun?: boolean } = {},
 ): Promise<Executed> {
   if (label) console.log(`\n=== ${label} ===`)
   let tx = unsigned
-  for (const key of keys) tx = await signFrameTx(tx, key)
+  for (const key of keys) tx = await signWith(tx, key)
   console.log(describeTx(tx))
   const sim = await simulateFrameTx(client, tx)
   console.log(describeSimulation(sim))

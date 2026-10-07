@@ -1,5 +1,19 @@
 import { readdirSync, readFileSync } from 'node:fs'
-import { type Hex, hexToBigInt, isAddressEqual, recoverAddress, serializeSignature } from 'viem'
+import { p256 } from '@noble/curves/p256'
+import {
+  type Address,
+  type Hex,
+  concatHex,
+  getAddress,
+  hexToBigInt,
+  hexToBytes,
+  isAddressEqual,
+  keccak256,
+  recoverAddress,
+  serializeSignature,
+  size,
+  slice,
+} from 'viem'
 import { generatePrivateKey, privateKeyToAddress } from 'viem/accounts'
 import { describe, expect, it } from 'vitest'
 import {
@@ -9,12 +23,18 @@ import {
   frameSigHash,
   frameTxFromJson,
   frameTxHash,
+  generateP256Key,
+  p256Address,
+  p256Placeholder,
+  p256PublicKey,
   parseFrameTx,
   secp256k1Placeholder,
   senderFrame,
   serializeFrameTx,
   settledGasUsed,
   signFrameTx,
+  signFrameTxP256,
+  signWith,
   verifyFrame,
   type FrameTx,
   type FrameTxJson,
@@ -107,6 +127,13 @@ describe('mined testnet transactions', () => {
         }
       })
 
+      it('every empty-msg P256 signature verifies for its signer over our sig hash', () => {
+        const sigHash = frameSigHash(tx)
+        for (const s of tx.signatures.filter((s) => s.scheme === Scheme.P256)) {
+          expect(p256Verifies(s.msg === '0x' ? sigHash : s.msg, s.signature, s.signer ?? tx.sender)).toBe(true)
+        }
+      })
+
       it('settles to the receipt gasUsed', () => {
         const frames = receipt.frameReceipts.map((f) => ({
           execution: hexToBigInt(f.gasUsed),
@@ -158,5 +185,55 @@ describe('signFrameTx', () => {
       blobVersionedHashes: [],
     }
     await expect(signFrameTx(tx, generatePrivateKey())).rejects.toThrow(/no SECP256K1/)
+  })
+})
+
+/** r ‖ s ‖ qx ‖ qy over `digest` (no prehash, low s), by the key whose address is keccak256(qx ‖ qy)[12:]. */
+function p256Verifies(digest: Hex, signature: Hex, signer: Address): boolean {
+  if (size(signature) !== 128) return false
+  const [r, s, qx, qy] = [0, 32, 64, 96].map((o) => slice(signature, o, o + 32))
+  if (!isAddressEqual(getAddress(slice(keccak256(concatHex([qx, qy])), 12)), signer)) return false
+  const sig = new p256.Signature(hexToBigInt(r), hexToBigInt(s))
+  return p256.verify(sig, hexToBytes(digest), hexToBytes(concatHex(['0x04', qx, qy])), { prehash: false, lowS: true })
+}
+
+describe('P256 signing', () => {
+  const owner = generatePrivateKey()
+  const passkey = generateP256Key()
+  const tx: FrameTx = {
+    chainId: 8141n,
+    nonceKeys: [0n],
+    nonceSeq: 3n,
+    sender: '0x000000000000000000000000000000000000bEEF',
+    frames: [verifyFrame({ scope: Approve.EXECUTION_AND_PAYMENT, execution: 50_000n })],
+    signatures: [secp256k1Placeholder(privateKeyToAddress(owner)), p256Placeholder(p256Address(passkey))],
+    fees: { maxPriorityFeePerGas: 1n, maxFeePerGas: 2n, maxFeePerBlobGas: 0n },
+    blobVersionedHashes: [],
+  }
+
+  it('derives the signer address from the public key', () => {
+    const { qx, qy } = p256PublicKey(passkey)
+    expect(p256Address(passkey)).toBe(getAddress(slice(keccak256(concatHex([qx, qy])), 12)))
+  })
+
+  it('fills only its own entry, with a low-s signature over the sig hash', async () => {
+    const signed = signFrameTxP256(tx, passkey)
+    expect(signed.signatures[0].signature).toBe('0x')
+    const sig = signed.signatures[1].signature
+    expect(size(sig)).toBe(128)
+    expect(hexToBigInt(slice(sig, 32, 64)) <= p256.CURVE.n / 2n).toBe(true)
+    expect(frameSigHash(signed)).toBe(frameSigHash(tx))
+    expect(p256Verifies(frameSigHash(tx), sig, p256Address(passkey))).toBe(true)
+  })
+
+  it('co-signs with a secp256k1 key over the same sig hash', async () => {
+    let signed = tx
+    for (const key of [owner, passkey]) signed = await signWith(signed, key)
+    expect(isAddressEqual(await recover(frameSigHash(tx), signed.signatures[0].signature), privateKeyToAddress(owner))).toBe(true)
+    expect(p256Verifies(frameSigHash(tx), signed.signatures[1].signature, p256Address(passkey))).toBe(true)
+  })
+
+  it('refuses a key that matches no entry', () => {
+    expect(() => signFrameTxP256(tx, generateP256Key())).toThrow(/no P256/)
   })
 })

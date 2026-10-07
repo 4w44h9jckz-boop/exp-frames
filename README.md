@@ -43,7 +43,7 @@ npm test          # encoder/gas tests against ethrex's golden vector and mined t
 | `types.ts` | `FrameTx`, `Frame`, `FrameSignature` |
 | `encode.ts` | RLP encode/decode, tx hash, canonical signature hash (`TXPARAM(0x08)`) |
 | `gas.ts` | Intrinsic gas, calldata floor, `max_gas`, `max_cost`, settled `gas_used` |
-| `sign.ts` | secp256k1 signing (`yParity ‖ r ‖ s`, v is 0/1) of signature entries |
+| `sign.ts` | Fills signature entries: secp256k1 (`yParity ‖ r ‖ s`, v is 0/1) and P256 (`r ‖ s ‖ qx ‖ qy`, signer = `keccak256(qx ‖ qy)[12:]`), both low-s |
 | `frames.ts` | `verifyFrame` / `senderFrame` / `defaultFrame` / `expiryFrame` builders |
 | `rpc.ts` | Nonce sequence, fees, `prepareFrameTx`, simulate, send, receipts, faucet |
 | `format.ts` | Human-readable tx, simulation and receipt output |
