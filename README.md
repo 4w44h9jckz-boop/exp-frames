@@ -73,3 +73,4 @@ README with the frame layout, how to run it, mined tx hashes and observations. P
 | 03 | `exp/03-atomic-batch` | [Atomic approve + swap](experiments/03-atomic-batch/): all-or-nothing frame batches | Example 2 |
 | 04 | `exp/04-sponsored-erc20` | [Sponsored transaction](experiments/04-sponsored-erc20/): a sponsor pays gas, the user pays it back in an ERC-20 | Example 3 |
 | 05 | `exp/05-multisig` | [k-of-n multisig](experiments/05-multisig/): owners' secp256k1 and P256 (passkey) signatures validated by the protocol, counted by the account | Signatures, `SIGPARAM` |
+| 06 | `exp/06-privacy-pool` | [Privacy pool as its own sender](experiments/06-privacy-pool/): Tornado withdrawals with `tx.sender` = the pool and no signature; storage vs keyed (EIP-8250 nullifier keys, EIP-8272 roots) | `FRAMEDATACOPY`, keyed nonces, recent roots |
