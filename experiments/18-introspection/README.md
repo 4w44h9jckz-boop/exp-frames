@@ -116,8 +116,8 @@ halted: reason=Invalid Opcode`.
 ## Observations
 
 1. **ethrex's introspection matches the EIP, value for value and halt for halt.** 731 words from
-   VERIFY, SENDER, DEFAULT and a nested call agree with a model written from the EIP's tables. All twenty probes behave as the
-   EIP says, and each opcode costs what the EIP says. The opcodes see the same transaction from
+   VERIFY, SENDER, DEFAULT and a nested call agree with a model written from the EIP's tables.
+   All twenty probes behave as the EIP says, and each opcode costs what the EIP says. The opcodes see the same transaction from
    VERIFY, SENDER, DEFAULT and a nested call. Only the current-frame values differ, and they
    differ as specified:
    - `TXPARAM(0x0A)`;
