@@ -133,6 +133,11 @@ Gas estimates for the same type-4 against the head state, from [`estimate.ts`](e
    The sender's code changing is then incidental: what matters is that C's validity depended on
    the vanished block. Experiment 19 tests this deliberately.
 
+   *Tested since.* Experiment 19 tested it (observation 6). Over 80 rounds, one receipt
+   named a block that a rebuilt block replaced at the same height, which confirms the first half.
+   The transaction sent on that receipt survived, and none of 80 was dropped, so the second half
+   holds only sometimes. The wait-for-a-child-block rule stands.
+
 7. **Each authorization costs the authority a nonce.** Dana's nonce went from 6 to 7 at B without
    her sending anything, and frame transactions on nonce key 0 continued from there. A wallet that
    pre-signs frame transactions for an EOA must re-sign them after any delegation change.
