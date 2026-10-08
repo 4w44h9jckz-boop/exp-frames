@@ -44,7 +44,9 @@ RPC_URL=https://rpc.frames-devnet-0.ethpandaops.io RPC_UPSTREAM=nethermind npx t
 
 `RPC_UPSTREAM` pins every request to one client and skips the balancer's cache (eRPC's
 `X-ERPC-Use-Upstream` and `X-ERPC-Skip-Cache-Read`). Without it, each request goes to whichever
-client the balancer picks, possibly from its cache. The clients do not yet agree on the JSON of a
+client the balancer picks, possibly from its cache. The balancer also merges identical requests
+that are in flight together, whatever client each asked for, so a pinned client checks the
+`x-erpc-upstream` response header and refuses (and viem retries) an answer from another client. The clients do not yet agree on the JSON of a
 frame transaction or a frame receipt (execution-apis#860 and #907 are open); `frameTxFromJson`,
 `frameReceiptGas` and `frameReceiptStatus` read all four.
 

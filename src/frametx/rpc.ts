@@ -54,15 +54,36 @@ export function envelopeFor(chainId: bigint | number): FrameTxEnvelope {
  * `RPC_URL` selects the network; the Hegota testnet is the default. On frames-devnet-0,
  * `upstream` (or `RPC_UPSTREAM`), such as `geth`, pins every request to that client and skips the
  * balancer's cache, through eRPC's `X-ERPC-Use-Upstream` and `X-ERPC-Skip-Cache-Read`
- * directives; the `x-erpc-upstream` response header names the node that answered.
+ * directives.
+ *
+ * The directives do not survive eRPC's multiplexer: identical requests in flight at the same time
+ * are merged and all answered by whichever upstream served the first, whatever each one asked
+ * for. So a pinned client checks the `x-erpc-upstream` response header, which names the node that
+ * answered, and throws `UpstreamMismatch` rather than return another client's answer as this
+ * one's. viem retries the request, later and alone, so it usually reaches the right client in
+ * the end; asking different clients the same question one at a time avoids the retries.
  */
 export function makeClient(
   rpcUrl = process.env.RPC_URL || HEGOTA_RPC_URL,
   upstream = process.env.RPC_UPSTREAM,
 ): PublicClient {
   const chain = rpcUrl === FRAMES_DEVNET_0_RPC_URL ? framesDevnet0 : hegotaTestnet
-  const headers = upstream ? { 'X-ERPC-Use-Upstream': `*${upstream}*`, 'X-ERPC-Skip-Cache-Read': 'true' } : undefined
-  return createPublicClient({ chain, transport: http(rpcUrl, { fetchOptions: headers ? { headers } : undefined }) })
+  if (!upstream) return createPublicClient({ chain, transport: http(rpcUrl) })
+  const headers = { 'X-ERPC-Use-Upstream': `*${upstream}*`, 'X-ERPC-Skip-Cache-Read': 'true' }
+  const onFetchResponse = (response: Response) => {
+    const answered = response.headers.get('x-erpc-upstream')
+    if (answered && !answered.includes(upstream)) throw new UpstreamMismatch(upstream, answered)
+  }
+  return createPublicClient({ chain, transport: http(rpcUrl, { fetchOptions: { headers }, onFetchResponse }) })
+}
+
+export class UpstreamMismatch extends Error {
+  constructor(
+    readonly asked: string,
+    readonly answered: string,
+  ) {
+    super(`asked ${asked}, answered by ${answered.replace(/#.*/, '')}`)
+  }
 }
 
 /** Untyped JSON-RPC call, for methods viem does not know (or would reformat). */
