@@ -271,6 +271,21 @@ implementation (Rust). Status: push access granted; work is on kohaku-rs branch 
   Nethermind held a zero-fee sponsored tx. `MAX_VERIFY_GAS` is 100k (reth, ethrex), 300k
   (Nethermind), 500k (Hegota). 21 of 39 tx JSON fields differ; `gas` means two things.
   ⏳ Funded: replay 02–21's shapes on devnet-0 (list in 22's README), then devnet-1 (8-field).
+- ✅ **Approval scope** (23): the EIP's "or otherwise constrain every subsequent `SENDER` frame"
+  read literally. A mempool observer inserted a sandwich *inside the victim's own transaction* as a
+  `DEFAULT`-frame replacement, mined in block 315,369 (front 95,247 and back 15,463 execution gas,
+  paid by the victim), and a relayer raised the tip to 0.0011865 ETH. A scoped digest that commits
+  to every frame except the pay frame's contents let a second payer replace the first without the
+  user re-signing (block 315,376).
+- ✅ **Sealed paymaster** (24): ethereum/EIPs#12328's whole-code egress scan, live. A paymaster
+  with no `CALL` in its code, so sealed by the scan, sent its whole balance out through a `SENDER`
+  frame's `value` while a sponsorship it backed was pending, and the sponsorship was dropped. A
+  paymaster sealed by construction (immutable EIP-8272 source, a Merkle policy over target,
+  selector, cap and deadline): prefix 13,305 gas at depth 4, pay frame $3{,}811 + 191d$. A later
+  root does not revoke an earlier one inside 8,191 slots; only the policy's `notAfter` bounds it.
+  Offline: the PR's scan fails 28% of call-free Solidity builds on metadata bytes alone; an
+  amended scan (reachable code only, constant-scope `APPROVE`, no code-less or delegated payer)
+  fails 0.9%. A reorg at block 316,413 turned a mined drain's receipt from success to failure.
 
 ## Status log
 
@@ -317,6 +332,19 @@ implementation (Rust). Status: push access granted; work is on kohaku-rs branch 
   aggregation and pre-execution validation (BIP-340 first, WebAuthn stays in the EVM), no wider
   default code without a rotation path, `MAX_VERIFY_STATE_GAS` in bytes, one admission order with
   structured reasons.
+
+- **2026-10-08 (c)**: Asked "are frame transactions done?", read EIP-8141 master end to end with
+  EIP-8250, EIP-8272, EIP-7805, EIP-8369, ERC-7562 and the Hegota and Glamsterdam meta EIPs, and
+  `aa`'s and `crops-frame`'s findings. Ran experiments 23 (approval scope) and 24 (sealed paymaster)
+  to test the two claims that needed a live chain. Rewrote the post around a readiness map: the
+  execution layer is done; approval semantics, payers, the public mempool, inclusion lists, partial
+  statelessness and post-quantum accounts are not. Its suggestions: sign what you approve (Security
+  Considerations); a fan-out invariant for payers, under which the code-less sponsor rule and the
+  PR-12328 scan both fail; evict by fee, and by deadline only near expiry; a FOCIL profile for
+  directly evaluable frame transactions; a namespaced VOPS surface; scheme agility only with a
+  rotation path, since an EOA has no protocol path off ECDSA. It also sets the public mempool beside
+  ERC-7562 (narrower on every row) and says what stays on ERC-4337 at launch. 183 mined transactions
+  across the branches.
 
 ## References
 
