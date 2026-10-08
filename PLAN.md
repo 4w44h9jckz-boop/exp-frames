@@ -286,6 +286,24 @@ implementation (Rust). Status: push access granted; work is on kohaku-rs branch 
   Offline: the PR's scan fails 28% of call-free Solidity builds on metadata bytes alone; an
   amended scan (reachable code only, constant-scope `APPROVE`, no code-less or delegated payer)
   fails 0.9%. A reorg at block 316,413 turned a mined drain's receipt from success to failure.
+- ✅ **Inclusion lists** (25, offline and inside ethrex `c94964843d`): of 183 mined frame txs,
+  173 are EIP-8369 Profile 2 candidates as written and 183 under EIP-8272's "skip both verifier
+  frames" rule; the 10 left out are exactly the recent-root ones (06, 24). 68 are directly
+  evaluable (a Profile 1 for frames). ethrex fills one 2^20 budget per payload, in delivery order:
+  2 privacy withdrawals per slot, and one set of lists gives 46 admitted sets over 5,040 orders,
+  because consensus-specs deduplicates through `set`. An unfunded committee member's junk denies
+  honest withdrawals for free; a per-list fill admits every honest tx in every multi-list scenario.
+  Attester stateless cost: 50 to 53 µs per default-code frame tx, 48 µs per type-2.
+- ✅ **Validation CPU** (26, inside ethrex): worst compute about 16 ns/gas (alt_bn128 MUL,
+  BLS pairing, ecrecover); Groth16 13.1, 40-key multisig 15.0, WOTS shape 5.7; cold state from
+  memory 1.4. A cap of 250k is 4 ms; a separate state cap keeps reads at 47. ethrex verifies
+  frame signatures twice on admission; P256 without aws-lc-rs is 3.9 times slower.
+- ✅ **Execution digest** (27): a draft ERC for $E$ (EIP-712, domain `FrameExecution`, pay frame's
+  target, limits and data open; blobs pinned). viem, by hand, alloy (kohaku-rs) and a 617-byte Yul
+  account agree; 19 cases in ethrex, 0 mismatches. On the testnet, an owner's typed-data
+  signature was reused byte for byte by a second sponsor, mined in block 320,282. Found: the relay
+  can name the sender as payer; 23's layout missed blobs; EIP-8250 first-use state gas lands in the
+  pay frame, so its limits must stay open.
 
 ## Status log
 
@@ -345,6 +363,14 @@ implementation (Rust). Status: push access granted; work is on kohaku-rs branch 
   rotation path, since an EOA has no protocol path off ECDSA. It also sets the public mempool beside
   ERC-7562 (narrower on every row) and says what stays on ERC-4337 at launch. 183 mined transactions
   across the branches.
+- **2026-10-08 (d)**: Asked to try harder, ran the post's open questions as experiments 25
+  (inclusion lists, against ethrex's Profile 2 code and consensus-specs' own function), 26 (what a
+  validation gas cap bounds in time) and 27 (the execution digest as a draft ERC, with a Yul
+  account, vectors, an alloy port in kohaku-rs and a live replacement). Folded them into the post:
+  suggestion 5 split into 5a (Profile 1 for directly evaluable frames) and 5b (fill the budget per
+  list and carry list boundaries through the Engine API), section 7 gained the compute numbers,
+  section 1 the ERC and three findings, and smaller fixes 14 and 15 are new. 188 mined
+  transactions across the branches. Republished the post's page.
 
 ## References
 
