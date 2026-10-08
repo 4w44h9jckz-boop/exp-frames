@@ -12,7 +12,8 @@ import {
 } from 'viem'
 import { NONCE_MANAGER } from './constants.js'
 import { frameTxHash, serializeFrameTx } from './encode.js'
-import type { Frame, FrameSignature, FrameTx, FrameTxFees } from './types.js'
+import type { FrameGasUsed } from './gas.js'
+import type { Frame, FrameSignature, FrameTx, FrameTxEnvelope, FrameTxFees } from './types.js'
 
 export const HEGOTA_RPC_URL = 'https://rpc1.privacy.ethrex.xyz'
 export const HEGOTA_FAUCET_URL = 'https://faucet.privacy.ethrex.xyz'
@@ -27,8 +28,41 @@ export const hegotaTestnet = defineChain({
   testnet: true,
 })
 
-export function makeClient(rpcUrl = process.env.RPC_URL || HEGOTA_RPC_URL): PublicClient {
-  return createPublicClient({ chain: hegotaTestnet, transport: http(rpcUrl) })
+/**
+ * ethpandaops frames-devnet-0: geth, Nethermind, reth and ethrex behind one eRPC balancer, which
+ * sends each request (a whole batch at a time) to one of them. EIP-8141 at the same pin as the
+ * Hegota testnet, without EIP-8250 or EIP-8272, so its envelope is `plain`.
+ */
+export const FRAMES_DEVNET_0_RPC_URL = 'https://rpc.frames-devnet-0.ethpandaops.io'
+export const FRAMES_DEVNET_0_EXPLORER_URL = 'https://dora.frames-devnet-0.ethpandaops.io'
+
+export const framesDevnet0 = defineChain({
+  id: 7_034_189_865,
+  name: 'ethpandaops frames-devnet-0',
+  nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 },
+  rpcUrls: { default: { http: [FRAMES_DEVNET_0_RPC_URL] } },
+  blockExplorers: { default: { name: 'Dora', url: FRAMES_DEVNET_0_EXPLORER_URL } },
+  testnet: true,
+})
+
+/** The envelope a chain takes: `plain` on frames-devnet-0, `keyed` everywhere else so far. */
+export function envelopeFor(chainId: bigint | number): FrameTxEnvelope {
+  return BigInt(chainId) === BigInt(framesDevnet0.id) ? 'plain' : 'keyed'
+}
+
+/**
+ * `RPC_URL` selects the network; the Hegota testnet is the default. On frames-devnet-0,
+ * `upstream` (or `RPC_UPSTREAM`), such as `geth`, pins every request to that client and skips the
+ * balancer's cache, through eRPC's `X-ERPC-Use-Upstream` and `X-ERPC-Skip-Cache-Read`
+ * directives; the `x-erpc-upstream` response header names the node that answered.
+ */
+export function makeClient(
+  rpcUrl = process.env.RPC_URL || HEGOTA_RPC_URL,
+  upstream = process.env.RPC_UPSTREAM,
+): PublicClient {
+  const chain = rpcUrl === FRAMES_DEVNET_0_RPC_URL ? framesDevnet0 : hegotaTestnet
+  const headers = upstream ? { 'X-ERPC-Use-Upstream': `*${upstream}*`, 'X-ERPC-Skip-Cache-Read': 'true' } : undefined
+  return createPublicClient({ chain, transport: http(rpcUrl, { fetchOptions: headers ? { headers } : undefined }) })
 }
 
 /** Untyped JSON-RPC call, for methods viem does not know (or would reformat). */
@@ -37,13 +71,31 @@ export async function rpc<T>(client: PublicClient, method: string, params: unkno
   return request({ method, params })
 }
 
-// ---- JSON shapes served by ethrex ----
+// ---- JSON shapes served by ethrex, and how the other clients differ ----
 
+/**
+ * A frame receipt. The clients do not agree on its JSON yet (execution-apis#860 is open):
+ * frames-devnet-0 on 2026-10-08 served execution gas as `gasUsed` (ethrex), `executionGasUsed`
+ * (Nethermind) or both (geth, reth), and `status` as a number (Nethermind) or a quantity (the
+ * rest). Read them with `frameReceiptGas` and `frameReceiptStatus`.
+ */
 export type FrameReceiptJson = {
-  status: Hex
-  gasUsed: Hex
+  status: Hex | number
+  gasUsed?: Hex
+  executionGasUsed?: Hex
   stateGasUsed: Hex
   logs: { address: Address; topics: Hex[]; data: Hex }[]
+}
+
+export function frameReceiptGas(f: FrameReceiptJson): FrameGasUsed {
+  const execution = f.executionGasUsed ?? f.gasUsed
+  if (execution === undefined) throw new Error('frame receipt has neither gasUsed nor executionGasUsed')
+  return { execution: hexToBigInt(execution), state: hexToBigInt(f.stateGasUsed) }
+}
+
+/** 0 FAILURE, 1 SUCCESS, 2 SKIPPED. */
+export function frameReceiptStatus(f: FrameReceiptJson): number {
+  return typeof f.status === 'number' ? f.status : Number(hexToBigInt(f.status))
 }
 
 export type FrameTxReceiptJson = {
@@ -62,19 +114,47 @@ export type FrameTxReceiptJson = {
   logs: unknown[]
 }
 
+/**
+ * A frame as the node serves it. On frames-devnet-0 (2026-10-08) each client named the fields
+ * its own way; execution-apis#907 would fix one:
+ * - ethrex: `to` (null when null), `gasLimit`, `stateGasLimit`;
+ * - Nethermind: `target` (absent when null), `executionGasLimit`, `stateGasLimit`;
+ * - reth and geth: `target` (absent when null), `executionGas`, `stateGas`.
+ * A signature entry's null `signer` is `null` (ethrex), absent (Nethermind, reth) or `0x` (geth).
+ */
+export type FrameJson = {
+  mode: Hex
+  flags: Hex
+  to?: Address | null
+  target?: Address | null
+  gasLimit?: Hex
+  executionGasLimit?: Hex
+  executionGas?: Hex
+  stateGasLimit?: Hex
+  stateGas?: Hex
+  value: Hex
+  data: Hex
+}
+
 export type FrameTxJson = {
   hash: Hex
   type: Hex
   chainId: Hex
-  nonceKeys: Hex[]
-  nonceSeq: Hex
-  sender: Address
-  frames: { mode: Hex; flags: Hex; to: Address | null; gasLimit: Hex; stateGasLimit: Hex; value: Hex; data: Hex }[]
-  signatures: { scheme: Hex; signer: Address | null; msg: Hex; signature: Hex }[]
+  /** Keyed envelope (EIP-8250). */
+  nonceKeys?: Hex[]
+  nonceSeq?: Hex
+  /** Plain envelope (frames-devnet-0). */
+  nonce?: Hex
+  /** Nethermind serves no `sender` (frames-devnet-0, 2026-10-08); `from` is the same address. */
+  sender?: Address
+  from?: Address
+  frames: FrameJson[]
+  signatures: { scheme: Hex; signer?: Address | null; msg: Hex; signature: Hex }[]
   maxPriorityFeePerGas: Hex
   maxFeePerGas: Hex
   maxFeePerBlobGas: Hex
-  blobVersionedHashes: Hex[]
+  /** geth leaves it out when empty. */
+  blobVersionedHashes?: Hex[]
   blockNumber: Hex | null
 }
 
@@ -91,28 +171,43 @@ export type SimulateResult = {
   executionError: string | null
 }
 
+/** An address the node may serve as `null`, absent or `0x`. */
+function nullable(a: Address | null | undefined): Address | null {
+  return a && a !== '0x' ? getAddress(a) : null
+}
+
 /** Rebuild a FrameTx from the node's JSON. Check `frameTxHash(tx) === json.hash` before trusting it. */
 export function frameTxFromJson(j: FrameTxJson): FrameTx {
   const big = (h: Hex) => hexToBigInt(h)
+  const nonce =
+    j.nonceKeys !== undefined && j.nonceSeq !== undefined
+      ? { nonceKeys: j.nonceKeys.map(big), nonceSeq: big(j.nonceSeq) }
+      : j.nonce !== undefined
+        ? { envelope: 'plain' as const, nonceKeys: [0n], nonceSeq: big(j.nonce) }
+        : undefined
+  if (!nonce) throw new Error(`${j.hash}: neither nonceKeys/nonceSeq nor nonce`)
   return {
     chainId: big(j.chainId),
-    nonceKeys: j.nonceKeys.map(big),
-    nonceSeq: big(j.nonceSeq),
-    sender: getAddress(j.sender),
-    frames: j.frames.map(
-      (f): Frame => ({
+    ...nonce,
+    sender: getAddress((j.sender ?? j.from) as Address),
+    frames: j.frames.map((f, i): Frame => {
+      const target = nullable(f.to ?? f.target)
+      const execution = f.gasLimit ?? f.executionGasLimit ?? f.executionGas
+      const state = f.stateGasLimit ?? f.stateGas
+      if (execution === undefined || state === undefined) throw new Error(`${j.hash}: frame ${i} has no gas limits`)
+      return {
         mode: Number(big(f.mode)),
         flags: Number(big(f.flags)),
-        target: f.to ? getAddress(f.to) : null,
-        limits: { execution: big(f.gasLimit), state: big(f.stateGasLimit) },
+        target,
+        limits: { execution: big(execution), state: big(state) },
         value: big(f.value),
         data: f.data,
-      }),
-    ),
+      }
+    }),
     signatures: j.signatures.map(
       (s): FrameSignature => ({
         scheme: Number(big(s.scheme)),
-        signer: s.signer ? getAddress(s.signer) : null,
+        signer: nullable(s.signer),
         msg: s.msg,
         signature: s.signature,
       }),
@@ -122,7 +217,7 @@ export function frameTxFromJson(j: FrameTxJson): FrameTx {
       maxFeePerGas: big(j.maxFeePerGas),
       maxFeePerBlobGas: big(j.maxFeePerBlobGas),
     },
-    blobVersionedHashes: j.blobVersionedHashes,
+    blobVersionedHashes: j.blobVersionedHashes ?? [],
   }
 }
 
@@ -171,8 +266,13 @@ export async function prepareFrameTx(
     opts.nonceSeq ?? getNonceSeq(client, opts.sender, nonceKeys),
     opts.fees ?? suggestFees(client),
   ])
+  const envelope = envelopeFor(chainId)
+  if (envelope === 'plain' && (nonceKeys.length !== 1 || nonceKeys[0] !== 0n)) {
+    throw new Error(`chain ${chainId} has no EIP-8250 keyed nonces`)
+  }
   return {
     chainId: BigInt(chainId),
+    ...(envelope === 'plain' ? { envelope } : {}),
     nonceKeys,
     nonceSeq,
     sender: getAddress(opts.sender),

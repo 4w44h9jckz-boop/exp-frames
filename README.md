@@ -24,6 +24,30 @@ EIP-8250 keyed nonces at [`f3079a09e8`](https://github.com/ethereum/EIPs/blob/f3
 - The expiry verifier lives at `0x…8141` (EIP master has since moved it to `0x81413f0c…FfFf`).
 - The nodes run `--mempool.max-verify-gas=500000`, not the spec's 100,000.
 
+### ethpandaops frames-devnet-0
+
+| | |
+|---|---|
+| Chain ID | `7034189865` |
+| RPC | `https://rpc.frames-devnet-0.ethpandaops.io`, an eRPC balancer over geth, Nethermind, reth and ethrex |
+| Explorer | https://dora.frames-devnet-0.ethpandaops.io |
+| Faucet | https://faucet.frames-devnet-0.ethpandaops.io (proof of work and a captcha, so a person claims) |
+
+EIP-8141 at the same pin, without EIP-8250 or EIP-8272, so the envelope is EIP-8141's own:
+`0x06 || rlp([chain_id, nonce, sender, frames, signatures, fees, blob_versioned_hashes])`. The library
+picks it from the chain id (`envelopeFor`); a `FrameTx` with `envelope: 'plain'` carries the nonce in
+`nonceSeq`, and its nonce is not priced as calldata.
+
+```bash
+RPC_URL=https://rpc.frames-devnet-0.ethpandaops.io RPC_UPSTREAM=nethermind npx tsx scripts/inspect.ts <txhash>
+```
+
+`RPC_UPSTREAM` pins every request to one client and skips the balancer's cache (eRPC's
+`X-ERPC-Use-Upstream` and `X-ERPC-Skip-Cache-Read`). Without it, each request goes to whichever
+client the balancer picks, possibly from its cache. The clients do not yet agree on the JSON of a
+frame transaction or a frame receipt (execution-apis#860 and #907 are open); `frameTxFromJson`,
+`frameReceiptGas` and `frameReceiptStatus` read all four.
+
 ## Setup
 
 ```bash

@@ -21,6 +21,7 @@ import {
   Scheme,
   encodePayload,
   frameSigHash,
+  frameReceiptGas,
   frameTxFromJson,
   frameTxHash,
   generateP256Key,
@@ -136,10 +137,7 @@ describe('mined testnet transactions', () => {
       })
 
       it('settles to the receipt gasUsed', () => {
-        const frames = receipt.frameReceipts.map((f) => ({
-          execution: hexToBigInt(f.gasUsed),
-          state: hexToBigInt(f.stateGasUsed),
-        }))
+        const frames = receipt.frameReceipts.map(frameReceiptGas)
         expect(settledGasUsed(tx, frames, BigInt(meta?.refund ?? 0))).toBe(hexToBigInt(receipt.gasUsed))
       })
     })

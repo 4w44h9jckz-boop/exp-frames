@@ -1,0 +1,118 @@
+{
+  "meta": {
+    "clientVersion": "Nethermind/v2.1.0-unstable+3c210d3c-f/linux-x64/dotnet10.0.12",
+    "capturedAt": "2026-10-08T02:11:01.622Z"
+  },
+  "tx": {
+    "type": "0x6",
+    "frames": [
+      {
+        "mode": 1,
+        "flags": 3,
+        "executionGasLimit": "0x1388",
+        "stateGasLimit": "0x0",
+        "value": "0x0",
+        "data": "0x"
+      },
+      {
+        "mode": 2,
+        "flags": 4,
+        "target": "0x02dc5238fc5aabcbed86daa15e2c42212ca5f490",
+        "executionGasLimit": "0x7530",
+        "stateGasLimit": "0x0",
+        "value": "0x0",
+        "data": "0x"
+      },
+      {
+        "mode": 2,
+        "flags": 4,
+        "target": "0x02dc5238fc5aabcbed86daa15e2c42212ca5f490",
+        "executionGasLimit": "0x1",
+        "stateGasLimit": "0x0",
+        "value": "0x0",
+        "data": "0x"
+      },
+      {
+        "mode": 2,
+        "flags": 0,
+        "target": "0x02dc5238fc5aabcbed86daa15e2c42212ca5f490",
+        "executionGasLimit": "0x7530",
+        "stateGasLimit": "0x0",
+        "value": "0x0",
+        "data": "0x"
+      }
+    ],
+    "signatures": [
+      {
+        "scheme": 1,
+        "msg": "0x",
+        "signature": "0x01f5dbd67437c18d8b41d6e1c0adcc3019a771a8c9acef3c0d5d1a192ed40a307f414edf7d3131568ecbf4ab6c83e851a685425d428f539e9ab3bdb27600b47617"
+      }
+    ],
+    "maxFeePerBlobGas": "0x0",
+    "blobVersionedHashes": [],
+    "maxPriorityFeePerGas": "0x77359400",
+    "maxFeePerGas": "0x4a817c800",
+    "accessList": [],
+    "yParity": "0x0",
+    "chainId": "0x1a3453829",
+    "nonce": "0xbd25",
+    "to": null,
+    "from": "0xeedd4d5d54b0205efc2e14aef9c97ae6668f2770",
+    "value": "0x0",
+    "input": "0x",
+    "gasPrice": "0x77359407",
+    "v": "0x0",
+    "r": "0x0",
+    "s": "0x0",
+    "hash": "0xf09b366152b40dee753a96dd25a1f4f9f80b496b359fe09d6edf98e19c4c57e9",
+    "transactionIndex": "0x0",
+    "blockHash": "0x827419a07fef0ad98b18b82f713f1e4d7fa927a2d2a4c07f8cc01495b19d4f66",
+    "blockNumber": "0x18262",
+    "blockTimestamp": "0x6ac6e870",
+    "gas": "0xfde9"
+  },
+  "receipt": {
+    "transactionHash": "0xf09b366152b40dee753a96dd25a1f4f9f80b496b359fe09d6edf98e19c4c57e9",
+    "transactionIndex": "0x0",
+    "blockHash": "0x827419a07fef0ad98b18b82f713f1e4d7fa927a2d2a4c07f8cc01495b19d4f66",
+    "blockNumber": "0x18262",
+    "cumulativeGasUsed": "0x517c",
+    "gasUsed": "0x517c",
+    "effectiveGasPrice": "0x77359407",
+    "from": "0xeedd4d5d54b0205efc2e14aef9c97ae6668f2770",
+    "to": null,
+    "contractAddress": null,
+    "logs": [],
+    "logsBloom": "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+    "status": "0x0",
+    "payer": "0xeedd4d5d54b0205efc2e14aef9c97ae6668f2770",
+    "frameReceipts": [
+      {
+        "status": 1,
+        "executionGasUsed": "0x64",
+        "stateGasUsed": "0x0",
+        "logs": []
+      },
+      {
+        "status": 1,
+        "executionGasUsed": "0xbb8",
+        "stateGasUsed": "0x0",
+        "logs": []
+      },
+      {
+        "status": 0,
+        "executionGasUsed": "0x1",
+        "stateGasUsed": "0x0",
+        "logs": []
+      },
+      {
+        "status": 2,
+        "executionGasUsed": "0x0",
+        "stateGasUsed": "0x0",
+        "logs": []
+      }
+    ],
+    "type": "0x6"
+  }
+}

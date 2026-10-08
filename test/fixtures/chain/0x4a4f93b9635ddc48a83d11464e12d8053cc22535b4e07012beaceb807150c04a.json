@@ -1,0 +1,133 @@
+{
+  "meta": {
+    "clientVersion": "Nethermind/v2.1.0-unstable+3c210d3c-f/linux-x64/dotnet10.0.12",
+    "capturedAt": "2026-10-08T02:11:09.743Z"
+  },
+  "tx": {
+    "type": "0x6",
+    "frames": [
+      {
+        "mode": 1,
+        "flags": 3,
+        "executionGasLimit": "0x1388",
+        "stateGasLimit": "0x0",
+        "value": "0x0",
+        "data": "0x"
+      },
+      {
+        "mode": 2,
+        "flags": 0,
+        "target": "0x4d6ef17d60953c1b45522f38fb16d7b5b9b6f86d",
+        "executionGasLimit": "0x7530",
+        "stateGasLimit": "0x0",
+        "value": "0x0",
+        "data": "0x"
+      },
+      {
+        "mode": 2,
+        "flags": 0,
+        "target": "0x4d6ef17d60953c1b45522f38fb16d7b5b9b6f86d",
+        "executionGasLimit": "0x7530",
+        "stateGasLimit": "0x0",
+        "value": "0x0",
+        "data": "0x"
+      },
+      {
+        "mode": 2,
+        "flags": 0,
+        "target": "0x4d6ef17d60953c1b45522f38fb16d7b5b9b6f86d",
+        "executionGasLimit": "0x7530",
+        "stateGasLimit": "0x0",
+        "value": "0x0",
+        "data": "0x"
+      },
+      {
+        "mode": 2,
+        "flags": 0,
+        "target": "0x4d6ef17d60953c1b45522f38fb16d7b5b9b6f86d",
+        "executionGasLimit": "0x7530",
+        "stateGasLimit": "0x0",
+        "value": "0x0",
+        "data": "0x"
+      }
+    ],
+    "signatures": [
+      {
+        "scheme": 1,
+        "msg": "0x",
+        "signature": "0x01079a0abdc52089c581e61a61f806c511d7b5aec508b65e567e6ee736188cbf1468f91ca4be5196b7da70aae64b91047d2030f10b15ba39d1dc47c1578ba4c6c6"
+      }
+    ],
+    "maxFeePerBlobGas": "0x0",
+    "blobVersionedHashes": [],
+    "maxPriorityFeePerGas": "0x77359400",
+    "maxFeePerGas": "0x4a817c800",
+    "accessList": [],
+    "yParity": "0x0",
+    "chainId": "0x1a3453829",
+    "nonce": "0xbd25",
+    "to": null,
+    "from": "0x6101cc8d3fd683dde0aab1eb365410f3dac167b9",
+    "value": "0x0",
+    "input": "0x",
+    "gasPrice": "0x77359407",
+    "v": "0x0",
+    "r": "0x0",
+    "s": "0x0",
+    "hash": "0x4a4f93b9635ddc48a83d11464e12d8053cc22535b4e07012beaceb807150c04a",
+    "transactionIndex": "0x4",
+    "blockHash": "0x827419a07fef0ad98b18b82f713f1e4d7fa927a2d2a4c07f8cc01495b19d4f66",
+    "blockNumber": "0x18262",
+    "blockTimestamp": "0x6ac6e870",
+    "gas": "0x1e848"
+  },
+  "receipt": {
+    "transactionHash": "0x4a4f93b9635ddc48a83d11464e12d8053cc22535b4e07012beaceb807150c04a",
+    "transactionIndex": "0x4",
+    "blockHash": "0x827419a07fef0ad98b18b82f713f1e4d7fa927a2d2a4c07f8cc01495b19d4f66",
+    "blockNumber": "0x18262",
+    "cumulativeGasUsed": "0x1b497",
+    "gasUsed": "0x546f",
+    "effectiveGasPrice": "0x77359407",
+    "from": "0x6101cc8d3fd683dde0aab1eb365410f3dac167b9",
+    "to": null,
+    "contractAddress": null,
+    "logs": [],
+    "logsBloom": "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+    "status": "0x1",
+    "payer": "0x6101cc8d3fd683dde0aab1eb365410f3dac167b9",
+    "frameReceipts": [
+      {
+        "status": 1,
+        "executionGasUsed": "0x64",
+        "stateGasUsed": "0x0",
+        "logs": []
+      },
+      {
+        "status": 1,
+        "executionGasUsed": "0xbb8",
+        "stateGasUsed": "0x0",
+        "logs": []
+      },
+      {
+        "status": 1,
+        "executionGasUsed": "0x64",
+        "stateGasUsed": "0x0",
+        "logs": []
+      },
+      {
+        "status": 1,
+        "executionGasUsed": "0x64",
+        "stateGasUsed": "0x0",
+        "logs": []
+      },
+      {
+        "status": 1,
+        "executionGasUsed": "0x64",
+        "stateGasUsed": "0x0",
+        "logs": []
+      }
+    ],
+    "type": "0x6"
+  }
+}
