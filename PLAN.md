@@ -31,7 +31,7 @@
 | Network | Chain | Clients | Spec | Use |
 |---|---|---|---|---|
 | **ethrex Hegotá testnet** | `8141` | ethrex `v23.0.0-hegota-testnet-hotfix-4738681` | 8141@`b75cbe6115` + 8250 + 8272 (8-field envelope) | ✅ everything so far |
-| **ethpandaops frames-devnet-0** | `7034189865` | geth, Nethermind (`v2.1.0-unstable+3c210d3c`), reth, ethrex behind one eRPC balancer | 8141@`b75cbe61`, **no 8250** (7-field envelope with a plain `nonce`) | ⏳ cross-client runs |
+| **ethpandaops frames-devnet-0** | `7034189865` | geth, Nethermind (`v2.1.0-unstable+3c210d3c`), reth, ethrex behind one eRPC balancer | 8141@`b75cbe61`, **no 8250** (7-field envelope with a plain `nonce`) | ✅ cross-client probes (22), unfunded; funded runs wait for a human faucet claim |
 | ethpandaops frames-devnet-1 | not set yet | geth, Nethermind, reth, ethrex | 8141@`88fa3e4` + 8250 + 8272 + 7906 | 💡 planned launch ~2026-10-15 (tests 10-12) |
 | ethrex "Frames" testnet | `81410` | ethrex | 8141 only | 💡 used by the `aa` repo in Sept; liveness unchecked |
 | JARDIN demo devnet | `1729` (stated) | ethrex | ? | 💡 `https://demo.eip-8141.ethrex.xyz/rpc`, unverified |
@@ -63,14 +63,17 @@
 ethrex keeps a consensus divergence ledger in `docs/hegota-testnet-divergences.md`. Check it before
 relying on an edge case.
 
-### frames-devnet-0 (next)
+### frames-devnet-0
 
-- RPC `https://rpc.frames-devnet-0.ethpandaops.io`. Each request goes to a random client, so a run
-  gets cross-client coverage, but you cannot pick the client. `debug_*` and `txpool_*` are blocked.
-  Explorer `https://dora.frames-devnet-0.ethpandaops.io`.
+- RPC `https://rpc.frames-devnet-0.ethpandaops.io`. Each request goes to a random client unless it
+  is pinned: `X-ERPC-Use-Upstream: *reth*` plus `X-ERPC-Skip-Cache-Read: true` (tooling
+  `makeClient(url, 'reth')`). eRPC merges identical requests in flight and answers all of them from
+  one upstream whatever each asked for, so a pinned client refuses an answer whose `x-erpc-upstream`
+  header names another node (tooling `68929f9`), and cross-client reads go one client at a time.
+  `debug_*` and `txpool_*` are blocked. Explorer `https://dora.frames-devnet-0.ethpandaops.io`.
 - Faucet `https://faucet.frames-devnet-0.ethpandaops.io`: proof-of-work plus **hCaptcha**, so a human
   must claim. A GitHub login gives 100 ETH a day.
-- Tooling needed (`tooling` follow-up):
+- Tooling (done in `9bcc0d2`; kept for reference):
   - An envelope variant: `0x06 || rlp([chain_id, nonce, sender, frames, signatures, fees, blob_versioned_hashes])`.
     The sig hash follows it, and there is no EIP-8250 nonce calldata in the data cost.
   - `nonce` from `eth_getTransactionCount`.
@@ -129,7 +132,8 @@ Status: ✅ done · 🔄 in progress · ⏳ next · 💡 idea
   `tooling`, plus each experiment branch's own.
 - ✅ Contract compilation (`solc` npm: Solidity, plus Yul with `verbatim_*` for `0xaa`, `0xb0–0xb5`)
   and CREATE2 deployment frames.
-- ⏳ Network profiles: the frames-devnet-0 envelope (no 8250), RPC feature probing, per-network fixtures.
+- ✅ Network profiles: the frames-devnet-0 envelope (no 8250), pinned per-client RPC, six devnet-0 fixtures
+  (one per spamoor shape, built and served by different clients).
 - ✅ P256 signing (scheme `0x2`; signer = `keccak(qx‖qy)[12:]`) and ordered multi-key signing (`signAll`).
 - 💡 ARBITRARY entries + `SIGDATACOPY` helpers. Experiments 07 (FROST), 11 (WebAuthn) and 17 (WOTS)
   each carry their own encoder; none has moved into `tooling` yet.
@@ -259,8 +263,14 @@ implementation (Rust). Status: push access granted; work is on kohaku-rs branch 
   replacement; receipt finality. ethrex departs from the EIP in two places, both permissive:
   `TIMESTAMP` through a nested call to `0x8141`, and calls to a code-less EOA with a nonce or
   balance. Simulation is a faithful dry run of admission.
-- ⏳ **Cross-client**: replay experiments 01–04 on frames-devnet-0 (7-field) and devnet-1 (8-field)
-  once tooling supports them, and diff receipts and gas. This is the largest open item.
+- ✅ **Cross-client** (22, frames-devnet-0, unfunded): heads agree at 50/50 heights; all 2,000 frame
+  txs built by the four clients re-encode, recover and settle under `tooling`, but they are 5 spamoor
+  shapes, all self-relayed secp256k1. 49 admission probes × 2 fee levels × 4 clients: geth checks
+  balance before any frame rule, has a 24,000 gas floor, refuses blob frame txs; reth reports bad
+  signatures as prefix failures; ethrex lets the EIP-7825 and state caps reach simulation;
+  Nethermind held a zero-fee sponsored tx. `MAX_VERIFY_GAS` is 100k (reth, ethrex), 300k
+  (Nethermind), 500k (Hegota). 21 of 39 tx JSON fields differ; `gas` means two things.
+  ⏳ Funded: replay 02–21's shapes on devnet-0 (list in 22's README), then devnet-1 (8-field).
 
 ## Status log
 
@@ -293,6 +303,20 @@ implementation (Rust). Status: push access granted; work is on kohaku-rs branch 
   replacement bump and receipt confirmation (19). Every port is checked by rebuilding the
   experiment's mined transactions offline. While porting 11, kohaku's `Eoa` was found to claim
   the default code accepts P256, which the EIP does not allow, and the claim was corrected.
+- **2026-10-08 (a)**: Experiment 22 on frames-devnet-0, all four clients, without funds (the
+  faucet needs a human): chain agreement and conformance, admission probes, cap bisection, JSON
+  per client. Found and fixed an eRPC trap (merged in-flight requests answered by one upstream).
+  All four serve a frame rolled back with its batch as `SUCCESS` (`0x13dcebcf…`, block 99,563).
+- **2026-10-08 (b)**: Read EIP-8141 master and the open PRs (12039, 12041, 12061, 12091, 12109,
+  12113, 12213, 12253, 12301, 12310, 12321, 12328, 12330, 12340, 12352, 12387, 12395;
+  execution-apis 860, 894, 907, 909, 910). Wrote the ethresear.ch post on branch
+  `post/ethresearch` (`posts/frame-transactions-in-practice.md`): results of 01–22 and seven
+  suggestions, each with its cost and the easier fix it does not propose: frame-level `TIMESTAMP`
+  (plus an optional not-before in the expiry frame), a two-dimensional validation budget (access
+  vs compute) instead of moving the floor, a ROLLED_BACK frame status, scheme admission by
+  aggregation and pre-execution validation (BIP-340 first, WebAuthn stays in the EVM), no wider
+  default code without a rotation path, `MAX_VERIFY_STATE_GAS` in bytes, one admission order with
+  structured reasons.
 
 ## References
 
