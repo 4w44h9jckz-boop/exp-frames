@@ -371,6 +371,21 @@ implementation (Rust). Status: push access granted; work is on kohaku-rs branch 
   list and carry list boundaries through the Engine API), section 7 gained the compute numbers,
   section 1 the ERC and three findings, and smaller fixes 14 and 15 are new. 188 mined
   transactions across the branches. Republished the post's page.
+- **2026-10-09**: Asked for a ranked list of the open problems that takes recent EIP changes
+  into account. Re-read EIP-8141, 8250, 8272, 8081, 7805 and 8369 at master, the open PRs
+  (12041, 12252, 12301, 12321, 12328, 12340, 12394, 12396, 12421), consensus-specs `aa16bb4`
+  (still `list(set(...))`) and ethrex `c94964843d` (unchanged). Two findings moved: PR-12394
+  proposes 25's per-list budget, as a membership bitvector per tx, but keeps the shape rule
+  that leaves out recent-root txs; and EIP-8151 with EIP-8298 (both now Considered) would give
+  an EOA a way off ECDSA, while EIP-8355's ML-DSA was Declined. New: since the keyless
+  deployments only EIP-8250 requires its contract to exist at activation, so on a chain
+  without the expiry verifier, clients that evaluate the frame directly and clients that
+  execute it disagree; the mempool admits 5 of EIP-8250's 16 keys fresh; `857622a`'s retry
+  count. Stale in our results: the testnet's expiry verifier is still at `0x8141`, and 06's
+  withdrawal would now cost 12,100 more gas per key. The post gained "What moved while we wrote
+  this" and smaller fixes 16 and 17; `posts/frame-transactions-open-problems.md` on
+  `post/ethresearch` ranks 19 problems from hard to easy, each with damage, recent changes and
+  a fix. Both published as pages.
 
 ## References
 
