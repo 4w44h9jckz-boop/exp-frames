@@ -19,16 +19,15 @@ We built 27 experiments on [EIP-8141 frame transactions](https://eips.ethereum.o
    - The one implementation of that profile fills a replay budget in the order the consensus layer delivers, and the consensus specification deduplicates the lists through a `set`. Eight runs of its own function gave eight orders, and eight different admitted sets.
    - One committee member listing transactions from a key that was never funded denies honest privacy withdrawals, for free.
 
-   We propose the subset that needs no extension at all (68 of our 183 transactions), and a per-list budget that restores FOCIL's guarantee that one honest includer suffices.
+   We propose the subset that needs no extension at all (68 of our 183 transactions), and a per-list budget that restores FOCIL's guarantee that one honest includer suffices. [PR-12394](https://github.com/ethereum/EIPs/pull/12394), opened on 2026-10-08, proposes that budget; it still leaves out the recent-root transactions the profile exists for.
 4. **Validation state has three homes, and they disagree.** The mempool allows any slot of the sender. EIP-8369 allows slots 0 to 3. Account practice (ERC-1967, ERC-7201, ERC-7579, and EIP-7702 re-delegation) keeps state anywhere but there. A delegated EOA can be inclusion-list-eligible or re-delegation-safe, not both.
 5. **Revocation and deadlines are punished.**
    - EIP-8272 roots cannot be withdrawn for 8,191 slots, and we measured that a later root revokes nothing.
    - The only way to bound a root's life is an expiry frame.
    - The EIP evicts the nearest deadline first, at any fee, so the transactions that declare when they stop being valid are the first to go.
-6. **Post-quantum: a new account can be post-quantum, an EOA cannot leave ECDSA.**
-   - EIP-7851 is declined for Hegota.
-   - Default code and the canonical paymaster are secp256k1 only.
-   - Every post-quantum signature is `ARBITRARY`, which the EIP itself makes non-aggregatable.
+6. **Post-quantum: a new account can be post-quantum; an EOA can leave ECDSA only if two Considered EIPs ship together.**
+   - On 2026-10-08 Hegota declined EIP-8355's ML-DSA precompiles, and moved EIP-8151 and EIP-8298 to Considered. Together those two retire an EOA's key; either alone leaves it with power.
+   - Default code is secp256k1 only, so every post-quantum signature is `ARBITRARY`: checked in the EVM, which the EIP itself makes non-aggregatable, and above the public mempool's 100,000 gas for in-EVM schemes.
 7. **The public mempool is a strict subset of ERC-7562.** That is a defensible choice, but it means frames replace the simple half of ERC-4337 at launch, not all of it. Gas-for-tokens sponsorship becomes either a live signer or unsecured credit. One limit could safely grow, and we timed it: compute. The worst work per gas runs at about 16 ns in ethrex, a Groth16 proof at 13, and a state read from memory at 1.4. A separate cap on state would admit a 245k-gas proof without raising the 47 cold reads a prefix may make.
 
 Each finding comes with a suggestion, its cost, and the easier fix we are *not* proposing. The thread that runs through all of them: **every rule that widened the mempool safely is a declaration a node can index without executing anything; every rule that failed infers something from execution, or from the order things arrived in.**
@@ -40,22 +39,46 @@ Each finding comes with a suggestion, its cost, and the easier fix we are *not* 
 
 ## Is it done? A readiness map
 
-Spec-wise, we read EIP-8141 at master on 2026-10-08, with EIP-8250 (keyed nonces), EIP-8272 (recent roots), EIP-7805 (FOCIL), EIP-8369 (VOPS profiles), ERC-7562 and the Hegota and Glamsterdam meta EIPs, and the consensus-specs and Engine API text that FOCIL runs on. Experiment-wise, every claim below has a mined transaction, a refusal message or a quoted sentence behind it.
+Spec-wise, we read EIP-8141 at master on 2026-10-08, and again on 2026-10-09 after the changes listed below, with EIP-8250 (keyed nonces), EIP-8272 (recent roots), EIP-7805 (FOCIL), EIP-8369 (VOPS profiles), ERC-7562 and the Hegota and Glamsterdam meta EIPs, and the consensus-specs and Engine API text that FOCIL runs on. Experiment-wise, every claim below has a mined transaction, a refusal message or a quoted sentence behind it.
 
 | Layer | What it decides | State | Evidence | What is missing |
 |---|---|---|---|---|
 | Block execution | envelope, signature hash, frames, `APPROVE`, receipts, gas | **converged** | 4 clients, 50 of 50 heights; 2,000 transactions re-encoded and re-settled (22); 41 rebuilt byte for byte in Rust | a status for frames rolled back with their batch; cross-client coverage beyond 5 shapes |
 | Approval semantics | what a custom `VERIFY` must authenticate | sig hash sound; **guidance exploitable** | sandwich and fee rewrite mined (23); an EIP-712 execution digest from an unmodified wallet call, mined under a second payer (27) | one paragraph of Security Considerations; an ERC for the digest, drafted (section 1) |
-| Payers | who may sponsor many pending transactions | canonical paymaster works, for one secp256k1 signer; **two other rules unsafe as written** | 4 users in one block (09); scan-sealed paymaster drained with a sponsorship pending (24) | a fan-out invariant (section 2) |
-| Public mempool | what propagates | specified, deliberately narrow; **clients diverge** | 3 values of `MAX_VERIFY_GAS`, 3 check orders (22); worst compute about 16 ns per gas, state from memory 1.4 (26) | caps, order and error vocabulary; a cap for state apart from compute (section 7) |
+| Payers | who may sponsor many pending transactions | canonical paymaster works, for one secp256k1 signer; **two other rules unsafe as written** | 4 users in one block (09); scan-sealed paymaster drained with a sponsorship pending (24) | a fan-out invariant (section 2); PR-12041's paymaster is the safe model |
+| Public mempool | what propagates | specified, deliberately narrow; **clients diverge** | 3 values of `MAX_VERIFY_GAS`, 3 check orders (22); worst compute about 16 ns per gas, state from memory 1.4 (26) | caps, order and error vocabulary; a cap for state apart from compute, which PR-12301's floor does not yet separate (section 7) |
 | Shared senders | privacy pools, multisig treasuries | **one pending transaction per sender** without EIP-8250, which is only Considered | storage pool serializes all users; keyed pool lands 3 per block (06) | scheduling, and keyed mempool rules ([PR-12039](https://github.com/ethereum/EIPs/pull/12039)) |
-| Inclusion lists | censorship resistance | **undefined for type `0x06`; order-dependent where built** | 173 of 183 candidates under EIP-8369, 183 under EIP-8272's rule; 68 directly evaluable; 46 admitted sets from one set of lists (25) | a Profile 1 for directly evaluable frames; a per-list budget, with list boundaries in the Engine API (section 4) |
+| Inclusion lists | censorship resistance | **undefined for type `0x06`; order-dependent where built**; per-list fix proposed (PR-12394) | 173 of 183 candidates under EIP-8369, 183 under EIP-8272's rule; 68 directly evaluable; 46 admitted sets from one set of lists (25) | a Profile 1 for directly evaluable frames; PR-12394 merged with recent-root frames skipped, and consensus-specs carrying list membership (section 4) |
 | Partial statelessness | what a VOPS node can validate | Proposed; surface conflicts with account practice | 7579 module refused (14); storage outlives delegation (15) | a namespaced surface (section 5) |
-| Time | deadlines, not-before, revocation | deadline yes; not-before no; **deadlines evicted first** | expiry frame (10); hidden not-before (19); irrevocable roots (24) | frame-level `TIMESTAMP`; eviction order (section 3) |
-| Post-quantum | migration off ECDSA | new contract accounts only, at 2.7 times ECDSA's gas; **EOAs have no exit** | WOTS account (17); delegation adds a key, removes none (15) | scheme agility in default code and the canonical paymaster, with rotation (section 6) |
+| Time | deadlines, not-before, revocation | deadline yes; not-before proposed (PR-12252); **deadlines evicted first** | expiry frame (10); hidden not-before (19); irrevocable roots (24) | frame-level `TIMESTAMP`; eviction order (section 3) |
+| Post-quantum | migration off ECDSA | new contract accounts only, at 2.7 times ECDSA's gas; **EOAs exit only if EIP-8151 and EIP-8298 both ship** | WOTS account (17); delegation adds a key, removes none (15); ML-DSA declined for Hegota | both EIPs, together; a compute floor that admits in-EVM verification; scheme agility with rotation (section 6) |
 | Wallet interface | what an RPC returns | **21 of 39 transaction fields differ** across clients | (22) | [execution-apis PR-860](https://github.com/ethereum/execution-apis/pull/860), [PR-907](https://github.com/ethereum/execution-apis/pull/907) |
 
 The pattern is that the closer a layer sits to the block, the more done it is, and the closer it sits to a user, the less. That is the expected order of work for a protocol change. But users never meet the block layer alone. A frame transaction that a wallet cannot price, a mempool will not carry, and an inclusion list does not protect is, to a user, not done.
+
+### What moved while we wrote this
+
+On 2026-10-09 we re-read every EIP above, the open pull requests against them, consensus-specs (at `aa16bb4`) and ethrex's testnet branch (still `c94964843d`). In the two weeks before:
+- **Merged into EIP-8141:**
+  - a block producer may evict a transaction whose validation prefix keeps failing to approve payment, after more than one attempt ([`857622a`](https://github.com/ethereum/EIPs/commit/857622acc95d59c0b52bc92cf862a15d823bf5db));
+  - the expiry verifier became an ordinary contract deployed by a keyless transaction, at `0x81413f0c...`, instead of a predeploy at `0x8141` ([`88fa3e4`](https://github.com/ethereum/EIPs/commit/88fa3e4d24efb0dffdbe1fda2765060b870de784));
+  - an approval made inside a call that later reverts is now undone with it ([`af80fc1`](https://github.com/ethereum/EIPs/commit/af80fc1c4122c4990b8c84bfd10be60c6e343bb2), 2026-10-08).
+- **EIP-8250** ([`e328506`](https://github.com/ethereum/EIPs/commit/e32850647e72d6287b7778c6899007abd1a78b1d), 2026-10-08): the nonce manager is keyless-deployed, each non-zero key costs 12,100 execution gas besides its first-use state gas, and keyed nonces enter the block access list. It is still Considered.
+- **EIP-8272** ([`5e32ce9`](https://github.com/ethereum/EIPs/commit/5e32ce9abb16d8a8d1a55b65fc2aa55b606b882c), 2026-10-08): the recent-root contract is keyless-deployed, and shape matching skips both leading verifier frames.
+- **Hegota, EIP-8081** ([`f154af8`](https://github.com/ethereum/EIPs/commit/f154af816c4e3467ea3a86e064e4d3493ab2a8e0), 2026-10-08): EIP-8355's ML-DSA precompiles are Declined; EIP-8151 and EIP-8298 moved to Considered. FOCIL and EIP-8141 are still the only EIPs Scheduled.
+- **Open pull requests:**
+  - [PR-12394](https://github.com/ethereum/EIPs/pull/12394): per-member inclusion-list budgets and a two-dimensional gas fit (section 4);
+  - [PR-12396](https://github.com/ethereum/EIPs/pull/12396): each list filled in hash order (section 4);
+  - [PR-12421](https://github.com/ethereum/EIPs/pull/12421): a frame that installs an EIP-7702 delegation (sections 2 and 6);
+  - [PR-12041](https://github.com/ethereum/EIPs/pull/12041): the canonical paymaster accepts any protocol-verified scheme, with signer rotation (section 6);
+  - [PR-12301](https://github.com/ethereum/EIPs/pull/12301): `MAX_VERIFY_GAS` as a floor, with headroom above it (section 7);
+  - [PR-12321](https://github.com/ethereum/EIPs/pull/12321): one order of admission checks (smaller fixes);
+  - [PR-12340](https://github.com/ethereum/EIPs/pull/12340): sender authority storage (section 5);
+  - [PR-12252](https://github.com/ethereum/EIPs/pull/12252): a not-before time in the expiry frame (smaller fixes).
+
+Two findings moved. Section 4's per-list budget is now a pull request, and section 6's "no exit for an EOA" holds only until EIP-8151 and EIP-8298 ship together. The rest stand, and each section says where a pull request touches it. Our testnet's code predates all of the above: its expiry verifier is at `0x8141`, and it does not charge EIP-8250's 12,100 gas per key, so experiment 06's withdrawal would now cost 12,100 more per key.
+
+The same findings, ranked by how hard each is to fix, with the damage each can do and the fix we propose, are in a companion list, [Frame Transaction Open Problems](https://github.com/4w44h9jckz-boop/exp-frames/blob/post/ethresearch/posts/frame-transactions-open-problems.md).
 
 ## Frames in one page
 
@@ -224,6 +247,15 @@ The public mempool stays safe if every action that costs $O(1)$ fees has $F(a) =
 | **PR-12328 "egress-decidable" scan, as written** | **one transaction by the paymaster as sender** | **unbounded (measured below)** |
 
 The code-less sponsor's row is the EIP's own text: such a payer "is not a paymaster and is governed by the per-payer exposure rule alone", which bounds the summed maximum cost of its pending transactions by its balance $B$. That bounds the *amount* at risk, not the *count*. Suppose the smallest maximum cost a sponsored transaction can declare is $c_{\min} \approx 50{,}000$ gas at 2 gwei, that is $10^{-4}$ ETH. Then one ether backs about 10,000 pending transactions, each with its own fresh sender, and one 21,000-gas transfer invalidates them all (derived). The `aa` study raised the same row as [question 9](https://github.com/4w44h9jckz-boop/aa/blob/main/docs/06-findings/02-questions-for-the-specification-authors.md). ethrex does not implement the exemption, and caps such a sponsor at one (09).
+
+Three open pull requests touch this row, and none bounds it:
+- PR-12321 specifies the cleanup: a payer that approved through default code and then acquires code is dropped with everything it backs, and a falling balance evicts transactions until the exposure fits again. That is the fan-out, written down.
+- PR-12421's set-delegation frame is one more one-transaction action that gives a code-less sponsor code, and so drops all its pending sponsorships.
+- PR-12328 (below) has not changed since 2026-09-13.
+
+The model that does satisfy the invariant is PR-12041's canonical paymaster. Its withdrawals and now its signer rotations both wait out the 86,400-second timelock, so within that horizon nothing invalidates what it backs.
+
+EIP-8141 has also begun to admit the cost of unpaid work in another place. A prefix that never approves is charged nothing, so since `857622a` a block producer may evict it after more than one failed build attempt, because a failure can be transient. A count either wastes work or evicts a transaction that was about to become valid, and an adversary can arrange the second by delaying the transaction that funds a payer. Retrying only when a dependency recorded at admission changes bounds the work by state changes somebody paid for (smaller fixes, 17).
 
 ### Three doors
 
@@ -421,6 +453,8 @@ This covers:
 
 It covers them from the day frames ship. It needs no AA-VOPS extension, no code corpus, no IL VERIFY budget, and none of the unscheduled EIPs, and it stands under ePBS exactly where Profile 1 stands. And because nothing about it is replayed, no budget rations it, so nothing in the next subsection applies to it.
 
+Where it should live has changed. PR-12394 moves Profile 2's rules into EIP-7805, which is Scheduled, while Profile 1 there still means legacy, 2930, 1559 and 7702 transactions. The paragraph above belongs next to PR-12394's, in EIP-7805, so that it ships with FOCIL whatever happens to EIP-8369. It recognizes an expiry frame by its target, so it also needs the expiry verifier's code to be present at activation (smaller fixes, 16).
+
 **Cost.**
 - Attesters decode frame transactions and verify `SECP256K1` entries over the frame signature hash, which is stateless work they already do for type-2 transactions in another encoding. We timed it with ethrex's own functions (25): decoding a default-code frame transaction and checking its signature takes 50 to 53 $\mu$s on one core, and recovering a type-2 sender takes 48. A full slot of them costs less than a full slot of type-2 transactions, because they are larger.
 - The coverage is the EOA-equivalent subset: 68 of our 183 transactions. Contracts with their own `VERIFY`, privacy pools included, still need Profile 2.
@@ -458,8 +492,8 @@ ethrex's fill debits in the order it receives. We ran the specification's functi
 **Sorting fixes determinism and nothing else.** A canonical order, by declared cost and then hash, makes the verdict the same everywhere. But junk priced just under a withdrawal's cost still crowds it out: in our thirty-junk scenario it denied every withdrawal and every sponsorship. And the flat fill is not monotone in the lists, which no order repairs. FOCIL tolerates attesters that received different lists because more lists can only mean more to include; the builder's bid declares which lists it covered, in `inclusion_list_bits`. Under one shared budget an extra list can only add debits ahead of a transaction, so an attester that received the attacker's list excuses what one that did not would require.
 
 **Suggestion 5b (consensus-specs, Engine API, EIP-8369): fill the budget per list, and carry the lists.** EIP-8369 already says the budget is per list, counted "per IL occurrence before deduplication". What is missing is the boundaries:
-- `get_inclusion_list_transactions` returns the timely, non-equivocating lists in committee order, the order `InclusionListBits` already uses, each in its signed order;
-- the Engine API carries them as an array of arrays, or as the flat array plus a parallel array of list indices;
+- `get_inclusion_list_transactions` returns the timely, non-equivocating lists in committee order, the order `InclusionListBits` already uses;
+- the Engine API carries them as an array of arrays, or as the flat array plus a parallel array of list indices (PR-12394 chose a membership bitvector per transaction, which is the second form);
 - the execution layer fills each list's budget on its own, then deduplicates. A transaction is admitted if any list that carries it admits it.
 
 Per-list admission is monotone, so a builder that satisfies the lists its bits declare satisfies every attester whose lists those bits include. An attacker's budget is its own. It can withhold its own list's protection, which it could always do by listing nothing, and it cannot spend anyone else's. In each multi-list scenario we ran, it admitted every honest transaction. That is FOCIL's guarantee that one honest includer suffices, restored for Profile 2.
@@ -473,6 +507,13 @@ Per-list admission is monotone, so a builder that satisfies the lists its bits d
 - **Rationing per sender or per payer.** The attacker's keys are free and never funded, so rationing by key counts keys, not adversaries.
 - **Ordering by fee, or by arrival.** A transaction that is never included never pays the fee it declares, and an includer who publishes first would choose the order, which is the attack.
 - **Dropping the budget.** Attester replay becomes unbounded.
+
+**The proposal now exists.** PR-12394 (to EIP-7805, opened 2026-10-08) has the consensus layer pass, with each deduplicated transaction, a bitvector of the committee positions whose lists carry it. The execution layer fills each position's budget on its own, and there is no shared budget. Its rationale names this attack: a shared budget "lets one includer exhaust it with maximum cost candidates, which are never executed and so cost nothing". PR-12396 (to EIP-8369) fills each list in ascending hash order rather than the order the includer chose. Bits are a better carrier than our array of arrays, since they cost one bitvector per transaction and the lists can be rebuilt from them. What the two still leave:
+- **The recent-root transactions.** PR-12394's shape rule ignores "a first expiry verifier frame" only, so it excludes the same 10 transactions as EIP-8369, although its own state surface lists "the EIP-8272 recent root entries that `T` references" (smaller fixes, 14).
+- **A per-transaction cap of $2^{18} = 262{,}144$.** Our withdrawal used 250,387 and declared 410,000, so a wallet must declare within 4.7% of measured use.
+- **A cap 2.6 times the propagation floor.** The transactions this cap admits and the public mempool's 100,000 does not are the ones includers are least likely to have seen (section 7).
+- **The consensus side.** consensus-specs still ends `get_inclusion_list_transactions` with `list(set(transactions))` at `aa16bb4`, and ethrex's branch is unchanged.
+- **The benchmark** of the $2^{24}$ replay bound, below.
 
 What per-list filling leaves is the paid grief ethrex's own security considerations record: a transaction that is valid when listed and invalidated by a cheaper conflicting one in the block. It now costs the attacker an entry in every honest list it must deny, each placed there through the public mempool, instead of one seat anywhere on the committee.
 
@@ -498,7 +539,9 @@ What resolves it was measured in experiment 08: keep *one* commitment and carry 
 
 There is a price beyond gas. A prefix that reads any sender slot gave up keyed concurrency on ethrex: the storage proxy was refused a second pending transaction, the code proxy was not.
 
-**Suggestion 6 (EIP-8369): define the surface as a namespaced base, not slots 0 to 3.**
+Two open pull requests pull the homes further apart. PR-12394 sets `AA_VOPS_SLOT_COUNT = 4` with a rationale (a passkey's two slots, a second key, a configuration word), which settles the surface on slots 0 to 3. PR-12340 widens the mempool's side to "sender authority storage": the sender's storage, plus account-associated storage in a chain-configured list of immutable contracts. Validation that reads such a contract is admitted by the mempool and outside every inclusion-list surface. Meanwhile PR-12421 and EIP-8298 give EOAs new ways to acquire code, so delegates that share an account's slots will be more common.
+
+**Suggestion 6 (EIP-8369, PR-12394): define the surface as a namespaced base, not slots 0 to 3.**
 
 $$\mathsf{base} = \mathsf{keccak256}(\texttt{"eip8369.aa-vops.validation"}) - 1, \qquad \text{surface} = \{\mathsf{base}, \ldots, \mathsf{base} + N - 1\}$$
 
@@ -508,24 +551,35 @@ The base is one constant for every account, so a VOPS node stores those $N$ slot
 - Account authors must write to a specific slot, which Solidity supports through ERC-7201-style layout annotations.
 - The surface stops being "the first slots", which is easier to explain.
 
-**Not suggested: admitting keccak-derived per-account slots (mappings) to the surface.** That is an unbounded surface, and keeping it bounded is the reason VOPS profiles exist.
+**Not suggested: admitting keccak-derived per-account slots (mappings) to the surface.** That is an unbounded surface, and keeping it bounded is the reason VOPS profiles exist. For the same reason, if PR-12340's authority contracts are admitted to the mempool, the same list belongs in the inclusion-list surface, or validation that reads them is propagated and never protected.
 
-## 6. Post-quantum: the account can move, the EOA cannot
+## 6. Post-quantum: the account can move, and the EOA only if two Considered EIPs ship together
 
 **What a post-quantum user gets in Hegota as scheduled:**
 - **A new contract account, post-quantum, works.** Experiment 17's WOTS account (1,024 one-time keys under a Merkle root, chosen by nonce) cost 73,481 gas per transfer, against 27,382 for ECDSA. At the Winternitz parameter that minimizes bytes ($w = 256$), the work fits 100,000 gas only after grinding the randomizer, $2^{18.7}$ tries on average.
 - **Its signature is `ARBITRARY`, and stays unaggregatable.** The EIP keeps protocol-validated signature bytes out of the EVM "to allow future aggregation schemes", and `ARBITRARY` bytes are exactly the ones the EVM reads. [EIP-8288](https://eips.ethereum.org/EIPS/eip-8288)'s aggregation moves witnesses outside the transaction into mempool wrappers, a separate path (the `aa` study's question 6).
-- **It cannot sponsor at scale.** The canonical paymaster in master "authorizes with a single secp256k1 signer via `ecrecover`". A post-quantum sponsor is non-canonical and capped at one pending transaction. PR-12041's `SIGPARAM` version admits any protocol scheme, but no post-quantum scheme is in the registry, and EIP-8355's ML-DSA precompiles are only Proposed.
-- **An EOA cannot leave ECDSA.** Default code accepts `SECP256K1` only. EIP-7702 delegation adds keys and removes none: in experiment 15 the EOA key kept full power after delegation, signing legacy transactions and new authorizations. EIP-7851, which would let a delegated EOA disable its key, is declined.
+- **It costs more than the public mempool carries.** In-EVM post-quantum verification runs 150,000 to 200,000 gas (EIP-8288's figures, as PR-12394 quotes them), above the 100,000 that every public-mempool node must carry (section 7).
+- **It cannot sponsor at scale.** The canonical paymaster in master "authorizes with a single secp256k1 signer via `ecrecover`". PR-12041 now accepts any protocol-verified scheme except `ARBITRARY`, with signer rotation behind the withdrawal timelock. But no post-quantum scheme is in the registry, and on 2026-10-08 Hegota declined EIP-8355's ML-DSA precompiles. A post-quantum sponsor stays non-canonical, capped at one pending transaction.
+- **An EOA cannot leave ECDSA through anything scheduled.** Default code accepts `SECP256K1` only. EIP-7702 delegation adds keys and removes none: in experiment 15 the EOA key kept full power after delegation, signing legacy transactions and new authorizations. PR-12421's set-delegation frame installs the same delegation indicator, and says so: it "does not remove the authority of the account's ECDSA key". EIP-7851 is declined.
 
-The honest summary: Hegota makes post-quantum accounts possible and leaves every existing account on ECDSA, with no protocol path off it.
+**What changed on 2026-10-08: a door, if two EIPs ship together.** EIP-8298 (`SETCODEFROM`) and EIP-8151 moved to Considered. The path they open:
+1. the EOA delegates through EIP-7702 to migration code, which stores its post-quantum wallet state;
+2. the code calls `SETCODEFROM` and adopts ordinary wallet code, which is not a delegation indicator;
+3. EIP-3607 then refuses ECDSA-signed transactions from the account, and EIP-7702 can no longer re-delegate it;
+4. EIP-8151 makes `ecRecover` return zero for an account with such code, which closes ERC-2612 `permit` and every other contract that checks the old key through `ecRecover`.
 
-**Suggestion 7: scheme agility where the protocol recognizes code, with rotation.**
-- Version the canonical paymaster to accept any registry scheme for its signer, as PR-12041 does.
+Without step 4 the old key still moves tokens through `permit`. Without steps 2 and 3, EIP-8151 has nothing to restrict.
+
+The honest summary: Hegota as scheduled makes post-quantum accounts possible and leaves every existing account on ECDSA. As Considered, it could give them an exit, per chain, and only before an attacker able to derive keys can race the migration. What it does not give either kind of account is an efficient post-quantum path in frames: verification stays `ARBITRARY`, in the EVM, unaggregatable, and over the mempool's floor.
+
+**Suggestion 7: ship the exit as a pair, and scheme agility only with rotation.**
+- Schedule EIP-8151 and EIP-8298 together, or neither: each alone leaves the old key with power.
+- Until a post-quantum scheme is in the registry, give the mempool a compute floor that admits in-EVM post-quantum verification (section 7), rather than raising the single cap.
+- Version the canonical paymaster to accept any registry scheme for its signer, as PR-12041 now does.
 - Admit new schemes to the registry by what only the protocol can do with them: pre-execution validation and aggregation. On that test BIP-340 Schnorr comes first, and among post-quantum schemes the one with a credible aggregation path beats the one that verifies fastest. Under the calldata floor, bytes are the cost: a 738-byte WOTS signature pays 66,474 gas of floor before any verification.
 - Pair any widening of default code with a scheme-generic code-installation authorization, so a key-derived address can still rotate.
 
-**Cost.** Each scheme is consensus code forever, and versioning the canonical paymaster is the migration problem of question 14.
+**Cost.** Each scheme is consensus code forever, and versioning the canonical paymaster is the migration problem of question 14. PR-12041 answers it by pinning a code hash per fork and demoting the instances of an unpinned version, which strands their sponsorship capacity, though not their funds, at each upgrade.
 
 **Not suggested: post-quantum schemes in default code without rotation.** That would make a key the permanent sole owner of an address that can never acquire code: the same dead end, one scheme later.
 
@@ -536,8 +590,8 @@ The honest summary: Hegota makes post-quantum accounts possible and leaves every
 | pending per sender | `SAME_SENDER_MEMPOOL_COUNT` = 4 | 1 (more only with EIP-8250 and PR-12039) |
 | unstaked paymaster or factory | `SAME_UNSTAKED_ENTITY_MEMPOOL_COUNT` = 10 | 1 (non-canonical) |
 | staked entities | unlimited, with reputation | none: code-hash recognition instead |
-| storage outside the sender | associated storage allowed | none |
-| validation gas | `MAX_VERIFICATION_GAS` = 500,000 | `MAX_VERIFY_GAS` = 100,000 |
+| storage outside the sender | associated storage allowed | none (PR-12340: a chain-configured list of authority contracts) |
+| validation gas | `MAX_VERIFICATION_GAS` = 500,000 | `MAX_VERIFY_GAS` = 100,000 (PR-12301: a floor, with headroom above) |
 
 Every row is narrower. That is a defensible design: a smaller surface is what makes frame validation cheap enough for inclusion lists and partial statelessness, and lightclient's [mempool strategies note](https://hackmd.io/@matt/frame-mempool) says plainly that "a restrictive policy is fine at launch".
 
@@ -564,6 +618,12 @@ Wallet-wise, the migration path is not "frames instead of 4337". It is to move w
 - Every admission also costs about 30 $\mu$s that no gas counts, about 1,900 gas at the worst rate.
 
 So gas is a good enough unit for compute, and the reason not to simply raise the cap is state. At 250,000 the single cap allows 119 cold reads instead of 47. Two caps (smaller fixes, 9) let compute grow to 4 ms while the state allowance stays where it is.
+
+**Where PR-12301 leaves this.** It makes `MAX_VERIFY_GAS` a floor: a node must carry any transaction whose declared validation budget is at or below it, and may carry heavier ones as headroom, so "the heavier its validation work the fewer nodes carry it". That makes the three values we found on frames-devnet-0 legitimate, and for compute it is the right shape. Two things it leaves:
+- **The floor is still one dimension.** A node that grants a 250,000-gas Groth16 prefix headroom grants 119 cold reads with it.
+- **The transactions above the floor are the ones inclusion lists exist for.** PR-12394 admits Profile 2 candidates up to 262,144, which is 2.6 times the floor, so privacy spends and post-quantum accounts are exactly the transactions includers are least likely to have seen. EIP-8369's fallback is direct submission to an includer, and for a privacy spend that links its network origin to the spend.
+
+A compute floor of 250,000 beside a cold-access cap of today's 47 reads closes both.
 
 ## Four clients, one chain
 
@@ -593,18 +653,20 @@ Error-wise, "the validation prefix reverted" covers too much. It covered an unfu
 
 ## Smaller fixes
 
-Rows 8 to 13 were argued in full in the previous version of this post, and 14 and 15 are new this round. In brief:
+Rows 8 to 13 were argued in full in the previous version of this post, and 14 to 17 are new this round. Where an open pull request touches a row, the row says so. In brief:
 
 | # | Suggestion | Evidence | Not suggested |
 |---|---|---|---|
-| 8 | `TIMESTAMP` only while executing a frame whose target is `EXPIRY_VERIFIER`. Optionally, `not_before` in the expiry frame's data | ethrex admits a nested call to the verifier: a hidden deadline, the EIP's own example attack (19) | `TIMESTAMP` in `VERIFY` generally |
-| 9 | Meter the prefix in two dimensions: cold state access, capped where today's floor is, and total, capped by a CPU benchmark | the workloads over 100k (Groth16, unground WOTS, 40-key multisigs) are compute, not state access (06, 17). The benchmark: the worst work runs at about 16 ns per gas, Groth16 at 13.1, state from memory at 1.4, so a total cap is a time budget over 16 ns, 4 ms at 250k (26, section 7) | raising the single cap, which raises the state-access worst case with it: from 47 cold reads to 119 at 250k |
+| 8 | `TIMESTAMP` only while executing a frame whose target is `EXPIRY_VERIFIER`. Optionally, `not_before` in the expiry frame's data | ethrex admits a nested call to the verifier: a hidden deadline, the EIP's own example attack (19). PR-12252 adds `valid_after` and keeps the wording that admits the nested call | `TIMESTAMP` in `VERIFY` generally |
+| 9 | Meter the prefix in two dimensions: cold state access, capped where today's floor is, and total, capped by a CPU benchmark | the workloads over 100k (Groth16, unground WOTS, 40-key multisigs) are compute, not state access (06, 17). The benchmark: the worst work runs at about 16 ns per gas, Groth16 at 13.1, state from memory at 1.4, so a total cap is a time budget over 16 ns, 4 ms at 250k (26, section 7). PR-12301 makes the cap a floor; it should be a floor in both dimensions | raising the single cap, which raises the state-access worst case with it: from 47 cold reads to 119 at 250k |
 | 10 | `status = 3` (ROLLED_BACK) for frames undone by their batch | all four clients report them `SUCCESS` while their logs and state are gone (03, 22) | marking them FAILURE |
-| 11 | Denominate `MAX_VERIFY_STATE_GAS` in state bytes | a re-derivation of `CPSB` silently shrinks what the rule admits | |
-| 12 | One stated order of admission checks; a small enum of rejection reasons; `gas` defined or dropped for type `0x06` | three orders, four error vocabularies (22) | |
-| 13 | Reconcile the paymaster text: one sentence makes a transaction "eligible ... only if the `pay` frame targets a canonical paymaster instance", the next section admits non-canonical ones | EIP-8141 master | |
-| 14 | EIP-8369's condition 2 skips both leading verifier frames, as EIP-8272 already says, and loses the two sentences that predate EIP-8272's canonical frame | as written it leaves out 10 of 183 transactions, exactly the recent-root ones its motivation names (25, section 4) | |
-| 15 | The omission check's gas fit is EIP-8141's two-dimensional test, not one comparison against `T.gas` | 104 of 183 transactions declare state gas, median 97,920; the largest declares 30,070,620 for five contract creations. Under one dimension, a transaction that creates an account needs room in the dimension it does not use (25) | |
+| 11 | Denominate `MAX_VERIFY_STATE_GAS` in state bytes, and size it for EIP-8250's keys | a re-derivation of `CPSB` silently shrinks what the rule admits. At 97,920 state gas per fresh key, 500,000 admits 5 fresh keys of the 16 EIP-8250 allows, fewer beside a deploy frame | |
+| 12 | One stated order of admission checks; a small enum of rejection reasons; `gas` defined or dropped for type `0x06` | three orders, four error vocabularies (22). PR-12321 defines the order; the enum and `gas` remain | |
+| 13 | Reconcile the paymaster text: one sentence makes a transaction "eligible ... only if the `pay` frame targets a canonical paymaster instance", the next section admits non-canonical ones | EIP-8141 master; PR-12041's rewrite of the section is the place to fix it | |
+| 14 | EIP-8369's condition 2, and PR-12394's copy of it, skip both leading verifier frames, as EIP-8272 already says; EIP-8369 loses the two sentences that predate EIP-8272's canonical frame | as written it leaves out 10 of 183 transactions, exactly the recent-root ones its motivation names (25, section 4) | |
+| 15 | The omission check's gas fit is EIP-8141's two-dimensional test, not one comparison against `T.gas` | 104 of 183 transactions declare state gas, median 97,920; the largest declares 30,070,620 for five contract creations. Under one dimension, a transaction that creates an account needs room in the dimension it does not use (25). PR-12394 makes exactly this change | |
+| 16 | Require each keyless-deployed contract to exist at activation, as EIP-8250 does, in EIP-8141 (expiry verifier) and EIP-8272 (recent roots); allow direct evaluation of the expiry frame only when the canonical code is present | EIP-8141 and EIP-8272 moved to keyless deployments on 2026-10-06 and 2026-10-08, and only EIP-8250 states the requirement. Where the contract is missing, a client that evaluates the expiry frame directly accepts what a client that executes it refuses: the empty address runs default code, which finds no signature | installing at the fork, which the EIPs moved away from so that activation changes no state |
+| 17 | Retry a prefix that failed to approve only when a dependency recorded at admission changes | `857622a` bounds unpaid producer work by a count of attempts, and asks for more than one because failures can be transient (section 2) | a count of attempts, which either wastes work or evicts what was about to become valid |
 
 ## What we would not change
 
@@ -622,7 +684,9 @@ Rows 8 to 13 were argued in full in the previous version of this post, and 14 an
 Last round's list asked for an attester cost model for suggestion 5, a CPU benchmark for suggestion 9, and an ERC for $E$. Experiments 25 to 27 are those three. What is left:
 - **The Profile 2 replay bound.** Suggestion 5b makes an attester's worst case $16\,c_{\max}$ per slot, $2^{24}$ gas at the candidate value: about 270 ms of compute at the worst rate we measured, before disk. That needs a pipeline benchmark, and a decision on $c_{\max}$, before either is fixed.
 - **Disk.** Experiment 26 read state from memory. The state half of suggestion 9 needs a cold read from disk, which is where state becomes the binding resource, above about 34 $\mu$s per slot.
+- **A re-run on code that implements the 2026-10-08 changes:** the approval rollback, the keyless addresses, and EIP-8250's 12,100 gas per key. The rollback is a consensus change none of our four-client checks exercised.
 - **A funded run on frames-devnet-0, and frames-devnet-1** (EIP-8250 and EIP-8272 across clients). Every shape spamoor does not send, including both paymasters of experiment 24 and the execution digest of experiment 27, read back from four clients.
 - **Review of the ERC draft**, and whether a protocol execution hash is ever warranted: for RPCs that must show the operation's identity, or for EOAs that want execution-only signatures without a contract.
+- **Comments on PR-12394**: the shape rule, and whether its per-transaction cap and the public mempool's floor should be the same number.
 
 Every number above has a branch, a README, a command and a transaction hash behind it in [exp-frames](https://github.com/4w44h9jckz-boop/exp-frames). Corrections are very welcome, especially from the EIP authors where we have read intent into text that does not state it.
