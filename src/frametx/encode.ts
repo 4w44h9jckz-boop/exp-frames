@@ -45,11 +45,21 @@ function signatureFields(s: FrameSignature, elide: boolean): Rlp {
   return [rlpInt(s.scheme), rlpAddr(s.signer), s.msg, sig]
 }
 
+/** Whether `tx` uses EIP-8141's own single nonce rather than EIP-8250's keyed one. */
+export function isPlain(tx: FrameTx): boolean {
+  if (tx.envelope !== 'plain') return false
+  if (tx.nonceKeys.length !== 1 || tx.nonceKeys[0] !== 0n) throw new Error('a plain envelope has no nonce keys; set nonceKeys to [0n]')
+  return true
+}
+
+function nonceFields(tx: FrameTx): Rlp[] {
+  return isPlain(tx) ? [rlpInt(tx.nonceSeq)] : [tx.nonceKeys.map(rlpInt), rlpInt(tx.nonceSeq)]
+}
+
 function envelope(tx: FrameTx, elide: boolean): Rlp {
   return [
     rlpInt(tx.chainId),
-    tx.nonceKeys.map(rlpInt),
-    rlpInt(tx.nonceSeq),
+    ...nonceFields(tx),
     rlpAddr(tx.sender),
     tx.frames.map(frameFields),
     tx.signatures.map((s) => signatureFields(s, elide)),
@@ -81,8 +91,12 @@ export function frameSigHash(tx: FrameTx): Hex {
   return keccak256(concatHex([TYPE_PREFIX, toRlp(envelope(tx, true))]))
 }
 
-/** `rlp(nonce_keys) || rlp(nonce_seq)` — EIP-8250 nonce bytes priced as calldata. */
+/**
+ * `rlp(nonce_keys) || rlp(nonce_seq)` — EIP-8250 nonce bytes priced as calldata. A plain
+ * envelope's nonce is not priced, as for any other transaction type.
+ */
 export function nonceCalldata(tx: FrameTx): Hex {
+  if (isPlain(tx)) return '0x'
   return concatHex([toRlp(tx.nonceKeys.map(rlpInt)), toRlp(rlpInt(tx.nonceSeq))])
 }
 
@@ -112,17 +126,21 @@ function asOptAddr(x: Rlp, what: string): Address | null {
   return getAddress(b)
 }
 
-/** Parse a raw `0x06…` transaction. Structural only; no validity checks. */
+/** Parse a raw `0x06…` transaction, keyed (8 fields) or plain (7). Structural only. */
 export function parseFrameTx(raw: Hex): FrameTx {
   if (!raw.toLowerCase().startsWith(TYPE_PREFIX)) throw new Error(`not a type-0x06 transaction`)
   const fields = asList(fromRlp(`0x${raw.slice(4)}`, 'hex'), 'envelope')
-  if (fields.length !== 8) throw new Error(`envelope: expected 8 fields, got ${fields.length}`)
-  const [chainId, nonceKeys, nonceSeq, sender, frames, signatures, fees, blobs] = fields
+  if (fields.length !== 8 && fields.length !== 7) throw new Error(`envelope: expected 7 or 8 fields, got ${fields.length}`)
+  const plain = fields.length === 7
+  const [chainId, nonceKeys, nonceSeq, sender, frames, signatures, fees, blobs] = plain
+    ? [fields[0], ['0x'] as Rlp, ...fields.slice(1)]
+    : fields
   const feeList = asList(fees, 'fees')
   const senderAddr = asOptAddr(sender, 'sender')
   if (senderAddr === null) throw new Error('sender: empty')
   return {
     chainId: asInt(chainId, 'chain_id'),
+    ...(plain ? { envelope: 'plain' as const } : {}),
     nonceKeys: asList(nonceKeys, 'nonce_keys').map((k) => asInt(k, 'nonce_key')),
     nonceSeq: asInt(nonceSeq, 'nonce_seq'),
     sender: senderAddr,
