@@ -48,6 +48,8 @@ import {
   verifyFrame,
   waitForFrameTxReceipt,
   getFrameTxReceipt,
+  frameReceiptGas,
+  frameReceiptStatus,
 } from '../../src/frametx/index.js'
 import { CANONICAL_ENTRY_POINT, artifact } from './artifacts.js'
 
@@ -153,7 +155,7 @@ async function frameTx(tx: FrameTx, keys: Hex[], round: number, what: string) {
   const first = await waitForFrameTxReceipt(client, hash)
   await settle(BigInt(first.blockNumber))
   const r = (await getFrameTxReceipt(client, hash))!
-  const frames = r.frameReceipts.map((f) => `${BigInt(f.gasUsed)}${BigInt(f.stateGasUsed) ? `+${BigInt(f.stateGasUsed)}s` : ''}${Number(f.status) === 1 ? '' : ' FAIL'}`).join(' · ')
+  const frames = r.frameReceipts.map((f) => `${frameReceiptGas(f).execution}${frameReceiptGas(f).state ? `+${frameReceiptGas(f).state}s` : ''}${frameReceiptStatus(f) === 1 ? '' : ' FAIL'}`).join(' · ')
   rows.push({ round, rail: 'frames', what, hash, gasUsed: BigInt(r.gasUsed), note: frames })
 }
 
