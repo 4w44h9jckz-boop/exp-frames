@@ -279,7 +279,7 @@ Difficulty is the coordination a fix needs. **Hard** means a new mechanism, or a
 
 **Damage.**
 - **Sandwich** (experiment 23): a relay inserted a sandwich inside the victim's own transaction, mined in block 315,369. The victim got 3.0% less, the full slippage it allowed, and paid for the bot's 110,710 gas.
-- **Fee rewrite** (experiment 23): a relay set a 10 gwei tip where the owner signed for 1,000 wei. It cost the account 0.0011865 ETH.
+- **Fee rewrite** (experiment 23): a relay set a 10 gwei tip where the owner's wallet chose 1,000 wei, and the signature, which covers no fee, stayed valid. It cost the account 0.0011865 ETH.
 - **Payer swap** (experiment 27): with an execution-only digest, a relay can name the account as its own payer, and the account then pays relay-chosen fees unless it refuses payment on that digest.
 
 **Fix.**

@@ -206,8 +206,8 @@ Security Considerations).
 A frame that also approves payment pays for whatever fees the transaction states. If it signed
 something that left the fees open, whoever relays the transaction would set the tip, and the
 account would pay it. Experiment 23 measured this against an account that did not commit to the
-fees: relayed at a 10 gwei tip instead of the 1,000 wei its owner signed, it paid 0.0011865 ETH,
-about ten million times what its owner signed for. So the rule is asymmetric. The canonical hash when
+fees: relayed at a 10 gwei tip instead of the 1,000 wei its owner's wallet chose, it paid
+0.0011865 ETH, about ten million times what that tip would have cost. So the rule is asymmetric. The canonical hash when
 the account pays, `E` when it does not.
 
 ### Why EIP-712

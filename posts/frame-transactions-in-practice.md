@@ -10,7 +10,7 @@ We built 27 experiments on [EIP-8141 frame transactions](https://eips.ethereum.o
 
 1. **The EIP's own guidance for custom validation is exploitable.** It allows an account to "constrain every subsequent `SENDER` frame" in place of the canonical signature hash. We took that literally. A mempool observer then:
    - inserted a sandwich *inside the victim's own transaction* and replaced it; the transaction was mined, the victim got 3.0% less, and paid for the attacker's frames;
-   - separately, relayed the same signature with a 10 gwei tip where the owner had signed for 1,000 wei.
+   - separately, relayed the same signature with a 10 gwei tip where the owner's wallet had chosen 1,000 wei. The signature covers no fee, so it stayed valid.
 
    The fix is a rule: sign what you approve. The same rule, applied carefully, also gives "sign once, any payer". We wrote that half up as a draft ERC: an EIP-712 digest that a wallet with no frame support signs through `eth_signTypedData_v4`. A second sponsor's replacement was mined carrying the owner's typed-data signature byte for byte.
 2. **Ether leaves an account through three doors, and two payer rules watch one.** The doors are an opcode, a key, and an approval of execution. [PR-12328](https://github.com/ethereum/EIPs/pull/12328)'s "egress-decidable" scan looks only at opcodes. A paymaster that passes it moved its whole balance out through a `SENDER` frame's `value`, mined, while a sponsorship admitted against that balance was pending; the sponsorship was dropped. The EIP's own exemption for code-less sponsors looks at none of the doors. We give a sound scan (it also cuts false positives from 28% to 0.9%) and measure the sealed pay frame the PR left unmeasured: 13,305 gas.
@@ -160,7 +160,7 @@ Both are only Considered for Hegota.
 
 > Custom validation contracts that grant `APPROVE_EXECUTION` should verify against the canonical signature hash, or otherwise constrain every subsequent `SENDER` frame, before approving.
 
-**What we did** ([23](https://github.com/4w44h9jckz-boop/exp-frames/tree/main/experiments/23-approval-scope)). A "literal" account takes the second branch at its word. Its owner signs an explicit digest $D$ of chain id, sender, nonce, and every `SENDER` frame in order: target, flags, both budgets, value and data. The owner signed `[self_verify, approve(pool, 10 A), swap(10 A, minOut)]`, with `minOut` 3% under the quote and a 1,000 wei tip.
+**What we did** ([23](https://github.com/4w44h9jckz-boop/exp-frames/tree/main/experiments/23-approval-scope)). A "literal" account takes the second branch at its word. Its owner signs an explicit digest $D$ of chain id, sender, nonce, and every `SENDER` frame in order: target, flags, both budgets, value and data. The owner signed `[self_verify, approve(pool, 10 A), swap(10 A, minOut)]` with `minOut` 3% under the quote, and its wallet set a 1,000 wei tip, which $D$ does not cover.
 
 A mempool observer kept the signature entry byte for byte, edited the frame list, raised the fees 20% so the copy counts as a replacement, and sent it within the same slot:
 
@@ -180,7 +180,7 @@ The attacked copy was mined (block 315,369):
 - the bot ended +0.3029 A;
 - the victim, as payer, paid for the bot's 110,710 gas of execution.
 
-Separately, the same honest transaction relayed with a 10 gwei tip was mined and cost the account 0.0011865 ETH, where the tip its owner signed would have cost about $10^{-7}$ of that.
+Separately, the same honest transaction relayed with a 10 gwei tip was mined and cost the account 0.0011865 ETH, where the tip its owner's wallet chose would have cost about $10^{-7}$ of that.
 
 **Why the second branch fails.** Constraining the `SENDER` frames leaves three things to whoever relays the transaction:
 - the `DEFAULT` frames, which run between the sender's operations and trade against them;
