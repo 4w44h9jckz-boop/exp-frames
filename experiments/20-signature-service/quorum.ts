@@ -14,6 +14,8 @@ import {
   type FrameTx,
   MAX_VERIFY_GAS_TESTNET,
   calldataFloorGas,
+  frameReceiptGas,
+  frameReceiptStatus,
   intrinsicGas,
   sendFrameTx,
   signAll,
@@ -86,7 +88,7 @@ if (args[0] === 'limit') {
       const f = r.frameReceipts[1]
       points.get(method)!.push([n, Number(BigInt(r.gasUsed))])
       console.log(
-        `| ${n} | ${method} | ${link(hash)} | ${BigInt(r.gasUsed)} | ${intrinsicGas(tx)} | ${calldataFloorGas(tx)} | ${BigInt(f.gasUsed)}${Number(f.status) === 1 ? '' : ' FAILED'} |`,
+        `| ${n} | ${method} | ${link(hash)} | ${BigInt(r.gasUsed)} | ${intrinsicGas(tx)} | ${calldataFloorGas(tx)} | ${frameReceiptGas(f).execution}${frameReceiptStatus(f) === 1 ? '' : ' FAILED'} |`,
       )
     }
   }

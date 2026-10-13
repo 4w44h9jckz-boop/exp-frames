@@ -14,6 +14,8 @@ import {
   type FrameTx,
   NEW_ACCOUNT_STATE_GAS,
   calldataFloorGas,
+  frameReceiptGas,
+  frameReceiptStatus,
   intrinsicGas,
   sendFrameTx,
   senderFrame,
@@ -103,7 +105,7 @@ for (const round of [1, 2]) {
     const by = method.startsWith('SIGPARAM') ? 'the protocol, before any frame' : 'the token, in the EVM'
     const frame = r.frameReceipts[1]
     console.log(
-      `| ${round} | ${method} | ${by} | ${link(hash)} | ${BigInt(r.gasUsed)} | ${intrinsicGas(signed)} | ${calldataFloorGas(signed)} | ${BigInt(frame.gasUsed)} + ${BigInt(frame.stateGasUsed)} state, ${frame.status === '0x1' ? 'success' : 'FAILED'} |`,
+      `| ${round} | ${method} | ${by} | ${link(hash)} | ${BigInt(r.gasUsed)} | ${intrinsicGas(signed)} | ${calldataFloorGas(signed)} | ${frameReceiptGas(frame).execution} + ${frameReceiptGas(frame).state} state, ${frameReceiptStatus(frame) === 1 ? 'success' : 'FAILED'} |`,
     )
   }
 }
