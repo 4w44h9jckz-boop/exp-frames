@@ -386,6 +386,14 @@ implementation (Rust). Status: push access granted; work is on kohaku-rs branch 
   this" and smaller fixes 16 and 17; `posts/frame-transactions-open-problems.md` on
   `post/ethresearch` ranks 19 problems from hard to easy, each with damage, recent changes and
   a fix. Both published as pages.
+- **2026-10-13**: Opened a PR into `main` for every branch but `plan`: `tooling` (#2), experiments
+  01 to 27 (#3 to #28; 05 had merged as #1) and the post (#29). A trial merge of all of them
+  into `main` had no conflicts and passed `vitest` (791), but `tsc` failed: 18, 20 and 21 read
+  `gasUsed` and `status` straight off a frame receipt, which `tooling`'s devnet-0 work made
+  optional. Each of the three now merges `tooling` and reads through `frameReceiptGas` and
+  `frameReceiptStatus`. The posts linked into experiment branches, which are deleted on merge;
+  they now link into `main`. Merge `tooling` first, as a merge commit, so each experiment PR
+  shows only its own commits.
 
 ## References
 
