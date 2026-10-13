@@ -34,13 +34,22 @@ export type FrameTxFees = {
 }
 
 /**
- * Type-0x06 envelope as the testnet encodes it:
- * [chain_id, nonce_keys, nonce_seq, sender, frames, signatures, fees, blob_versioned_hashes]
+ * Which nonce the envelope carries.
+ * - `keyed`: EIP-8250, as the ethrex Hegota testnet and frames-devnet-1 encode it:
+ *   `[chain_id, nonce_keys, nonce_seq, sender, frames, signatures, fees, blob_versioned_hashes]`.
+ * - `plain`: EIP-8141 alone, as frames-devnet-0 encodes it:
+ *   `[chain_id, nonce, sender, frames, signatures, fees, blob_versioned_hashes]`.
  */
+export type FrameTxEnvelope = 'keyed' | 'plain'
+
+/** A type-0x06 transaction. */
 export type FrameTx = {
   chainId: bigint
+  /** Absent means `keyed`. A `plain` envelope requires `nonceKeys` = `[0n]`. */
+  envelope?: FrameTxEnvelope
   /** EIP-8250. `[0n]` is the legacy account nonce. */
   nonceKeys: bigint[]
+  /** EIP-8250's sequence; in a `plain` envelope, the account nonce. */
   nonceSeq: bigint
   sender: Address
   frames: Frame[]
