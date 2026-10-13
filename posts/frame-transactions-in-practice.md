@@ -32,7 +32,7 @@ We built 27 experiments on [EIP-8141 frame transactions](https://eips.ethereum.o
 
 Each finding comes with a suggestion, its cost, and the easier fix we are *not* proposing. The thread that runs through all of them: **every rule that widened the mempool safely is a declaration a node can index without executing anything; every rule that failed infers something from execution, or from the order things arrived in.**
 
-> Experiments, one branch each, with READMEs, scripts, contracts and mined fixtures: [exp-frames](https://github.com/4w44h9jckz-boop/exp-frames) (start at the [tooling README](https://github.com/4w44h9jckz-boop/exp-frames/tree/tooling)). This round: [23, approval scope](https://github.com/4w44h9jckz-boop/exp-frames/tree/exp/23-approval-scope/experiments/23-approval-scope), [24, sealed paymaster](https://github.com/4w44h9jckz-boop/exp-frames/tree/exp/24-sealed-paymaster/experiments/24-sealed-paymaster), [25, inclusion lists](https://github.com/4w44h9jckz-boop/exp-frames/tree/exp/25-inclusion-lists/experiments/25-inclusion-lists), [26, validation CPU](https://github.com/4w44h9jckz-boop/exp-frames/tree/exp/26-validation-cpu/experiments/26-validation-cpu) and [27, execution digest](https://github.com/4w44h9jckz-boop/exp-frames/tree/exp/27-execution-digest/experiments/27-execution-digest)
+> Experiments, one directory each, with READMEs, scripts, contracts and mined fixtures: [exp-frames](https://github.com/4w44h9jckz-boop/exp-frames) (start at its [README](https://github.com/4w44h9jckz-boop/exp-frames#readme)). This round: [23, approval scope](https://github.com/4w44h9jckz-boop/exp-frames/tree/main/experiments/23-approval-scope), [24, sealed paymaster](https://github.com/4w44h9jckz-boop/exp-frames/tree/main/experiments/24-sealed-paymaster), [25, inclusion lists](https://github.com/4w44h9jckz-boop/exp-frames/tree/main/experiments/25-inclusion-lists), [26, validation CPU](https://github.com/4w44h9jckz-boop/exp-frames/tree/main/experiments/26-validation-cpu) and [27, execution digest](https://github.com/4w44h9jckz-boop/exp-frames/tree/main/experiments/27-execution-digest)
 > Rust wallet ports: [kohaku-rs, branch `experiment/frames`](https://github.com/4w44h9jckz-boop/kohaku-rs/tree/experiment/frames)
 > Companion studies we cite rather than repeat: [aa](https://github.com/4w44h9jckz-boop/aa) (account abstraction and the gas market for private transactions) and [crops-frame](https://github.com/4w44h9jckz-boop/crops-frame) (a composition framework for privacy protocols on frames)
 > Related reading: Nero_eth, [Frame transactions and the three gates to privacy](https://ethresear.ch/t/frame-transactions-and-the-three-gates-to-privacy/24666); lightclient, [Mempool Strategies for EIP-8141](https://hackmd.io/@matt/frame-mempool)
@@ -78,7 +78,7 @@ On 2026-10-09 we re-read every EIP above, the open pull requests against them, c
 
 Two findings moved. Section 4's per-list budget is now a pull request, and section 6's "no exit for an EOA" holds only until EIP-8151 and EIP-8298 ship together. The rest stand, and each section says where a pull request touches it. Our testnet's code predates all of the above: its expiry verifier is at `0x8141`, and it does not charge EIP-8250's 12,100 gas per key, so experiment 06's withdrawal would now cost 12,100 more per key.
 
-The same findings, ranked by how hard each is to fix, with the damage each can do and the fix we propose, are in a companion list, [Frame Transaction Open Problems](https://github.com/4w44h9jckz-boop/exp-frames/blob/post/ethresearch/posts/frame-transactions-open-problems.md).
+The same findings, ranked by how hard each is to fix, with the damage each can do and the fix we propose, are in a companion list, [Frame Transaction Open Problems](https://github.com/4w44h9jckz-boop/exp-frames/blob/main/posts/frame-transactions-open-problems.md).
 
 ## Frames in one page
 
@@ -150,7 +150,7 @@ Both are only Considered for Hegota.
 
 > Custom validation contracts that grant `APPROVE_EXECUTION` should verify against the canonical signature hash, or otherwise constrain every subsequent `SENDER` frame, before approving.
 
-**What we did** ([23](https://github.com/4w44h9jckz-boop/exp-frames/tree/exp/23-approval-scope/experiments/23-approval-scope)). A "literal" account takes the second branch at its word. Its owner signs an explicit digest $D$ of chain id, sender, nonce, and every `SENDER` frame in order: target, flags, both budgets, value and data. The owner signed `[self_verify, approve(pool, 10 A), swap(10 A, minOut)]`, with `minOut` 3% under the quote and a 1,000 wei tip.
+**What we did** ([23](https://github.com/4w44h9jckz-boop/exp-frames/tree/main/experiments/23-approval-scope)). A "literal" account takes the second branch at its word. Its owner signs an explicit digest $D$ of chain id, sender, nonce, and every `SENDER` frame in order: target, flags, both budgets, value and data. The owner signed `[self_verify, approve(pool, 10 A), swap(10 A, minOut)]`, with `minOut` 3% under the quote and a 1,000 wei tip.
 
 A mempool observer kept the signature entry byte for byte, edited the frame list, raised the fees 20% so the copy counts as a replacement, and sent it within the same slot:
 
@@ -200,7 +200,7 @@ Identity-wise, it moves what a transaction *is*. Across the two payers, $E$ stay
 
 **Cost.** One paragraph in the EIP. Wallets that build explicit digests also need a published layout for $E$, so that two wallets, an account and a sponsor agree on it byte for byte. That belongs in an ERC, not the EIP.
 
-**We drafted that ERC** ([27](https://github.com/4w44h9jckz-boop/exp-frames/tree/exp/27-execution-digest/experiments/27-execution-digest), [`erc-draft.md`](https://github.com/4w44h9jckz-boop/exp-frames/blob/exp/27-execution-digest/experiments/27-execution-digest/erc-draft.md)). $E$ is EIP-712 typed data:
+**We drafted that ERC** ([27](https://github.com/4w44h9jckz-boop/exp-frames/tree/main/experiments/27-execution-digest), [`erc-draft.md`](https://github.com/4w44h9jckz-boop/exp-frames/blob/main/experiments/27-execution-digest/erc-draft.md)). $E$ is EIP-712 typed data:
 
 ```
 domain  = EIP712Domain("FrameExecution", "1", chain_id, verifyingContract = sender)
@@ -270,7 +270,7 @@ PR-12328 proposes admitting any paymaster whose code shows that ether leaves onl
 
 The sentence is true of payment and false of execution. Door 2 passes vacuously: an account with no code has no forbidden opcode.
 
-**What we did** ([24](https://github.com/4w44h9jckz-boop/exp-frames/tree/exp/24-sealed-paymaster/experiments/24-sealed-paymaster), E). `SelfSendingPaymaster` is the canonical paymaster's admission rule with the timelocked withdrawal deleted, plus the default code's rule for when it is the sender. Its 134-byte runtime has none of the scanned opcodes; PR-12328's scan calls it sealed. The script then sent two transactions in one slot:
+**What we did** ([24](https://github.com/4w44h9jckz-boop/exp-frames/tree/main/experiments/24-sealed-paymaster), E). `SelfSendingPaymaster` is the canonical paymaster's admission rule with the timelocked withdrawal deleted, plus the default code's rule for when it is the sender. Its 134-byte runtime has none of the scanned opcodes; PR-12328's scan calls it sealed. The script then sent two transactions in one slot:
 
 ```
  sponsorship (admitted, reserved against the paymaster's balance)
@@ -291,7 +291,7 @@ On the way, block 316,413 was reorganized. Our first drain attempt's receipt sai
 
 ### A sealed paymaster that works
 
-PR-12328's construction is good, and we built it ([24](https://github.com/4w44h9jckz-boop/exp-frames/tree/exp/24-sealed-paymaster/experiments/24-sealed-paymaster), A to D). `SealedPaymaster`:
+PR-12328's construction is good, and we built it ([24](https://github.com/4w44h9jckz-boop/exp-frames/tree/main/experiments/24-sealed-paymaster), A to D). `SealedPaymaster`:
 - has no `CALL`-family opcode;
 - approves only through the four instructions `PUSH1 1, PUSH0, PUSH0, APPROVE`, so its scope is the constant `PAYMENT`. The canonical paymaster's runtime uses the same four;
 - holds the sponsor's EIP-8272 source id as an immutable, inside a `PUSH32`, so nothing trails the code;
@@ -366,7 +366,7 @@ The remaining 0.9% are digests with a `0x5b` byte at an instruction position. EO
 
 ## 3. Deadlines are declared, and then punished
 
-**Revocation-wise** ([24](https://github.com/4w44h9jckz-boop/exp-frames/tree/exp/24-sealed-paymaster/experiments/24-sealed-paymaster), D). The sponsor published a policy, then a second root without one of its leaves, meaning to revoke it. A transaction proving the revoked leaf against the *first* root was mined after the second root was written. EIP-8272 keeps every root referenceable for 8,191 slots, about 27 hours at 12-second slots, so a later root adds a root and withdraws nothing.
+**Revocation-wise** ([24](https://github.com/4w44h9jckz-boop/exp-frames/tree/main/experiments/24-sealed-paymaster), D). The sponsor published a policy, then a second root without one of its leaves, meaning to revoke it. A transaction proving the revoked leaf against the *first* root was mined after the second root was written. EIP-8272 keeps every root referenceable for 8,191 slots, about 27 hours at 12-second slots, so a later root adds a root and withdraws nothing.
 
 That is the property that makes EIP-8272 safe for the mempool: no write can invalidate a pending reference. For a privacy pool's commitment tree it is also what the application wants, because the set only grows. For an *allow-list* it is not. Privacy Pools' association sets are allow-lists: a provider that removes a flagged deposit wants the removal to take effect. Under EIP-8272 the removed deposit stays provable against older roots for 8,191 slots, unless the consumer bounds a root's age itself.
 
@@ -424,7 +424,7 @@ Profile 2 needs:
 - **Sponsored and private transactions.** These are what the companion EIPs exist for, and the `aa` study's question 5 asks whether a shared payer can be protected at all.
 - **Privacy pools, twice.** Without EIP-8250 a pool as its own sender has one pending withdrawal network-wide. Experiment 06 measured it: the storage design serializes every user, and a second withdrawal evicted the first. crops-frame's [P0005](https://github.com/4w44h9jckz-boop/crops-frame/blob/main/problems/records/P0005-a-shared-sender-has-a-one-transaction-mempool-ceiling.md) computes the ceiling at about 300 spends an hour.
 
-**What we measured** ([25](https://github.com/4w44h9jckz-boop/exp-frames/tree/exp/25-inclusion-lists/experiments/25-inclusion-lists)). We classified the 183 frame transactions mined before experiment 25 under each rule:
+**What we measured** ([25](https://github.com/4w44h9jckz-boop/exp-frames/tree/main/experiments/25-inclusion-lists)). We classified the 183 frame transactions mined before experiment 25 under each rule:
 
 | Rule | Eligible | Not |
 |---|---:|---:|
@@ -463,7 +463,7 @@ Where it should live has changed. PR-12394 moves Profile 2's rules into EIP-7805
 
 ### Where Profile 2 is built, the order decides
 
-Profile 2 bounds what an attester replays with a VERIFY budget, `MAX_VERIFY_GAS_PER_IL` $= 2^{20}$ per list. A listed transaction is admitted while its declared cost fits, and only admitted transactions must be included: omitting one that was never admitted is excused. The one implementation is ethrex's `hegota-testnet` branch (`crates/blockchain/focil_profile2.rs` at `c94964843d`), the code of the testnet the rest of this post ran on. We ran its own fill function over lists built from our mined transactions, plus never-valid ones from a key nobody funds ([25](https://github.com/4w44h9jckz-boop/exp-frames/tree/exp/25-inclusion-lists/experiments/25-inclusion-lists)).
+Profile 2 bounds what an attester replays with a VERIFY budget, `MAX_VERIFY_GAS_PER_IL` $= 2^{20}$ per list. A listed transaction is admitted while its declared cost fits, and only admitted transactions must be included: omitting one that was never admitted is excused. The one implementation is ethrex's `hegota-testnet` branch (`crates/blockchain/focil_profile2.rs` at `c94964843d`), the code of the testnet the rest of this post ran on. We ran its own fill function over lists built from our mined transactions, plus never-valid ones from a key nobody funds ([25](https://github.com/4w44h9jckz-boop/exp-frames/tree/main/experiments/25-inclusion-lists)).
 
 **Capacity-wise, the budget runs per payload, not per list.** The Engine API hands the execution layer one flat array, so ethrex has no list boundaries to fill against. Its spec says so and files it as spec feedback. A slot then protects:
 
@@ -500,7 +500,7 @@ Per-list admission is monotone, so a builder that satisfies the lists its bits d
 
 **Cost.**
 - **The Engine API changes shape.** It carries the same bytes, at most $16 \times 8$ KiB per call.
-- **The replay bound is $16\,c_{\max}$ per slot.** One honest list must be able to protect a transaction of cost $c_{\max}$ whatever the other fifteen carry, and no fill does better without lowering the cap. That is $2^{24}$ gas at the candidate value, the bound EIP-8369 itself states. Keeping ethrex's $2^{20}$ per slot would mean a per-transaction cap of $2^{16} = 65{,}536$, below what a withdrawal uses. A cap that admits a tightly declared withdrawal needs $16 \times 250{,}387 \approx 4.0$M gas of replay per slot. At the worst compute rate we measured ([26](https://github.com/4w44h9jckz-boop/exp-frames/tree/exp/26-validation-cpu/experiments/26-validation-cpu), section 7), about 16 ns per gas, that is 64 ms, and $2^{24}$ is 270 ms, before any state read from disk. EIP-8369 says the number "requires full pipeline benchmarks", and it should be benchmarked before either value is fixed.
+- **The replay bound is $16\,c_{\max}$ per slot.** One honest list must be able to protect a transaction of cost $c_{\max}$ whatever the other fifteen carry, and no fill does better without lowering the cap. That is $2^{24}$ gas at the candidate value, the bound EIP-8369 itself states. Keeping ethrex's $2^{20}$ per slot would mean a per-transaction cap of $2^{16} = 65{,}536$, below what a withdrawal uses. A cap that admits a tightly declared withdrawal needs $16 \times 250{,}387 \approx 4.0$M gas of replay per slot. At the worst compute rate we measured ([26](https://github.com/4w44h9jckz-boop/exp-frames/tree/main/experiments/26-validation-cpu), section 7), about 16 ns per gas, that is 64 ms, and $2^{24}$ is 270 ms, before any state read from disk. EIP-8369 says the number "requires full pipeline benchmarks", and it should be benchmarked before either value is fixed.
 
 **Not suggested:**
 - **A canonical order on the flat array.** It is deterministic and protects cheap transactions, and it leaves the verdict non-monotone and expensive transactions denied by cheaper junk.
@@ -604,7 +604,7 @@ Wallet-wise, the migration path is not "frames instead of 4337". It is to move w
 
 **Not suggested: associated storage for frames.** It is the one ERC-7562 rule that would bring ERC-20 sponsorship back, and it is the one that would break every VOPS surface above.
 
-**What can safely grow is compute** ([26](https://github.com/4w44h9jckz-boop/exp-frames/tree/exp/26-validation-cpu/experiments/26-validation-cpu)). We timed ethrex's own admission check, `Blockchain::validate_transaction`, on prefixes that spend their gas on the most expensive work a prefix may legally do. The slowest work per gas is elliptic-curve arithmetic: alt_bn128 MUL at 16.0 ns per gas on one core, a BLS12-381 pairing at 15.9, ECDSA recovery at 14.3. So a cap of $C$ gas bounds compute at about $16\,C$ ns:
+**What can safely grow is compute** ([26](https://github.com/4w44h9jckz-boop/exp-frames/tree/main/experiments/26-validation-cpu)). We timed ethrex's own admission check, `Blockchain::validate_transaction`, on prefixes that spend their gas on the most expensive work a prefix may legally do. The slowest work per gas is elliptic-curve arithmetic: alt_bn128 MUL at 16.0 ns per gas on one core, a BLS12-381 pairing at 15.9, ECDSA recovery at 14.3. So a cap of $C$ gas bounds compute at about $16\,C$ ns:
 
 | Cap | Worst compute |
 |---:|---:|
@@ -627,7 +627,7 @@ A compute floor of 250,000 beside a cold-access cap of today's 47 reads closes b
 
 ## Four clients, one chain
 
-frames-devnet-0 runs geth, Nethermind, reth and ethrex behind one eRPC balancer ([22](https://github.com/4w44h9jckz-boop/exp-frames/tree/exp/22-cross-client/experiments/22-cross-client)). Our test account has no funds there, so we asked what four clients can be asked without spending anything.
+frames-devnet-0 runs geth, Nethermind, reth and ethrex behind one eRPC balancer ([22](https://github.com/4w44h9jckz-boop/exp-frames/tree/main/experiments/22-cross-client)). Our test account has no funds there, so we asked what four clients can be asked without spending anything.
 
 **Consensus-wise, they agree.**
 - At 50 of 50 heights they served the same block hash, state root and receipts root.
@@ -647,7 +647,7 @@ Bisection gave three values of one constant: `MAX_VERIFY_GAS` is 100,000 on reth
 
 Error-wise, "the validation prefix reverted" covers too much. It covered an unfunded payer, an unbudgeted account-creation charge and a missing signature entry, from three clients. A wallet cannot tell "fund this account" from "budget account creation" from "sign entry 0".
 
-**Implementation-wise, a gas price is a time bound only for clients built like the one that set it** ([26](https://github.com/4w44h9jckz-boop/exp-frames/tree/exp/26-validation-cpu/experiments/26-validation-cpu)). Two things we found inside ethrex:
+**Implementation-wise, a gas price is a time bound only for clients built like the one that set it** ([26](https://github.com/4w44h9jckz-boop/exp-frames/tree/main/experiments/26-validation-cpu)). Two things we found inside ethrex:
 - It verifies each protocol signature twice on admission, once over the signature list and again inside the prefix simulation. One `SECP256K1` entry adds 89 $\mu$s over an empty prefix, two recoveries' worth, for the 2,800 gas the protocol charges.
 - Built without its assembly backend, the portable path its zkVM guest builds take, `P256VERIFY` runs at 36.0 ns per gas. That is 3.9 times its rate with the backend, and more than twice the slowest operation of a normal build.
 
@@ -689,4 +689,4 @@ Last round's list asked for an attester cost model for suggestion 5, a CPU bench
 - **Review of the ERC draft**, and whether a protocol execution hash is ever warranted: for RPCs that must show the operation's identity, or for EOAs that want execution-only signatures without a contract.
 - **Comments on PR-12394**: the shape rule, and whether its per-transaction cap and the public mempool's floor should be the same number.
 
-Every number above has a branch, a README, a command and a transaction hash behind it in [exp-frames](https://github.com/4w44h9jckz-boop/exp-frames). Corrections are very welcome, especially from the EIP authors where we have read intent into text that does not state it.
+Every number above has a directory, a README, a command and a transaction hash behind it in [exp-frames](https://github.com/4w44h9jckz-boop/exp-frames). Corrections are very welcome, especially from the EIP authors where we have read intent into text that does not state it.

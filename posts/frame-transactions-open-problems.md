@@ -2,7 +2,7 @@
 
 Nineteen problems that stand between [EIP-8141](https://eips.ethereum.org/EIPS/eip-8141) frame transactions and something a user can rely on, ranked from the hardest to fix to the easiest. Damage is rated separately, because the two orderings disagree: the most dangerous problem that is cheap to fix (problem 11) sits near the bottom.
 
-Each problem says what it is, how it happens, what it can cost, what recent changes did to it, and the fix we propose. Experiments are cited by number from [exp-frames](https://github.com/4w44h9jckz-boop/exp-frames), where each is a branch with its scripts, contracts and mined transactions; problems in this list are cited as "problem N". The argument behind most of them is in the companion post, [Is EIP-8141 Done?](https://github.com/4w44h9jckz-boop/exp-frames/blob/post/ethresearch/posts/frame-transactions-in-practice.md).
+Each problem says what it is, how it happens, what it can cost, what recent changes did to it, and the fix we propose. Experiments are cited by number from [exp-frames](https://github.com/4w44h9jckz-boop/exp-frames), where each has a directory with its scripts, contracts and mined transactions; problems in this list are cited as "problem N". The argument behind most of them is in the companion post, [Is EIP-8141 Done?](https://github.com/4w44h9jckz-boop/exp-frames/blob/main/posts/frame-transactions-in-practice.md).
 
 We read every EIP named here at master on 2026-10-09, with the open pull requests against them, consensus-specs at `aa16bb4`, and ethrex's `hegota-testnet` branch at `c94964843d`.
 
