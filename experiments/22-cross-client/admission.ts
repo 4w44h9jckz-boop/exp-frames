@@ -235,9 +235,9 @@ const probes: Probe[] = [
   // A VERIFY frame that succeeds (the identity precompile), so only the mempool rule is broken.
   { name: 'verify-after-prefix', rule: 'Mempool rule 8: no VERIFY after the prefix', names: /after/, raw: (b) => signed(b, { frames: [self(), transfer(), verifyFrame({ scope: Approve.NONE, target: IDENTITY, execution: 5_000n, data: '0x01' })] }) },
   { name: 'two-default-first', rule: 'Mempool rule 2: at most one deploy, first', names: /recogni|shape|deploy/, raw: (b) => signed(b, { frames: [transfer({ mode: Mode.DEFAULT }), transfer({ mode: Mode.DEFAULT }), self(), transfer()] }) },
-  { name: 'verify-gas-150k', rule: 'Mempool rule 6: prefix execution <= MAX_VERIFY_GAS (100,000)', names: /max_verify_gas|verification gas|gas budget/, raw: (b) => signed(b, { frames: [self(150_000n), transfer()] }) },
-  { name: 'verify-gas-600k', rule: 'Mempool rule 6, against a 500,000 cap', names: /max_verify_gas|verification gas|gas budget/, raw: (b) => signed(b, { frames: [self(600_000n), transfer()] }) },
-  { name: 'verify-state-600k', rule: 'Mempool rule 6: prefix state <= MAX_VERIFY_STATE_GAS (500,000)', names: /state/, raw: (b) => signed(b, { frames: [self(10_000n, 600_000n), transfer()] }) },
+  { name: 'verify-gas-150k', rule: 'Mempool rule 6: prefix execution <= MAX_VERIFY_GAS (100,000)', names: /max_verify_gas|verification gas|gas budget|validation prefix exceeds/, raw: (b) => signed(b, { frames: [self(150_000n), transfer()] }) },
+  { name: 'verify-gas-600k', rule: 'Mempool rule 6, against a 500,000 cap', names: /max_verify_gas|verification gas|gas budget|validation prefix exceeds/, raw: (b) => signed(b, { frames: [self(600_000n), transfer()] }) },
+  { name: 'verify-state-600k', rule: 'Mempool rule 6: prefix state <= MAX_VERIFY_STATE_GAS (500,000)', names: /state|validation prefix exceeds/, raw: (b) => signed(b, { frames: [self(10_000n, 600_000n), transfer()] }) },
 ]
 
 type Answer = { accepted: boolean; message: string }

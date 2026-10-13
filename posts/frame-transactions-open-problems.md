@@ -26,6 +26,21 @@ We read every EIP named here at master on 2026-10-09, with the open pull request
   - [PR-12252](https://github.com/ethereum/EIPs/pull/12252): a not-before time in the expiry frame.
 - **Unchanged:** consensus-specs still ends `get_inclusion_list_transactions` with `list(set(transactions))`, and ethrex's testnet branch has not moved.
 
+## What changed since 2026-10-09
+
+We read everything above again on 2026-10-13, reran experiment 22, and read ethrex's branches.
+- **EIP-8141** (2026-10-09): the `TXPARAM`, `FRAMEPARAM` and `SIGPARAM` parameters have names (`7752622`). The validation prefix is defined under Behavior, so that other EIPs can cite it, as "the frames up to and including the first frame after whose execution `payer` is set"; a frame that sets `payer` and then reverts does not end it (`af3a780`).
+- **PR-12394 and PR-12396** (2026-10-10 and 2026-10-12):
+  - the declared prefix takes an optional recent-root verifier frame after the expiry frame, which fixes problem 16 in both;
+  - a replay may load at most 16 code bodies and 131,072 bytes of code, "candidate values pending the full-pipeline benchmarks";
+  - Profile 2 activates only once EIP-8250 and EIP-8272 are live, and until then "omission of an EIP-8141 frame transaction is excused" (problem 5);
+  - an unsatisfied list is reported beside a `VALID` payload status instead of as a status of its own.
+- **PR-12301** (2026-10-12): a transaction above the floor "is included only if it reaches a block producer whose headroom accepts it" (problem 7).
+- **The ethpandaops devnet** is now reached at `bogota-devnet-0` (same chain). Its geth, rebuilt on 2026-10-09, checks the frame rules and signatures before the balance, and enforces `MAX_VERIFY_GAS` at 100,000 and `MAX_VERIFY_STATE_GAS` at 500,000 (problems 7 and 17).
+- **ethrex:**
+  - since 2026-10-07 13:10 UTC the Hegota nodes return a reorged-out block's transactions to the pool. That is the likely cause of the dropped dependent transactions in experiments 07, 15 and 16;
+  - a `frames-devnet-1` branch implements EIP-8250, EIP-8272, the keyless deployments, and the rollback of approvals in any failed call. No network runs it yet.
+
 ## Summary
 
 | # | Problem | Fix difficulty | Damage | After recent changes |
@@ -34,7 +49,7 @@ We read every EIP named here at master on 2026-10-09, with the open pull request
 | 2 | Inclusion-list verdicts depend on arrival order; one includer can deny them for free | Hard | High | Fix proposed in PR-12394 and PR-12396, merged nowhere |
 | 3 | Gas paid in tokens has no safe home in the frame mempool | Hard | Medium | PR-12340 reopens a curated form of third-party storage |
 | 4 | Validation state has three homes that disagree | Hard | High for delegated EOAs | PR-12394 settles slots 0 to 3; PR-12340 widens the mempool side |
-| 5 | Inclusion lists protect no frame transaction as scheduled | Medium-hard | High | PR-12394 covers only the replayed profile |
+| 5 | Inclusion lists protect no frame transaction as scheduled | Medium-hard | High | PR-12394 covers only the replayed profile, once EIP-8250 and EIP-8272 are live |
 | 6 | A shared sender gets one pending transaction without EIP-8250 | Medium | High for privacy pools | EIP-8250 rewritten, still Considered |
 | 7 | One validation gas cap mixes compute with state reads | Medium | High for privacy and post-quantum | PR-12301 makes it a floor with headroom |
 | 8 | One cheap action invalidates thousands of pending sponsorships | Medium | High | PR-12328 stalled; PR-12421 adds a trigger |
@@ -45,8 +60,8 @@ We read every EIP named here at master on 2026-10-09, with the open pull request
 | 13 | A hidden deadline through a nested `TIMESTAMP` | Easy | Medium | PR-12252 keeps the loophole |
 | 14 | Rolled-back frames report SUCCESS | Easy | Medium | Unchanged |
 | 15 | Activation requirements differ after the keyless deployments | Easy | Medium | New since 2026-10-06 |
-| 16 | The inclusion-list shape rule excludes recent-root transactions | Easy | High | Repeated in PR-12394 |
-| 17 | Admission order, rejection reasons and the `gas` field differ between clients | Easy | Low-medium | PR-12321 fixes the order |
+| 16 | The inclusion-list shape rule excludes recent-root transactions | Easy | High | Fixed in PR-12394 and PR-12396, merged nowhere |
+| 17 | Admission order, rejection reasons and the `gas` field differ between clients | Easy | Low-medium | PR-12321 fixes the order; geth moved its balance check later |
 | 18 | The paymaster text contradicts itself | Easy | Low | Unchanged |
 | 19 | EIP-8272 roots cannot be revoked for about 27 hours | Easy | Low-medium | Unchanged |
 
@@ -72,7 +87,7 @@ Difficulty is the coordination a fix needs. **Hard** means a new mechanism, or a
 - **Without the exit:** every EOA and every default-code account can be drained once a quantum computer can derive keys.
 - **With EIP-8298 alone:** transactions are closed, but `permit` still lets the old key move tokens.
 - **The migration itself:** it has to happen on every chain, and before an attacker who can derive the key can race it.
-- **After migrating:** a WOTS account paid 73,481 gas per transfer against 27,382 for ECDSA (experiment 17). In-EVM post-quantum verification runs 150,000 to 200,000 gas (EIP-8288's figures, as PR-12394 quotes them), above the 100,000 every mempool node must carry, so these transactions propagate poorly (problem 7).
+- **After migrating:** a WOTS account paid 73,481 gas per transfer against 27,382 for ECDSA (experiment 17). In-EVM post-quantum verification runs 150,000 to 200,000 gas (EIP-8288's figures), above the 100,000 every mempool node must carry, so these transactions propagate poorly (problem 7).
 - **Sponsors:** PR-12041's canonical paymaster excludes `ARBITRARY`, so a post-quantum sponsor stays non-canonical, limited to one pending transaction.
 
 **Fix.**
@@ -99,15 +114,14 @@ Difficulty is the coordination a fix needs. **Hard** means a new mechanism, or a
 **Recent changes.** PR-12394 has the consensus layer pass, with each transaction, a bitvector of the committee members whose lists carry it. The execution layer fills each member's budget separately, with no shared budget. PR-12396 fills each list in hash order. Neither is merged, and neither consensus-specs nor ethrex has changed.
 
 **What PR-12394 still leaves.**
-- Its shape rule excludes recent-root transactions (problem 16).
 - Its per-transaction cap is $2^{18} = 262{,}144$. Our withdrawal used 250,387 and declared 410,000, so a wallet must declare within 4.7% of measured use.
-- The replay bound of $2^{24}$ gas is unbenchmarked: about 270 ms of compute per slot at the 16 ns per gas we measured (experiment 26), before disk.
+- The replay bound of $2^{24}$ gas is unbenchmarked: about 270 ms of compute per slot at the 16 ns per gas we measured (experiment 26), before disk. Since 2026-10-10 the PR says so itself: the budget "does not bound the full replay pipeline".
 - Anyone other than the user who can invalidate the transaction inside the block, such as a payer that is not the user, can still remove its protection at an index the builder claims.
 
 **Fix.**
 - Merge PR-12394 and PR-12396.
 - Change consensus-specs to emit the membership bits instead of `list(set(...))`, and add the Engine API field.
-- Fix the shape rule (problem 16), and benchmark $2^{24}$.
+- Benchmark $2^{24}$.
 
 ### 3. Gas paid in tokens has no safe home in the frame mempool
 
@@ -141,7 +155,7 @@ Difficulty is the coordination a fix needs. **Hard** means a new mechanism, or a
 - **Modules:** an ERC-7579 validator module was refused outright (experiment 14).
 - **Concurrency:** a commitment held in code cost 4,262 gas in `VERIFY`, against 6,353 in slot 0, and the storage version lost keyed concurrency (experiment 08).
 
-**Recent changes.** PR-12394 fixes `AA_VOPS_SLOT_COUNT = 4` with a rationale, which settles the surface on slots 0 to 3. PR-12340 widens the mempool side. PR-12421 and EIP-8298 give EOAs new ways to acquire code, so delegates that share slots will be more common.
+**Recent changes.** PR-12394 fixes `AA_VOPS_SLOT_COUNT = 4`, which settles the surface on slots 0 to 3. Since 2026-10-10 its rationale no longer names the uses (a passkey's two slots, a second key, a configuration word); it "fixes the ordinary validation storage surface to four words per account". PR-12340 widens the mempool side. PR-12421 and EIP-8298 give EOAs new ways to acquire code, so delegates that share slots will be more common.
 
 **Fix.**
 - Use a namespaced base for the surface, $\mathsf{keccak256}(\texttt{"eip8369.aa-vops.validation"}) - 1$, with 4 words. It costs inclusion-list nodes exactly what slots 0 to 3 cost.
@@ -163,7 +177,7 @@ Difficulty is the coordination a fix needs. **Hard** means a new mechanism, or a
 - An EOA that moves from type-2 transactions to frame batching, the EIP's main UX benefit, loses inclusion-list protection by doing so.
 - Sponsored and private transactions are unprotected.
 
-**Recent changes.** PR-12394 moves Profile 2 into EIP-7805, which is Scheduled. Profile 1 there still means legacy, 2930, 1559 and 7702 transactions.
+**Recent changes.** PR-12394 moves Profile 2 into EIP-7805, which is Scheduled. Profile 1 there still means legacy, 2930, 1559 and 7702 transactions. Since 2026-10-10 it states the gap outright: before Profile 2 activates, which needs EIP-8250 and EIP-8272, "omission of an EIP-8141 frame transaction is excused because nonce and balance cannot decide its validity".
 
 **Fix.**
 - Add to EIP-7805 itself a Profile 1 for directly evaluable frame transactions:
@@ -193,12 +207,12 @@ Difficulty is the coordination a fix needs. **Hard** means a new mechanism, or a
 
 ### 7. One validation gas cap mixes compute with state reads
 
-**What it is.** `MAX_VERIFY_GAS` bounds compute and cold state reads with one number, and clients disagree on it: 100,000 on reth and ethrex, 300,000 on Nethermind, 500,000 on ethrex's Hegota build (experiment 22).
+**What it is.** `MAX_VERIFY_GAS` bounds compute and cold state reads with one number, and clients disagree on it: 100,000 on reth, ethrex and (since its 2026-10-09 build) geth, 300,000 on Nethermind, 500,000 on ethrex's Hegota build (experiment 22).
 
 **How it happens.** The workloads that need more than 100,000 are compute: Groth16 at 245,000, a 40-key multisig at 129,000, post-quantum signatures at 150,000 to 200,000. Raising the single cap also raises the cold reads it allows, from 47 to 119 at 250,000.
 
 **Damage.**
-- **Propagation:** privacy, post-quantum and large-multisig transactions propagate unreliably. Under PR-12301, "the heavier its validation work the fewer nodes carry it".
+- **Propagation:** privacy, post-quantum and large-multisig transactions propagate unreliably. Under PR-12301, "the heavier its validation work the fewer nodes carry it", and since 2026-10-12 it "is included only if it reaches a block producer whose headroom accepts it".
 - **Inclusion lists:** PR-12394's inclusion-list cap of 262,144 is 2.6 times the propagation floor, so the transactions that most need inclusion lists are the ones includers are least likely to see.
 - **Privacy:** EIP-8369's fallback is direct submission to an includer, which for a privacy spend links its network origin to the spend.
 
@@ -321,17 +335,18 @@ Difficulty is the coordination a fix needs. **Hard** means a new mechanism, or a
 
 ### 16. The inclusion-list shape rule excludes recent-root transactions
 
-**What it is.** EIP-8369's shape rule, and PR-12394's copy of it, skip only the expiry verifier frame.
+**What it is.** EIP-8369's shape rule skips only the expiry verifier frame. PR-12394 copied it until 2026-10-10.
 
 **How it happens.** A recent-root frame matches none of the four recognized validation shapes.
 
 **Damage.**
 - **The motivating case is excluded:** "a privacy spend that checks recent roots and consumes each nullifier as a single-use EIP-8250 keyed nonce". That is 10 of the same 183 transactions, all of them experiment 06's withdrawals and experiment 24's sealed sponsorships.
-- **PR-12394 contradicts itself:** its own state surface lists "the EIP-8272 recent root entries that `T` references".
+- **PR-12394 contradicted itself:** its own state surface listed "the EIP-8272 recent root entries that `T` references".
+
+**Recent changes.** Fixed in both pull requests. Since 2026-10-10 PR-12394 and PR-12396 define a declared prefix of "an optional EIP-8141 `expiry_verify` frame, an optional EIP-8272 `recent_root_verify` frame, then one of" the four shapes, and PR-12396 drops both stale sentences. Under them all 183 transactions are candidates. Neither is merged, so EIP-8369 itself still excludes the 10.
 
 **Fix.**
-- Skip both optional leading verifier frames, as EIP-8272 already requires.
-- Drop EIP-8369's two stale sentences about envelope references and a composed payload encoding.
+- Merge PR-12396, or make the same change to EIP-8369.
 
 ### 17. Admission order, rejection reasons and the `gas` field differ between clients
 
@@ -341,7 +356,7 @@ Difficulty is the coordination a fix needs. **Hard** means a new mechanism, or a
 - A wallet cannot tell "fund this account" from "budget account creation" from "sign entry 0".
 - Fee estimation breaks.
 
-**Recent changes.** PR-12321 defines one 12-step admission order.
+**Recent changes.** PR-12321 defines one 12-step admission order. geth's 2026-10-09 build moved its balance check after the frame rules, the signatures and the public mempool's caps, as the EIP's Security Considerations ask; a rerun of experiment 22 on 2026-10-13 shows the other three unchanged.
 
 **Fix.**
 - Merge PR-12321.
@@ -366,6 +381,6 @@ Difficulty is the coordination a fix needs. **Hard** means a new mechanism, or a
 
 ## Recently fixed, and what in our own results is stale
 
-- **The approval rollback (`af80fc1`)** is a consensus change. ethrex's testnet code predates it, and none of our four-client checks exercised it, so it needs a cross-client test.
+- **The approval rollback (`af80fc1`)** is a consensus change, and none of our four-client checks exercised it, so it needs a cross-client test. ethrex fixed the same bug on 2026-09-22 (lambdaclass/ethrex#7298), two weeks before the EIP's text, on its `hegota-testnet` branch. The Hegota nodes run `hegota-testnet-hotfix`, which forked before that fix, so they still keep an approval whose call reverted. ethrex's `frames-devnet-1` branch rolls approvals back on any failed call.
 - **Experiment 06's withdrawal** now costs 12,100 more execution gas per key.
 - **Experiments that used the expiry verifier** targeted `0x8141`. Master puts it at `0x81413f0c...`.

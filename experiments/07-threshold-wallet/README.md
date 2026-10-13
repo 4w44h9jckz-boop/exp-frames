@@ -171,6 +171,9 @@ Appending a byte leaves the sig hash unchanged and moves the transaction hash
    Experiment 19 tests this deliberately. Until then: before sending a transaction whose
    validity depends on another, wait for a block that builds on the other's receipt.
 
+   *Amended 2026-10-13.* ethrex has since fixed a node that lost a reorged-out block's
+   transactions; experiment 19's observation 6 has the details and why it fits this drop.
+
    *Tested since.* Experiment 19 tested it (observation 6). Over 80 rounds, one receipt
    named a block that a rebuilt block replaced at the same height, which confirms the first half.
    The transaction sent on that receipt survived, and none of 80 was dropped, so the second half

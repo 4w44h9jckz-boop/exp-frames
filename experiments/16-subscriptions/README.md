@@ -198,6 +198,10 @@ approves both scopes, so the prefix ends there, and frame 1, a second VERIFY, is
    dependent transaction survived, and none of the 80 was dropped, so the eviction happens only
    sometimes, and what decides it is still open. The advice above stands.
 
+   *Amended 2026-10-13.* ethrex has since fixed a node that lost a reorged-out block's
+   transactions, which fits these drops; experiment 19's observation 6 has the details. The C2
+   pulls fit it too: any node would admit them, so other pools held copies.
+
 7. **A design note, not tested: entry 0 is redundant.** Frame 1 approves payment only if the
    merchant signed entry 1 over the canonical hash, which covers the pull frame. So the account
    could take the merchant from frame 1's target, and leave entry 0 as a 100-gas ARBITRARY

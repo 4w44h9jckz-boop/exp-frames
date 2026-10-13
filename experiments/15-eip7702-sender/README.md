@@ -133,6 +133,9 @@ Gas estimates for the same type-4 against the head state, from [`estimate.ts`](e
    The sender's code changing is then incidental: what matters is that C's validity depended on
    the vanished block. Experiment 19 tests this deliberately.
 
+   *Amended 2026-10-13.* ethrex has since fixed a node that lost a reorged-out block's
+   transactions; experiment 19's observation 6 has the details and why it fits this drop.
+
    *Tested since.* Experiment 19 tested it (observation 6). Over 80 rounds, one receipt
    named a block that a rebuilt block replaced at the same height, which confirms the first half.
    The transaction sent on that receipt survived, and none of 80 was dropped, so the second half

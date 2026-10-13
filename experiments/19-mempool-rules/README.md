@@ -301,6 +301,19 @@ measured it. "EIP" is EIP-8141 as pinned (Draft) together with EIP-8250 for nonc
    missed slot's payload. Missed slots are 6.6% of all slots here, and a stale receipt came in 1
    of 80 rounds.
 
+   *Amended 2026-10-13: a likely cause, fixed since.* ethrex found the same loss through its
+   faucet and fixed it on 2026-10-06 (`20c7fb08` and `64b8fc09` on `hegota-testnet-hotfix`). When
+   a node made its own block head, it removed that block's transactions from its pool; when the
+   consensus layer then chose a competing block, nothing returned them, so they were "in neither
+   chain nor pool". A transaction that depended on a just-landed one fits that path exactly: the
+   other nodes would have refused it while the dependency was missing, so this node's pool likely
+   held the only copy, and a block that carried it and was then retracted lost it. The nodes have
+   run the fix since 2026-10-07 13:10 UTC. Experiments 01 to 21 ran before that (this
+   experiment's last block, 306,359, is at 12:00 UTC), and 23 onwards after. Experiment 24 met one
+   reorg after the fix, at block 316,413, and its transactions landed in the replacement block.
+   This is consistent with the drops, not a reproduction of them, and these 80 rounds were not
+   rerun.
+
    The wallet rule costs one slot. After a receipt, wait until the head is past its block before
    sending anything that depends on it, and re-read the receipt then. Experiment 20's `confirmed()`
    does exactly this.

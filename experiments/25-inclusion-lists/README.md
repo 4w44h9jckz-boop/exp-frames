@@ -137,6 +137,24 @@ EIP-8369 also describes the recent roots as "references in the signed envelope".
 before activation. Both describe EIP-8272 before it moved the references into a canonical frame,
 which its rationale explains under "Canonical frame instead of an envelope field".
 
+*Amended 2026-10-13.* Two open pull requests now fix the shape rule. Since 2026-10-10,
+[PR-12394](https://github.com/ethereum/EIPs/pull/12394) (to EIP-7805) and
+[PR-12396](https://github.com/ethereum/EIPs/pull/12396) (to EIP-8369) define a declared prefix
+that is "an optional EIP-8141 `expiry_verify` frame, an optional EIP-8272 `recent_root_verify`
+frame, then one of" the four shapes, and count both verifiers' limits in the budget. Under them
+all 183 are candidates, as under EIP-8272 and ethrex. Both read the recent roots from the
+canonical verifier frame, and PR-12396 replaces EIP-8369's "single composed ... signature hash"
+with EIP-8250's nonce fields alone. They add three things this classification did not test:
+- a replay may load at most `MAX_REPLAY_CODE_BODIES` = 16 distinct code bodies totalling
+  `MAX_REPLAY_CODE_BYTES` = 131,072 bytes, "candidate values pending the full-pipeline
+  benchmarks". This corpus was not traced for code loads;
+- Profile 2 activates only with EIP-8250 and EIP-8272, and before that "omission of an EIP-8141
+  frame transaction is excused". Both are Considered, not Scheduled;
+- the budget fill now runs over included and omitted transactions alike, in
+  `(keccak256(envelope), envelope)` order, deduplicated by exact bytes.
+
+EIP-8369 at master is unchanged since 2026-09-02, so the first row still describes the EIP.
+
 The 115 not eligible for the proposed Profile 1 are those whose prefix runs code:
 
 | reason | transactions |

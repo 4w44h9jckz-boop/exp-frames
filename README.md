@@ -11,7 +11,7 @@ public ethrex **Hegotá testnet**.
 | RPC | `https://rpc1.privacy.ethrex.xyz` (also serves `ethrex_simulateFrameTransaction`) |
 | Explorer | https://dora.privacy.ethrex.xyz (decodes type-`0x06` txs and per-frame receipts) |
 | Faucet | https://faucet.privacy.ethrex.xyz (1 ETH per address per hour) |
-| Client | ethrex, branch [`hegota-testnet`](https://github.com/lambdaclass/ethrex/tree/hegota-testnet) |
+| Client | ethrex, branch [`hegota-testnet-hotfix`](https://github.com/lambdaclass/ethrex/tree/hegota-testnet-hotfix): `4738681` until 2026-10-07 13:10 UTC (experiments 01 to 21), `64b8fc09` since (23 onwards) |
 
 The chain runs pinned EIP drafts, not their latest text:
 EIP-8141 at [`b75cbe6115`](https://github.com/ethereum/EIPs/blob/b75cbe6115/EIPS/eip-8141.md) and
@@ -23,15 +23,24 @@ EIP-8250 keyed nonces at [`f3079a09e8`](https://github.com/ethereum/EIPs/blob/f3
   `nonce_keys = [0]` is the ordinary account nonce.
 - The expiry verifier lives at `0x…8141` (EIP master has since moved it to `0x81413f0c…FfFf`).
 - The nodes run `--mempool.max-verify-gas=500000`, not the spec's 100,000.
+- An approval made inside a call that then reverts survives on these nodes. EIP-8141 undoes it
+  since [`af80fc1`](https://github.com/ethereum/EIPs/commit/af80fc1c4122c4990b8c84bfd10be60c6e343bb2)
+  (2026-10-08). ethrex fixed it first, on 2026-09-22 (lambdaclass/ethrex#7298), on its
+  `hegota-testnet` branch, but the nodes run `hegota-testnet-hotfix`, which forked before it.
 
 ### ethpandaops frames-devnet-0
 
 | | |
 |---|---|
 | Chain ID | `7034189865` |
-| RPC | `https://rpc.frames-devnet-0.ethpandaops.io`, an eRPC balancer over geth, Nethermind, reth and ethrex |
-| Explorer | https://dora.frames-devnet-0.ethpandaops.io |
-| Faucet | https://faucet.frames-devnet-0.ethpandaops.io (proof of work and a captcha, so a person claims) |
+| RPC | `https://rpc.bogota-devnet-0.ethpandaops.io`, an eRPC balancer over geth, Nethermind, reth and ethrex |
+| Explorer | https://dora.bogota-devnet-0.ethpandaops.io |
+| Faucet | https://faucet.bogota-devnet-0.ethpandaops.io (proof of work and a captcha, so a person claims) |
+
+ethpandaops renamed the devnet's hostnames from `frames-devnet-0` to `bogota-devnet-0` on 2026-10-12
+([`7c889ab`](https://github.com/ethpandaops/frames-devnets/commit/7c889abdc35b2a9413d6ecb59587a44a4857b279)).
+The chain, its id and its nodes are the same, and the old hostnames answer 404. The text below
+keeps the name the experiments used.
 
 EIP-8141 at the same pin, without EIP-8250 or EIP-8272, so the envelope is EIP-8141's own:
 `0x06 || rlp([chain_id, nonce, sender, frames, signatures, fees, blob_versioned_hashes])`. The library
