@@ -394,6 +394,8 @@ implementation (Rust). Status: push access granted; work is on kohaku-rs branch 
   `frameReceiptStatus`. The posts linked into experiment branches, which are deleted on merge;
   they now link into `main`. Merge `tooling` first, as a merge commit, so each experiment PR
   shows only its own commits.
+  Then, asked for one PR: after #2 to #4 merged, the remaining 25 branches went into `merge-all`
+  (one merge commit each; vitest 791, tsc clean) as #30, and #5 to #29 were closed.
 
 ## References
 
