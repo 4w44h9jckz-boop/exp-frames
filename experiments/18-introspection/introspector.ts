@@ -10,6 +10,8 @@ import {
   type FrameSignature,
   type FrameTx,
   Scheme,
+  frameReceiptGas,
+  frameReceiptStatus,
   frameSigHash,
   makeClient,
   maxCost,
@@ -95,9 +97,9 @@ export function model(tx: FrameTx, current: number, ctx: Context): Word[] {
     if (i < current) {
       const r = ctx.receipts?.[i]
       if (!r) throw new Error(`model needs the receipt of frame ${i}`)
-      put(at('0x05 status'), hexToBigInt(r.status))
-      put(at('0x0A gas used, execution'), hexToBigInt(r.gasUsed))
-      put(at('0x0B gas used, state'), hexToBigInt(r.stateGasUsed))
+      put(at('0x05 status'), BigInt(frameReceiptStatus(r)))
+      put(at('0x0A gas used, execution'), frameReceiptGas(r).execution)
+      put(at('0x0B gas used, state'), frameReceiptGas(r).state)
     }
   })
   tx.signatures.forEach((s, i) => {

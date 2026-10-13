@@ -20,6 +20,8 @@ import {
   defaultFrame,
   describeReceipt,
   describeSimulation,
+  frameReceiptGas,
+  frameReceiptStatus,
   frameSigHash,
   getNonceSeq,
   prepareFrameTx,
@@ -159,9 +161,9 @@ const B = await run(`B. ${probes.length} probes, one frame each`, (salt) => [
 console.log('\n| Probe | EIP | Status | Gas | Logged |\n|---|---|---|---|---|')
 for (const [k, [label, , , , want]] of probes.entries()) {
   const r = B.receipt.frameReceipts[k + 1]
-  const ok = Number(r.status) === 1
+  const ok = frameReceiptStatus(r) === 1
   const logged = ok && r.logs[0] ? (r.logs[0].data as Hex) : ''
-  console.log(`| ${label} | ${want} | ${ok ? 'success' : 'FAILURE'} | ${hexToBigInt(r.gasUsed)} | ${logged && isHex(logged) ? `0x${hexToBigInt(logged).toString(16)}` : ''} |`)
+  console.log(`| ${label} | ${want} | ${ok ? 'success' : 'FAILURE'} | ${frameReceiptGas(r).execution} | ${logged && isHex(logged) ? `0x${hexToBigInt(logged).toString(16)}` : ''} |`)
 }
 console.log(`sig hash ${frameSigHash(B.tx)}; entry 1 ${B.tx.signatures[1].signature}`)
 
