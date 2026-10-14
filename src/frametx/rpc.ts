@@ -31,10 +31,12 @@ export const hegotaTestnet = defineChain({
 /**
  * ethpandaops frames-devnet-0: geth, Nethermind, reth and ethrex behind one eRPC balancer, which
  * sends each request (a whole batch at a time) to one of them. EIP-8141 at the same pin as the
- * Hegota testnet, without EIP-8250 or EIP-8272, so its envelope is `plain`.
+ * Hegota testnet, without EIP-8250 or EIP-8272, so its envelope is `plain`. ethpandaops renamed
+ * its hostnames to bogota-devnet-0 on 2026-10-12 (ethpandaops/frames-devnets `7c889ab`); the chain
+ * and its id are unchanged, and the old hostnames answer 404.
  */
-export const FRAMES_DEVNET_0_RPC_URL = 'https://rpc.frames-devnet-0.ethpandaops.io'
-export const FRAMES_DEVNET_0_EXPLORER_URL = 'https://dora.frames-devnet-0.ethpandaops.io'
+export const FRAMES_DEVNET_0_RPC_URL = 'https://rpc.bogota-devnet-0.ethpandaops.io'
+export const FRAMES_DEVNET_0_EXPLORER_URL = 'https://dora.bogota-devnet-0.ethpandaops.io'
 
 export const framesDevnet0 = defineChain({
   id: 7_034_189_865,

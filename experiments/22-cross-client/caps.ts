@@ -68,7 +68,8 @@ async function main() {
     {
       name: 'MAX_VERIFY_GAS',
       spec: `100,000, so a VERIFY limit of ${100_000n - sigGas} with one SECP256K1 entry (${sigGas}) is the largest admitted`,
-      over: /max_verify_gas|verification gas|gas budget/i,
+      // geth since c55e4753 (2026-10-09) names neither cap: "frame validation prefix exceeds gas limit".
+      over: /max_verify_gas|verification gas|gas budget|validation prefix exceeds/i,
       tx: (limit) => build(limit, NEW_ACCOUNT_STATE_GAS),
       lo: 1_000n,
       hi: 2_000_000n,
@@ -76,7 +77,7 @@ async function main() {
     {
       name: 'MAX_VERIFY_STATE_GAS',
       spec: '500,000, so a VERIFY state limit of 500,000 is the largest admitted',
-      over: /state/i,
+      over: /state|validation prefix exceeds/i,
       tx: (limit) => build(10_000n, limit),
       lo: NEW_ACCOUNT_STATE_GAS,
       hi: 16_000_000n,

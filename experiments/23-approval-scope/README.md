@@ -63,8 +63,8 @@ would apply.
 
 ### A. A sandwich, inserted by replacement, against the literal account
 
-The owner signs `[self_verify, approve(pool, 10 A), swap(10 A, minOut)]` at a 1,000 wei tip, and
-the script sends it. A mempool observer copies it and makes three changes:
+The owner signs `[self_verify, approve(pool, 10 A), swap(10 A, minOut)]`, and the script sends it
+with a 1,000 wei tip, which $D$ does not cover. A mempool observer copies it and makes three changes:
 - it inserts `DEFAULT bot.front(15.42 A)` between the approve and the swap;
 - it appends `DEFAULT bot.back()`;
 - it raises both fee fields by 20 per cent, which a replacement needs.
@@ -83,14 +83,21 @@ It keeps the signature entry byte for byte and sends the copy within the same sl
 
 ### B. Fees chosen by the relay, against the literal account
 
-The same honest swap, signed at a 1,000 wei tip, relayed with a 10 gwei tip instead. Nothing else
-changes.
+The same honest swap, built with a 1,000 wei tip, relayed with a 10 gwei tip instead. Nothing else
+changes, and the signature entry stays valid because $D$ has no fee field. The owner signs no tip
+at all: 1,000 wei is what its wallet put in the transaction.
+
+Only the rewritten copy was sent, so the chain shows an ordinary transaction with a 10 gwei tip and
+nothing that records the tip the wallet chose. The 1,000 wei figure comes from `scenarioB` in
+[`example-scope.ts`](example-scope.ts). What the chain can show is narrower: the signature entry
+recovers to the owner over $D$, and $D$ is computed from fields that include no fee, so the same
+entry is valid at any fee.
 
 | | |
 |---|---|
 | relayed | [`0x6256f617…`](https://dora.privacy.ethrex.xyz/tx/0x6256f61748c76a0d4b75f5ac7fbfcf90fec37b4145dfe3548f18e5f0c78a8256), mined in block 315,371, 118,652 gas |
 | the account paid | **0.0011865 ETH** at 10,000,000,007 wei per gas |
-| at the tip its owner signed | 0.00000000012 ETH, about $10^{-7}$ of that |
+| at the tip the owner's wallet chose | 0.00000000012 ETH, about $10^{-7}$ of that |
 
 The difference went to the block's fee recipient. Who sets the tip on the literal account is
 whoever relays the transaction. If that is the builder, it is paying itself out of the sender's

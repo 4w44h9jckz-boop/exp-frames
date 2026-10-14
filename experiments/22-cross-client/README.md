@@ -7,6 +7,9 @@ frames-devnet-0 runs four execution clients on one chain:
 - reth `v2.5.2-0f07d37`;
 - ethrex `v23.0.0-frames-devnet-0-52c2e626`.
 
+*Rerun 2026-10-13* on geth `c55e4753`, with the other three unchanged; see [Rerun, 2026-10-13](#rerun-2026-10-13).
+ethpandaops has since renamed the devnet's hostnames to `bogota-devnet-0`; the chain is the same.
+
 All four sit behind one eRPC balancer, which pins a request to one of them on request. The chain
 is EIP-8141 at `b75cbe61` alone, without EIP-8250 or EIP-8272. Its envelope therefore has 7
 fields, with a plain `nonce` where Hegota has `nonce_keys` and `nonce_seq`; the tooling speaks
@@ -177,6 +180,7 @@ approving execution and payment, one SENDER frame and one SECP256K1 entry, which
 | Client | `MAX_VERIFY_GAS`: largest VERIFY limit not refused for it | so the cap is | `MAX_VERIFY_STATE_GAS`: largest not refused |
 |---|---|---|---|
 | geth | none refused up to 2,000,000: the balance check comes first | unobserved | unobserved, for the same reason |
+| geth `c55e4753` (2026-10-13) | 97,200 | 100,000 | 500,000 |
 | Nethermind | 297,200 | **300,000** | 500,000 |
 | reth | 97,200 | 100,000 | 500,000 |
 | ethrex | 97,200 | 100,000 | **none refused up to 16,000,000** before simulation |
@@ -196,7 +200,8 @@ only if a Nethermind node builds a block while holding it. This is the case EIPs
 fit under 100,000 (the largest, the WebAuthn passkey, verifies in 15,542), so none of them would
 split the network. A post-quantum verifier in the EVM would.
 
-**2. geth reads the sender's balance before it checks any frame rule.** Priced, geth refused 40 of
+**2. geth reads the sender's balance before it checks any frame rule.** *No longer true of geth's
+2026-10-09 build; see [Rerun, 2026-10-13](#rerun-2026-10-13).* Priced, geth refused 40 of
 49 probes with `insufficient funds for gas * price + value`, including every statically invalid
 transaction and every invalid signature. Free, it refused the same 40 with `transaction gas
 price below minimum: gas tip cap 0, minimum needed 1`. The order its refusals reveal:
@@ -291,6 +296,47 @@ The receipt has 32, of which 5 differ.
 wallet that computes a fee bound as `gas * maxFeePerGas` gets two answers. execution-apis
 PR-860 and PR-907, both open, are where these get settled. Until then the tooling's
 `frameTxFromJson`, `frameReceiptGas` and `frameReceiptStatus` read all four.
+
+## Rerun, 2026-10-13
+
+ethpandaops renamed the devnet's hostnames from `frames-devnet-0` to `bogota-devnet-0` on
+2026-10-12, and geth moved from `8f5271e4` (built 2026-10-06) to `c55e4753` (built 2026-10-09).
+Nethermind, reth and ethrex run the same builds as on 2026-10-08. All three parts were rerun
+unchanged, except that `caps.ts` and `admission.ts` now also count geth's new message for the
+caps as naming them:
+[`results/observe-2026-10-13.md`](results/observe-2026-10-13.md),
+[`results/admission-2026-10-13.md`](results/admission-2026-10-13.md),
+[`results/caps-2026-10-13.md`](results/caps-2026-10-13.md).
+
+- **The chain: unchanged.** 50 of 50 heights agree (135,694 to 135,743). All 2,001 frame
+  transactions in blocks 135,544 to 135,743 re-encode to their hash, recover and settle, 406 of
+  them in the 41 blocks the new geth built. Every client's JSON is unchanged, field for field.
+- **geth now checks the frame rules before the balance.** Priced, it answered `insufficient funds`
+  to 5 of 49 probes, against 40 on 2026-10-08: the two unfunded probes, and three whose fault only
+  simulation finds (a passed deadline, an unbudgeted account creation, a missing signature
+  entry). It named the broken rule for 44. The order its refusals now reveal:
+  1. decoding, the chain id, the frame-format rules (frame count, mode, flags, value, approval
+     scope, atomic flags, the expiry frame's encoding, `msg`) and the 24,000 gas floor;
+  2. the minimum tip, which is where 21 of the free probes stop;
+  3. the signatures;
+  4. the public mempool's prefix shapes and caps;
+  5. the balance;
+  6. then, unobservably without funds, the simulation.
+
+  This is the order the EIP's Security Considerations ask for: signatures and structure before
+  sender state. Finding 2 no longer holds for geth. Whose balance it reads for a sponsored
+  transaction is still unobserved.
+- **geth enforces both caps at the EIP's values.** A VERIFY limit of 97,200 with one SECP256K1
+  entry passes the cap and 97,201 does not, so `MAX_VERIFY_GAS` is 100,000 with the signature
+  counted, as in reth and ethrex. `MAX_VERIFY_STATE_GAS` is 500,000. The refusal names neither
+  cap: it is `frame validation prefix exceeds gas limit` for both. Three values of
+  `MAX_VERIFY_GAS` are still deployed: 100,000 (geth, reth and ethrex here), 300,000 (Nethermind)
+  and 500,000 (ethrex's Hegota build).
+- **Unchanged in geth:** the 24,000 gas floor that refuses a 19,435-gas cancel (finding 3), and
+  the refusal of every blob-carrying frame transaction (finding 4). The priced blob probe did not
+  reach geth this time: the balancer answered `upstream not allowed based on use-upstream
+  directive`. The free one did, and got finding 4's message.
+- **Nethermind, reth and ethrex: every verdict unchanged**, in both fee passes and both caps.
 
 ## What this needs funds for
 

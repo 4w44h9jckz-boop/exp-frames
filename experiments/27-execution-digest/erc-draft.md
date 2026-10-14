@@ -206,8 +206,8 @@ Security Considerations).
 A frame that also approves payment pays for whatever fees the transaction states. If it signed
 something that left the fees open, whoever relays the transaction would set the tip, and the
 account would pay it. Experiment 23 measured this against an account that did not commit to the
-fees: relayed at a 10 gwei tip instead of the 1,000 wei its owner signed, it paid 0.0011865 ETH,
-about ten million times what its owner signed for. So the rule is asymmetric. The canonical hash when
+fees: relayed at a 10 gwei tip instead of the 1,000 wei its owner's wallet chose, it paid
+0.0011865 ETH, about ten million times what that tip would have cost. So the rule is asymmetric. The canonical hash when
 the account pays, `E` when it does not.
 
 ### Why EIP-712
@@ -240,6 +240,37 @@ gas for a typical transaction.
 - **Moving the fees out of the canonical hash.** That would give fee freedom to every account,
   including the self-paying ones, which is the relay-sets-the-tip result above. The accounts that
   need fee freedom are the ones that do not pay, and `E` gives it to them.
+
+### Related work
+
+None of these leaves both the payer and the fees open under EIP-8141's explicit `msg`. Each
+settles part of the question.
+
+- **EIP-8430's open payer** (AA Transaction Type, in
+  [PR-12385](https://github.com/ethereum/EIPs/pull/12385), created 2026-09-23 when it split from
+  EIP-8130). With `payer = 0x00`, the sender's signature covers the fees and the gas limit but not
+  the payer, and any payer completes the transaction with a secp256k1 signature over its own
+  payer hash. Its `replay_id` leaves out the fees, the gas limit and the authorizations, so a fee
+  bump keeps the operation's identity: this ERC's operation identifier, in the protocol. It is a
+  separate transaction type, its sender still pins the fees, and its open payer signs with
+  secp256k1 only. EIP-8130 carried an open payer from 2026-02-28 to 2026-03-05.
+- **EIP-8141's Security Considerations** ask an execution approval to "verify against the
+  canonical signature hash, or otherwise constrain every subsequent `SENDER` frame". `E` is a way
+  to do the second. Experiment 23 showed that constraining the `SENDER` frames alone is not enough.
+- **EIP-8397** (Frame Authenticator Signatures, in
+  [PR-12244](https://github.com/ethereum/EIPs/pull/12244)): "A nonempty `msg` does not
+  necessarily commit to the frame transaction. Accounts approving execution or payment must reject
+  such signatures unless they independently prove an exact commitment to every security-relevant
+  transaction field." An account following this ERC proves that commitment by recomputing `E`.
+- **A `SENDER`-frame co-signer** ([PR-12214](https://github.com/ethereum/EIPs/pull/12214)) signs an
+  explicit digest over a batch's frames, to co-fund their value: a digest over part of the
+  transaction, for another party.
+- **Guarantor frame hashes** ([PR-11643](https://github.com/ethereum/EIPs/pull/11643),
+  [PR-11681](https://github.com/ethereum/EIPs/pull/11681)) give a payer a per-frame hash of the
+  sender's data: the same split, made from the payer's side.
+
+No Ethereum Magicians or ethresear.ch thread we found, as of 2026-10-13, proposes a digest that
+leaves both the payer and the fees open.
 
 ## Backwards Compatibility
 
