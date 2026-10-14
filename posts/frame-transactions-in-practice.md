@@ -1,12 +1,8 @@
-# Is EIP-8141 Done? Frame Transactions after 27 Experiments and Four Clients
+# Is EIP-8141 Done? Frame Transactions after 30 Experiments and Four Clients
 
-[EIP-8141](https://eips.ethereum.org/EIPS/eip-8141) adds *frame transactions* to Ethereum: a transaction type in which an account decides for itself how it is authorized and who pays for it. It is scheduled for Hegota, the network upgrade after Glamsterdam. The question we keep hearing is whether it is done.
+## TLDR
 
-To answer it we built 27 experiments. Most were mined on a public testnet that runs ethrex, an Ethereum execution client. Some ran inside ethrex's own code. One probed four execution clients on a shared development network.
-
-This post is meant to be read on its own. The section after the summary explains frame transactions and the proposals around them from scratch, and a glossary follows. Links point to the evidence; the argument should not need them.
-
-## The short answer
+[EIP-8141](https://eips.ethereum.org/EIPS/eip-8141) adds *frame transactions* to Ethereum: a transaction type in which an account decides for itself how it is authorized and who pays for it. It is scheduled for Hegota, the network upgrade after Glamsterdam. The question we keep hearing is whether it is done, and we built 30 experiments to answer it. Most were mined on a public testnet that runs ethrex, an Ethereum execution client. Some ran inside ethrex's own code, one probed four execution clients on a shared development network, and one read 30 days of mainnet.
 
 **The core is done.** Four clients compute the same blocks from frame transactions. An implementation we wrote separately reproduces the hashes, signatures and gas of 2,000 of their transactions. Everything we tried from ERC-4337, today's smart-account system, ports to frames, and a token transfer costs 2.41 times less gas.
 
@@ -22,11 +18,28 @@ This post is meant to be read on its own. The section after the summary explains
 
 Each finding comes with a suggestion, its cost, and the easier fix we are *not* proposing. One thread runs through all seven: **every rule that widened the mempool safely is a declaration that a node can check without running code. Every rule that failed infers something from running code, or from the order in which things arrived.**
 
-## Frame transactions in five minutes
+**What a wallet gets.** Our last three experiments asked what frames change for the products people use:
+- a dapp written against EIP-5792's `wallet_sendCalls` ran unchanged on a wallet that sends frame transactions, at about the gas of an EIP-7702 batch and 46% less than ERC-4337. The wallet had to sign twice to estimate gas, though;
+- gas paid in tokens works with no server at all, but the sponsor then pays for every batch that fails, and the one read that would refuse an empty wallet is forbidden;
+- over 30 days, notes in Tornado Cash's and Privacy Pools' ETH pools paid relayers 224.5 ETH for 3.35 ETH of gas. A pool that is its own sender, with a last frame that refunds what the gas did not use, would have charged the same withdrawals 4.65 ETH.
+
+> The same findings, ranked by how hard each is to fix: [Frame Transaction Open Problems](https://github.com/4w44h9jckz-boop/exp-frames/blob/main/posts/frame-transactions-open-problems.md)
+> What 45 wallets and providers ship today, and what frames would change about it: [What Wallets Ship Today](https://github.com/4w44h9jckz-boop/exp-frames/blob/main/posts/wallets-and-frames.md)
+> Every experiment, with its scripts, contracts and transaction hashes: [exp-frames](https://github.com/4w44h9jckz-boop/exp-frames)
+
+This post is meant to be read on its own. The introduction explains frame transactions and the proposals around them from scratch, and a glossary follows. Links point to the evidence; the argument should not need them.
+
+## Introduction
+
+A transaction today is one signature over one call. The signature is ECDSA over secp256k1, and the account that signed pays the fee. A frame transaction lifts all three limits. It allows:
+- an account to decide in its own code how it is authorized, with any signature scheme, or with none if a proof is the authorization;
+- someone other than the sender to pay, by approving payment in the same transaction;
+- several calls to run as the sender, and to succeed or revert together;
+- anyone to relay it, and, if it is signed correctly, nobody to change it on the way.
 
 ### Why frames
 
-A transaction today is one signature over one call. The signature is ECDSA over secp256k1, and the account that signed pays the fee. Smart-contract wallets work around all three limits with ERC-4337: users sign *user operations*, bundlers collect them from a separate mempool, and a contract called the EntryPoint runs them. That mempool has its own rulebook, ERC-7562. EIP-8141 moves the same flexibility into the protocol, so it needs no bundler, no EntryPoint and no second mempool.
+Smart-contract wallets already work around the three limits with ERC-4337: users sign *user operations*, bundlers collect them from a separate mempool, and a contract called the EntryPoint runs them. That mempool has its own rulebook, ERC-7562. EIP-8141 moves the same flexibility into the protocol, so it needs no bundler, no EntryPoint and no second mempool.
 
 ### A transaction made of frames
 
@@ -120,10 +133,11 @@ Glamsterdam, the upgrade before Hegota, schedules ePBS (EIP-7732, enshrined prop
 
 ## How we tested
 
-We used three environments:
-- **The Hegota testnet** (chain id 8141), a public testnet whose nodes run ethrex's Hegota build. Experiments 01 to 21, 23, 24 and 27 mined their transactions there. That build is ethrex `v23.0.0-hegota-testnet`, with EIP-8141 pinned at `b75cbe61` plus EIP-8250 and EIP-8272, and with `MAX_VERIFY_GAS` raised to 500,000 by a node flag. So its numbers are ethrex's, on the Amsterdam gas schedule, and some prefixes above 100,000 were mined there that a node at the EIP's value would refuse.
+We used four environments:
+- **The Hegota testnet** (chain id 8141), a public testnet whose nodes run ethrex's Hegota build. Experiments 01 to 21, 23, 24 and 27 to 30 mined their transactions there. That build is ethrex `v23.0.0-hegota-testnet`, with EIP-8141 pinned at `b75cbe61` plus EIP-8250 and EIP-8272, and with `MAX_VERIFY_GAS` raised to 500,000 by a node flag. So its numbers are ethrex's, on the Amsterdam gas schedule, and some prefixes above 100,000 were mined there that a node at the EIP's value would refuse.
 - **frames-devnet-0**, a development network run by ethpandaops with geth, Nethermind, reth and ethrex behind one RPC endpoint. It was renamed bogota-devnet-0 on 2026-10-12. Experiment 22 ran there.
 - **ethrex's own test tree**, at [`c94964843d`](https://github.com/lambdaclass/ethrex/tree/c94964843d39d04914dff178e55e60daf7707089) of its `hegota-testnet` branch. Experiments 25 to 27 ran there too, and 25 and 26 send no transaction at all.
+- **Ethereum mainnet, read only.** Experiment 30 read every withdrawal from five privacy pools over 30 days, to price what relayers charge today.
 
 | # | Experiment | Headline number |
 |---|---|---|
@@ -142,6 +156,9 @@ We used three environments:
 | 25 | inclusion lists for frame transactions, against ethrex's Profile 2 | 46 admitted sets from one set of lists; 2 privacy withdrawals per slot |
 | 26 | what a gas cap on the validation prefix bounds, in time | about 16 ns per gas at worst; Groth16 13.1; a state read from memory 1.4 |
 | 27 | a shared layout for the execution digest, as a draft ERC | one typed-data signature, two payers, the second mined |
+| 28 | EIP-5792's `wallet_sendCalls` and ERC-7677's paymaster service, bound to frames | a stock viem dapp unchanged; 90,321 gas against 92,143 for a 7702 batch and 167,458 for ERC-4337 |
+| 29 | gas paid in tokens with no server: a sponsor repaid from a swap in the same atomic batch | 91,276 gas; a failed batch costs the sponsor up to its cap, 4,147,393 gas in one transaction |
+| 30 | a privacy withdrawal with no relayer, priced against 30 days of mainnet relayers | 224.5 ETH of relayer fees for 3.35 ETH of gas; the note pays 1.023 times its gas with a refund frame |
 
 188 mined transactions are kept as test fixtures. Every experiment has a directory in [exp-frames](https://github.com/4w44h9jckz-boop/exp-frames) with a README, the scripts, the contracts and the transaction hashes.
 
@@ -153,14 +170,14 @@ We read EIP-8141 and the proposals above at master on 2026-10-08, again on 2026-
 |---|---|---|---|---|
 | Block execution | encoding, signature hash, frames, `APPROVE`, receipts, gas | **converged**: 4 clients agree at 50 of 50 heights; 2,000 transactions re-encoded and re-settled; 41 rebuilt byte for byte in Rust | Four clients | a receipt status for frames rolled back with their batch; cross-client coverage beyond 5 transaction shapes |
 | Approval | what a custom `VERIFY` must check | the canonical hash is sound; **the guidance is exploitable** | 1 | one paragraph of the EIP; an ERC for the digest, drafted |
-| Payers | who may sponsor many pending transactions | the canonical paymaster works, for one secp256k1 signer; **two other rules are unsafe as written** | 2 | a bound on how many pending transactions one action can invalidate |
+| Payers | who may sponsor many pending transactions | the canonical paymaster works, for one secp256k1 signer; **two other rules are unsafe as written**; a sponsor with no signer serves one user per block and pays for every failure (experiment 29) | 2, 7 | a bound on how many pending transactions one action can invalidate |
 | Public mempool | what propagates | specified and deliberately narrow; **clients diverge** | 7, Four clients | one set of caps, one check order and one error vocabulary; a cap for state apart from compute |
-| Shared senders | privacy pools, multisig treasuries | **one pending transaction per sender** unless EIP-8250 ships, and it is only Considered | 4 | scheduling EIP-8250, and mempool rules for keyed nonces |
+| Shared senders | privacy pools, multisig treasuries | **one pending transaction per sender** unless EIP-8250 ships, and it is only Considered. What is at stake: notes paid relayers 224.5 ETH in 30 days (experiment 30) | 4, Wallets | scheduling EIP-8250, and mempool rules for keyed nonces |
 | Inclusion lists | censorship resistance | **undefined for frame transactions; order-dependent where built**; a fix per list proposed | 4 | Profile 1 for frames that need no replay; the per-list fix merged; consensus-specs carrying list membership |
 | Partial statelessness | what a VOPS node can validate | Proposed; its storage surface conflicts with account practice | 5 | a namespaced surface |
 | Time | deadlines, not-before, revocation | deadlines yes; not-before proposed; **deadlines evicted first** | 3 | a frame-level clock rule; a different eviction order |
 | Post-quantum | moving off ECDSA | new contract accounts only, at 2.7 times ECDSA's gas; **EOAs exit only if EIP-8151 and EIP-8298 both ship** | 6 | both EIPs, together; room in the mempool for in-EVM verification |
-| Wallet interface | what an RPC returns | **21 of 39 transaction fields differ** across clients | Four clients | [execution-apis PR-860](https://github.com/ethereum/execution-apis/pull/860), [PR-907](https://github.com/ethereum/execution-apis/pull/907) |
+| Wallet interface | what an RPC returns, and what a dapp asks for | EIP-5792 dapps **work unchanged** (experiment 28); **21 of 39 transaction fields differ** across clients; estimating gas needs real signatures | Four clients, Wallets | [execution-apis PR-860](https://github.com/ethereum/execution-apis/pull/860), [PR-907](https://github.com/ethereum/execution-apis/pull/907); a simulation that takes placeholder signatures and reports state gas per frame; two ERC-7677 fields |
 
 The closer a layer sits to the block, the more done it is; the closer it sits to a user, the less. That is the expected order of work for a protocol change. But users never meet the block layer alone. A frame transaction that a wallet cannot price, a mempool will not carry, and an inclusion list does not protect is, to a user, not done.
 
@@ -444,7 +461,7 @@ A frame transaction has no `T.origin` in that sense. Its validity is whatever it
 
 EIP-8369 is the proposal that fills it. It defines two profiles of what a node with partial state (VOPS) can check. Profile 1 is ordinary transactions, checked by nonce and balance. *Every* frame transaction goes in Profile 2:
 
-> [EIP-8141](./eip-8141.md) frame transactions with an empty `blob_versioned_hashes` list are Profile 2 candidates.
+> [EIP-8141](https://eips.ethereum.org/EIPS/eip-8141) frame transactions with an empty `blob_versioned_hashes` list are Profile 2 candidates.
 
 Profile 2 replays the validation prefix of a listed frame transaction against the state at the end of the block. It needs:
 - an extension EIP for the state that replay reads (AA-VOPS), not yet written;
@@ -454,10 +471,13 @@ Profile 2 replays the validation prefix of a listed frame transaction against th
 
 **What is scheduled.** Hegota's meta EIP (read 2026-10-08) has exactly two EIPs Scheduled: FOCIL and EIP-8141. EIP-8250 and EIP-8272 are Considered, EIP-8369 Proposed. Glamsterdam's meta EIP, EIP-7773, schedules ePBS, so ePBS comes first.
 
-**What it means.** As scheduled, no frame transaction is protected by inclusion lists in Hegota. Three groups lose:
-- **EOAs that adopt frames.** A user whose wallet moves from ordinary transactions to frame batches, the main benefit of the EIP for users, loses inclusion-list protection by doing so.
-- **Sponsored and private transactions.** These are what the companion EIPs exist for, and the `aa` study asks whether a shared payer can be protected at all.
-- **Privacy pools, twice.** Without EIP-8250, a pool that is its own sender has one pending withdrawal network-wide. Experiment 06 measured it: the pool that tracks spends in storage serializes every user, and a second withdrawal evicted the first. The companion `crops-frame` study computes the ceiling at about 300 spends an hour ([P0005](https://github.com/4w44h9jckz-boop/crops-frame/blob/main/problems/records/P0005-a-shared-sender-has-a-one-transaction-mempool-ceiling.md)).
+**What it means.** As scheduled, no frame transaction is protected by inclusion lists in Hegota, and three groups lose.
+
+EOA-wise, a user whose wallet moves from ordinary transactions to frame batches, the main benefit of the EIP for users, loses inclusion-list protection by doing so.
+
+Sponsorship-wise, sponsored and private transactions are what the companion EIPs exist for, and the `aa` study asks whether a shared payer can be protected at all.
+
+Privacy-pool-wise, the loss is double. Without EIP-8250, a pool that is its own sender has one pending withdrawal network-wide. Experiment 06 measured it: the pool that tracks spends in storage serializes every user, and a second withdrawal evicted the first. The companion `crops-frame` study computes the ceiling at about 300 spends an hour ([P0005](https://github.com/4w44h9jckz-boop/crops-frame/blob/main/problems/records/P0005-a-shared-sender-has-a-one-transaction-mempool-ceiling.md)). These are the transactions frames help most: a pool that pays its own gas needs no relayer, and relayers took 224.5 ETH from notes in the last 30 days (experiment 30, below).
 
 **What we measured** ([experiment 25](https://github.com/4w44h9jckz-boop/exp-frames/tree/main/experiments/25-inclusion-lists)). We classified the 183 frame transactions mined before experiment 25 under each rule:
 
@@ -634,14 +654,22 @@ The honest summary: Hegota as scheduled makes post-quantum accounts possible and
 
 Every row is narrower. That is a defensible design: a smaller surface is what makes frame validation cheap enough for inclusion lists and partial statelessness, and lightclient's [mempool strategies note](https://hackmd.io/@matt/frame-mempool) says plainly that "a restrictive policy is fine at launch".
 
-But it means frames replace the *simple* half of ERC-4337 at launch, not all of it. The other half stays where it is:
-- **Gas sponsorship paid in ERC-20 tokens.** The paymaster cannot read the user's token balance during validation. So a sponsor paid in tokens either signs every transaction after an off-chain risk check, a live keyed service that sees each transaction before it propagates, or bears credit risk: a sender who emptied their wallet first cost our sponsor 218,760 gas (experiment 04).
-- **ERC-7579 external validators**, which must be rewritten as `DELEGATECALL` modules with namespaced state in the account (experiment 14).
-- **Validation over 100,000 gas.** A Groth16 privacy proof is 245,000 to 249,000 (experiment 06).
+But it means frames replace the *simple* half of ERC-4337 at launch, not all of it. The other half stays where it is.
+
+Token-gas-wise, a sponsor cannot read the user's token balance during validation. So a sponsor paid in tokens either signs every transaction after an off-chain risk check, which makes it a live keyed service that sees each transaction before it propagates, or it bears the risk. Experiment 29 built the second kind with no server at all: the user repays the sponsor in ETH out of a swap in the same atomic batch, and a last frame refunds the unused gas. It works, at 91,276 gas. But every batch that fails is the sponsor's loss, and the user pays nothing:
+- 57,595 gas for a user who held no tokens;
+- 53,999 for a swap that slipped, which needs no attacker, only a price that moved;
+- 4,147,393, close to the sponsor's own cap, for a call built to burn its budget and fail.
+
+The sponsor cannot learn from it either, because it has no storage it may read in validation, and the cap of one pending transaction per non-canonical payer limits it to one user per block, honest or not. The one read that would refuse the empty wallet, the token's `balanceOf(sender)`, was refused with `StorageReadNonSender`. ERC-7562 allows exactly that read, as storage associated with the sender (its rule STO-021). Experiment 04's sponsor, paid in tokens, lost 218,760 gas in simulation to a sender who held none.
+
+Module-wise, ERC-7579 external validators must be rewritten as `DELEGATECALL` modules with namespaced state in the account (experiment 14).
+
+Compute-wise, validation over 100,000 gas does not reach every node: a Groth16 privacy proof is 245,000 to 249,000 (experiment 06).
 
 For wallets, the migration path is not "frames instead of ERC-4337". It is to move what fits, keep an ERC-4337 path for what does not, and expect the gap to close by *declarations*: keyed nonces, recent roots, payers whose safety can be decided from their code. It will not close by reopening associated storage.
 
-**Not suggested: associated storage for frames.** It is the one ERC-7562 rule that would bring ERC-20 sponsorship back, and it is the one that would break every VOPS surface above.
+**Not suggested: associated storage for frames.** It is the one ERC-7562 rule that would bring ERC-20 sponsorship back, and it is the one that would break every VOPS surface above. Experiment 29 prices the choice: without it, a sponsor with no server pays for every failure, up to its own cap.
 
 **What can safely grow is compute** ([experiment 26](https://github.com/4w44h9jckz-boop/exp-frames/tree/main/experiments/26-validation-cpu)). We timed ethrex's own admission check, `Blockchain::validate_transaction`, on prefixes that spend their gas on the most expensive work a prefix may legally do. The slowest work per gas is elliptic-curve arithmetic: alt_bn128 multiplication at 16.0 ns per gas on one core, a BLS12-381 pairing at 15.9, ECDSA recovery at 14.3. So a cap of $C$ gas bounds compute at about $16\,C$ ns:
 
@@ -664,16 +692,105 @@ So gas is a good enough unit for compute, and the reason not to simply raise the
 
 A compute floor of 250,000 beside a cap of today's 47 cold reads closes both.
 
+## Wallets on frames: three experiments
+
+**In short.** Our wallet survey ([What Wallets Ship Today](https://github.com/4w44h9jckz-boop/exp-frames/blob/main/posts/wallets-and-frames.md)) read what 45 wallets and providers ship, and proposed eight experiments. We ran the three that decide the most. A dapp needs no change. Gas paid in tokens needs no server, at a price the sponsor pays. A privacy withdrawal needs no relayer, and that is where frames save users the most money.
+
+### A dapp does not need to change (experiment 28)
+
+Every wallet and provider in the survey serves dapps through EIP-5792: `wallet_sendCalls` sends a batch of calls, `wallet_getCallsStatus` reports what happened. Sponsorship rides on ERC-7677's paymaster web service, written for ERC-4337's EntryPoints. We wrote a wallet that answers those calls with frame transactions, and a paymaster service in ERC-7677's shape in front of a canonical paymaster. The dapp was viem's stock actions, unchanged:
+
+```
+ dapp (viem: getCapabilities, sendCalls, waitForCallsStatus)
+   |  wallet_sendCalls { calls, atomicRequired, capabilities.paymasterService }
+   v
+ wallet (EIP-1193 provider, EOA with no code)          paymaster service (ERC-7677 shape)
+   |  [0] VERIFY  -> sender   APPROVE(EXECUTION)          pm_getPaymasterStubData
+   |  [1] VERIFY  -> PM       APPROVE(PAYMENT)  <-------  pm_getPaymasterData, twice:
+   |  [2] SENDER  -> call 0   (atomic flag)               its signer signs the sig hash
+   |  [3] SENDER  -> call 1
+   |  sign a draft, simulate, tighten limits, sign the final, simulate, send
+   v
+ node --> receipt: payer, and per frame [status, gas, logs] --> wallet derives 200 / 500 / 600
+```
+
+Gas-wise, the steady-state approve-and-swap cost 90,321 as frames, 92,143 through an EIP-7702 delegate's `executeBatch`, and 167,458 through ERC-4337's EntryPoint v0.8. Sponsoring it cost 9,821 more, and the user's own wallet sent it: no relayer. Frames needed no delegation either, where a 7702 wallet must first send a 58,052-gas type-4 transaction before it may answer `atomic: supported`.
+
+Semantics-wise, one frame transaction carries both of EIP-5792's modes. With `atomicRequired`, the calls commit or roll back together. Without it, they are independent frames of one transaction, and two of three calls persisted after the second failed. A delegate's `executeBatch` reverts everything on any failure.
+
+Status-wise, the wallet has to derive what happened, because the receipt has no transaction status. ethrex's JSON derives `status: 0x0` whenever any frame failed, which reports the partial success above as a complete failure, and viem's fallback reads exactly that field. In the atomic case, the approve's frame reports SUCCESS although its batch rolled it back, as the EIP defines it. Our wallet knew which frames formed the batch because it built them. An indexer does not (smaller fixes, row 10).
+
+Estimation-wise, the node simulates only a transaction whose validation prefix approves, so a placeholder signature cannot be simulated. ERC-4337 has the opposite rule: an account should fail softly on a wrong signature so that gas can be estimated. Our wallet signed twice, once over generous limits and once over the final ones, and called the paymaster three times instead of ERC-7677's two. The simulation also reports no state gas per frame, so the wallet gave every call a fixed 379,440 of state budget. The draft's limits reserved 1.75 times the final maximum cost (smaller fixes, row 18).
+
+Binding-wise, ERC-7677 needs two fields it does not have, the pay frame's state budget and the payer's signature entries, and a policy refusal has no error code. A call without `to`, which EIP-5792 allows as a deployment, has no frame: a `SENDER` frame with no target calls the sender.
+
+### Gas in tokens with no server (experiment 29)
+
+Section 7 has the numbers. The layout is the point here, because the whole policy is in it:
+
+```
+ sender = USER (holds Token A, no ETH)        payer = GasForOutput (no storage, no signer)
+ ------------------------------------------------------------------------------------------
+ [0] VERIFY  -> USER     APPROVE(EXECUTION)     default code
+ [1] VERIFY  -> GFO      APPROVE(PAYMENT)       max cost <= cap; [2..3] atomic SENDER frames;
+                                                [4] repays >= max cost; [5] is its post-op
+ [2] SENDER  -> token    approve(dex, x)        \
+ [3] SENDER  -> dex      swapForEth(x, min)      |  one atomic batch: if anything fails,
+ [4] SENDER  -> GFO      value = max cost       /   the repayment fails with it
+ [5] DEFAULT -> GFO      post-op: refund the unused gas, if [4] succeeded
+```
+
+`FRAMEPARAM` lets the sponsor check every frame's mode, flags, target and value, so the repayment is enforced by the layout, not by a server. What the layout cannot do is see the token balance, and so a batch that fails costs the sponsor and nobody else.
+
+### A privacy withdrawal with no relayer (experiment 30)
+
+A withdrawal from a privacy pool goes to a fresh address, which has no ETH for gas. Today somebody else sends it and the note pays them out of the withdrawal: a Tornado Cash relayer, a Privacy Pools relayer, a Railgun broadcaster. We read every withdrawal from Tornado Cash's four ETH pools and Privacy Pools' ETH pool over 30 days of mainnet, blocks 25,972,879 to 26,188,878:
+
+| Pool | Withdrawals | Paid their own gas | Median fee | Median relayer gas | Fee / gas | No relayer, same price |
+|---|---:|---:|---:|---:|---:|---:|
+| Tornado 0.1 ETH | 5,447 | 5% | 0.002080 | 0.000426 | 5.1x | 0.000612 |
+| Tornado 1 ETH | 2,285 | 20% | 0.005850 | 0.000286 | 19.9x | 0.000395 |
+| Tornado 10 ETH | 1,189 | **49%** | 0.041774 | 0.000242 | 172.8x | 0.000337 |
+| Tornado 100 ETH | 553 | 24% | 0.431695 | 0.000434 | 1,053.4x | 0.000628 |
+| Privacy Pools ETH | 611 | 4% | 0.000170 | 0.000099 | 1.4x | 0.000095 |
+
+Amounts are in ETH. The last column prices the frames withdrawal below at each relayed withdrawal's own gas price. Over the window, notes paid relayers **224.5 ETH for 3.35 ETH of gas**, and the same withdrawals with no relayer would have cost **4.65 ETH**. 33 addresses relayed all 8,614, and one sent 77% of Privacy Pools'.
+
+Two things in that table are the privacy story rather than the price story. First, 1,471 withdrawals, 15% of all and 49% of the 10 ETH pool's, were sent by an address that already held ETH, and 661 by the recipient itself. That is the link relayers exist to prevent, accepted to save the fee: in the 10 ETH pool a median of 0.042 ETH, 0.4% of the note, for 0.00024 ETH of gas. Second, a relayer sees every request it relays as it arrives, and can refuse it.
+
+With frames, experiment 06's pool is its own sender and pays the gas from the note. But the note's fee is fixed in the proof, and the pool may approve payment only if the fee covers the maximum cost, so with ordinary headroom the note pays
+
+$$\text{fee} \ge \Big(g_{\text{intrinsic}} + \sum_i \ell_i\Big) \cdot f_{\max} \qquad\text{for a charge of}\qquad \Big(g_{\text{intrinsic}} + \sum_i u_i\Big) \cdot p$$
+
+where $\ell_i$ and $u_i$ are frame $i$'s limits and use, $f_{\max}$ the max fee and $p$ the price paid. Priced the way a wallet prices, with a max fee twice the price and limits 1.25 times use, the note paid **2.56 times** its gas, and experiment 06's pool kept the difference. A last frame can refund it, and it needs no oracle. The frames' use is in `FRAMEPARAM`, and with no blobs and no signatures the intrinsic gas the protocol does not expose falls out of the max cost:
+
+$$g_{\text{intrinsic}} + \sum_i \ell_i = \frac{\texttt{TXPARAM(0x06)}}{\texttt{TXPARAM(0x04)}}$$
+
+```
+ WITHDRAWAL   sender = POOL   signatures = []   nonce key = the nullifier hash (EIP-8250)
+ ----------------------------------------------------------------------------------------
+ [0] VERIFY  -> 0x..8272  (source_id, slot, root)        protocol: the root is recent
+ [1] VERIFY  -> POOL      APPROVE(EXECUTION_AND_PAYMENT)  proof; fee >= max cost; this layout
+ [2] SENDER  -> POOL      withdraw(proof, ..., fee)       recipient gets amount - fee
+ [3] DEFAULT -> POOL      refund                          recipient gets fee - bound on charge
+```
+
+The refund frame counts its own limit as used, so the pool never refunds more than the transaction leaves it. On the testnet the note then paid **1.023 times** its gas: the bound was off by exactly the 13,469 gas the refund frame left unused, and the frame cost 11,820 gas.
+
+**What it means.** Frames help privacy the most where today's market charges a percentage of the note: 14 to 729 times cheaper on Tornado's 1, 10 and 100 ETH pools, by median. Where a relayer already charges about gas, as Privacy Pools' does, the saving is 1.4 times, and the gain is the removal of the party. The comparison is conservative: our 593,130 gas includes 281,520 of state gas on the testnet's EIP-8037 schedule, for the nullifier's nonce key and the recipient's new account, which today's mainnet prices at about 47,000. What frames do not remove is the network path. A withdrawal still reaches a node from some IP address, and only Tor, a mixnet or the user's own node hides it. Railgun's broadcasters, reached over Waku, do that part today.
+
 ## Four clients, one chain
+
+**In short.** Four clients compute the same chain from frame transactions. They disagree about which transactions to admit, what to return over JSON-RPC, and what to say when they refuse. None of that is consensus, and all of it is what a wallet meets first.
 
 frames-devnet-0 runs geth, Nethermind, reth and ethrex behind one RPC endpoint ([experiment 22](https://github.com/4w44h9jckz-boop/exp-frames/tree/main/experiments/22-cross-client)). Our test account has no funds there, so we asked what four clients can be asked without spending anything.
 
-**They agree on blocks.**
+Block-wise, they agree:
 - At 50 of 50 heights they served the same block hash, state root and receipts root.
 - All 2,000 frame transactions in 200 blocks re-encode to their hash under our implementation, every secp256k1 entry recovers over our signature hash, and every receipt's `gasUsed` equals our settlement of its frames.
 - The coverage is narrow: 5 transaction shapes, all self-relayed and secp256k1, with no sponsor, no contract account and no state gas.
 
-**They disagree on admission.** We sent 49 probes, each breaking one rule, to each client. The divergences:
+Admission-wise, they disagree. We sent 49 probes, each breaking one rule, to each client. The divergences:
 
 | Probe | geth | Nethermind | reth | ethrex |
 |---|---|---|---|---|
@@ -686,23 +803,23 @@ Bisection gave three values of one constant: `MAX_VERIFY_GAS` is 100,000 on reth
 
 *Rerun on 2026-10-13, on geth's 2026-10-09 build.* geth's column has changed. It now names the broken rule for 44 of the 49 probes: it checks frame rules, then the minimum tip, then signatures and the public mempool's caps, and only then the balance. It refuses the 150,000 prefix ("frame validation prefix exceeds gas limit") and bisects to 100,000 and 500,000, the EIP's values. Three values are still deployed. The other three clients, the chain and their JSON are unchanged.
 
-**They disagree on what they return.** Of the 39 transaction fields the four serve over JSON-RPC, 21 are not served by all four. `gas` alone has three meanings: `max_gas`, the sum of frame limits, or absent.
+RPC-wise, they disagree on what they return. Of the 39 transaction fields the four serve over JSON-RPC, 21 are not served by all four. `gas` alone has three meanings: `max_gas`, the sum of frame limits, or absent.
 
-**Errors say too little.** "The validation prefix reverted" covered an unfunded payer, an unbudgeted account-creation charge and a missing signature entry, from three clients. A wallet cannot tell "fund this account" from "budget account creation" from "sign entry 0".
+Error-wise, they say too little. "The validation prefix reverted" covered an unfunded payer, an unbudgeted account-creation charge and a missing signature entry, from three clients. A wallet cannot tell "fund this account" from "budget account creation" from "sign entry 0".
 
-**A gas price is a time bound only for clients built like the one that set it** (experiment 26). Two things we found inside ethrex:
+Time-wise, a gas price is a bound on work only for clients built like the one that set it (experiment 26). Two things we found inside ethrex:
 - It verifies each protocol signature twice on admission, once over the signature list and again inside the prefix simulation. One `SECP256K1` entry adds 89 $\mu$s over an empty prefix, two recoveries' worth, for the 2,800 gas the protocol charges.
 - Built without its assembly backend, the portable path its zero-knowledge virtual machine builds take, `P256VERIFY` runs at 36.0 ns per gas. That is 3.9 times its rate with the backend, and more than twice the slowest operation of a normal build.
 
 ## Smaller fixes
 
-Rows 8 to 13 were argued in full in the previous version of this post, and rows 14 to 17 are new this round. Where an open pull request touches a row, the row says so.
+Suggestions 1 to 7 are in the numbered sections. The rest are smaller: a sentence of the EIP, a local rule or an RPC, each with its evidence. They are numbered on from 8, and the numbers are stable across versions of this post. Rows 14 to 17 came out of experiments 25 and 26, and row 18 out of experiment 28. Where an open pull request touches a row, the row says so.
 
 | # | Suggestion | Evidence | Not suggested |
 |---|---|---|---|
 | 8 | Allow `TIMESTAMP` only while executing a frame whose target is the expiry verifier. Optionally, add a not-before time to the expiry frame's data | ethrex admits a nested call to the verifier: a hidden deadline, the EIP's own example attack (experiment 19). PR-12252 adds `valid_after` and keeps the wording that admits the nested call | `TIMESTAMP` in `VERIFY` generally |
 | 9 | Meter the validation prefix in two dimensions: cold state access, capped where today's floor is, and total, capped by a CPU benchmark | the workloads over 100,000 (Groth16, unground WOTS, 40-key multisigs) are compute, not state access (experiments 06, 17). The worst work runs at about 16 ns per gas, Groth16 at 13.1, state from memory at 1.4, so a total cap is a time budget of 16 ns per gas, 4 ms at 250,000 (section 7). PR-12301 makes the cap a floor; it should be a floor in both dimensions | raising the single cap, which raises the worst case for state access with it: from 47 cold reads to 119 at 250,000 |
-| 10 | A receipt status 3, ROLLED_BACK, for frames undone by their atomic batch | all four clients report them `SUCCESS` while their logs and state changes are gone (experiments 03, 22) | marking them FAILURE |
+| 10 | A receipt status 3, ROLLED_BACK, for frames undone by their atomic batch | all four clients report them `SUCCESS` while their logs and state changes are gone (experiments 03, 22). A wallet serving EIP-5792 had to remember which frames formed the batch to report it, and ethrex's derived `status` calls a partly successful non-atomic batch a failure (experiment 28) | marking them FAILURE |
 | 11 | State `MAX_VERIFY_STATE_GAS` in state bytes, and size it for EIP-8250's keys | a re-derivation of the gas cost per state byte silently shrinks what the rule admits. At 97,920 state gas per fresh key, 500,000 admits 5 fresh keys of the 16 EIP-8250 allows, fewer beside a deploy frame | |
 | 12 | One stated order of admission checks; a small enum of rejection reasons; `gas` defined or dropped for type `0x06` | three orders and four error vocabularies (experiment 22). PR-12321 defines the order; the enum and `gas` remain | |
 | 13 | Reconcile the paymaster text: one sentence makes a transaction "eligible ... only if the `pay` frame targets a canonical paymaster instance", and the next section admits non-canonical ones | EIP-8141 master; PR-12041's rewrite of the section is the place to fix it | |
@@ -710,6 +827,7 @@ Rows 8 to 13 were argued in full in the previous version of this post, and rows 
 | 15 | The omission check's gas fit uses EIP-8141's two-dimensional test, not one comparison against `T.gas` | 104 of 183 transactions declare state gas, median 97,920; the largest declares 30,070,620 for five contract creations. With one dimension, a transaction that creates an account needs room in the dimension it does not use (experiment 25). PR-12394 makes exactly this change | |
 | 16 | Require each keyless-deployed contract to exist at activation, as EIP-8250 does, in EIP-8141 (the expiry verifier) and EIP-8272 (recent roots); evaluate the expiry frame directly only when its canonical code is present | EIP-8141 and EIP-8272 moved to keyless deployment on 2026-10-06 and 2026-10-08, and only EIP-8250 states the requirement. Where the contract is missing, a client that evaluates the expiry frame directly accepts what a client that executes it refuses: the empty address runs default code, which finds no signature | installing them at the fork, which the EIPs moved away from so that activation changes no state |
 | 17 | Retry a prefix that failed to approve payment only when something it depended on at admission changes | `857622a` bounds unpaid producer work by a count of attempts, and asks for more than one because failures can be transient (section 2) | a count of attempts, which either wastes work or evicts what was about to become valid |
+| 18 | A simulation RPC for type `0x06` that runs a transaction whose signature entries are placeholders, reports what each frame would approve, and reports execution and state gas per frame | the node simulates only a prefix that approves, so our EIP-5792 wallet signed twice per transaction and called the paymaster service three times. No per-frame state gas came back, so it gave every call a fixed 379,440 of state budget, and the draft reserved 1.75 times the final maximum cost (experiment 28) | estimating by hand from the gas constants, which every wallet would then get wrong in its own way |
 
 ## What we would not change
 
@@ -722,15 +840,31 @@ Rows 8 to 13 were argued in full in the previous version of this post, and rows 
 - **The explicit `msg` as the extension point.** Section 1: an execution-only digest needs no second protocol hash. An ERC can be versioned, and a canonical hash is fixed forever.
 - **A replay budget on Profile 2.** Section 4: without one, attester replay is unbounded. What has to change is how it is filled, not whether it exists.
 
+## Conclusions
+
+Is EIP-8141 done? As a state transition, yes. Four clients compute the same blocks, an implementation that shares no code with them reproduces 2,000 of their transactions, and everything we ported from ERC-4337 works at less gas. We found nothing in block execution that needs more than the receipt status of row 10.
+
+As something a user can rely on, no, and the reason is the same in every section. What a user relies on is decided before the block: by mempool nodes that simulate a prefix nobody pays for, by includers that must decide which transactions a builder owed them, and by wallets that must price a transaction before it is signed. The rules that already work there share one shape: they are *declarations* a node can check without running anything. A nonce key, a recent root, a deadline, a paymaster recognized by its code, a frame layout a sponsor reads with `FRAMEPARAM`. The rules that fail all *infer* something, from running code (section 2's opcode scan, section 4's replay) or from the order things arrived in (section 4's lists, section 3's eviction). So our suggestions are mostly of one kind: replace an inference with a declaration, or bound what the inference can cost.
+
+For wallets the picture is better than the mempool's. A dapp needs no change at all, because EIP-5792 already describes what a frame transaction is. Sponsorship and token gas work, but each brings back a server or a risk the sponsor carries, because the one read that would decide it is the storage read the mempool forbids. And the biggest gain is where frames remove a party outright: a privacy pool that pays its own gas makes a withdrawal 14 to 729 times cheaper than a relayer on most of Tornado Cash's pools, and stops 15% of users linking themselves to avoid that fee. That gain depends on EIP-8250, which is only Considered, and on a way to reach a node that does not reveal the user, which frames do not provide.
+
 ## Open questions, and what we run next
 
-The previous round asked for an attester cost model for suggestion 5, a CPU benchmark for suggestion 9, and an ERC for $E$. Experiments 25 to 27 are those three. What is left:
+Experiments 25 to 27 answered the three questions an earlier version of this post left open: an attester cost model for suggestion 5, a CPU benchmark for suggestion 9, and an ERC for $E$. Experiments 28 to 30 answered three of the eight the wallet survey proposed. What is left:
 - **The Profile 2 replay bound.** Suggestion 5b makes an attester's worst case $16\,c_{\max}$ per slot, $2^{24}$ gas at the candidate value: about 270 ms of compute at the worst rate we measured, before disk. That needs a benchmark of the whole pipeline, and a decision on $c_{\max}$, before either is fixed.
 - **Disk.** Experiment 26 read state from memory. The state half of suggestion 9 needs a cold read from disk, which is where state becomes the binding resource, above about 34 $\mu$s per slot.
 - **A rerun on code that implements the 2026-10-08 changes:** the approval rollback, the keyless addresses, and EIP-8250's 12,100 gas per key. The rollback is a consensus change none of our four-client checks exercised.
 - **A funded run on the four-client devnet, and on its successor with EIP-8250 and EIP-8272:** every shape the devnet's load generator does not send, including both paymasters of experiment 24 and the execution digest of experiment 27, read back from four clients.
 - **Review of the ERC draft**, and whether a protocol execution hash is ever warranted: for RPCs that must show an operation's identity, or for EOAs that want execution-only signatures without a contract.
 - **Comments on PR-12394**: whether its per-transaction cap and the public mempool's floor should be the same number. (The shape rule, our other comment, was fixed on 2026-10-10.)
+- **Estimation (row 18).** What a simulation RPC that takes placeholder signatures should return, and whether it belongs in execution-apis beside PR-860 and PR-907 or in a wallet ERC.
+- **The refund pattern.** Experiment 30's refund frame, and the $\texttt{TXPARAM(0x06)} / \texttt{TXPARAM(0x04)}$ identity it rests on, serve any post-op that refunds. The identity fails once a transaction carries blobs or signature entries, or once the calldata floor binds, and a wallet-facing standard would need a parameter that exposes the intrinsic gas directly.
+- **The rest of the wallet survey:**
+  - W2, a gas account paying for its owner's other accounts: how many pending sponsorships each client admits, and the fan-out of one transfer (suggestion 3);
+  - W4, ERC-7715 permissions as a frames policy, and where the mempool's rules on storage and time stop them;
+  - W5, a passkey in a real browser, against experiment 11's WebAuthn account;
+  - W7, an ERC-7730 descriptor for $E$, so a hardware wallet can show what it signs;
+  - W8, one signature for owner rotation on two chains, and its replay risks.
 
 Every number above has a directory, a README, a command and a transaction hash behind it in [exp-frames](https://github.com/4w44h9jckz-boop/exp-frames). Corrections are very welcome, especially from the EIP authors where we have read intent into text that does not state it.
 
@@ -765,7 +899,9 @@ Two findings moved. Section 4's budget per list is now a pull request, and secti
 
 ## Appendix B: sources
 
-- **Experiments**, one directory each with a README, scripts, contracts and mined fixtures: [exp-frames](https://github.com/4w44h9jckz-boop/exp-frames) (start at its [README](https://github.com/4w44h9jckz-boop/exp-frames#readme)). This round: [23, approval scope](https://github.com/4w44h9jckz-boop/exp-frames/tree/main/experiments/23-approval-scope), [24, sealed paymaster](https://github.com/4w44h9jckz-boop/exp-frames/tree/main/experiments/24-sealed-paymaster), [25, inclusion lists](https://github.com/4w44h9jckz-boop/exp-frames/tree/main/experiments/25-inclusion-lists), [26, validation CPU](https://github.com/4w44h9jckz-boop/exp-frames/tree/main/experiments/26-validation-cpu) and [27, execution digest](https://github.com/4w44h9jckz-boop/exp-frames/tree/main/experiments/27-execution-digest).
+- **Experiments**, one directory each with a README, scripts, contracts and mined fixtures: [exp-frames](https://github.com/4w44h9jckz-boop/exp-frames) (start at its [README](https://github.com/4w44h9jckz-boop/exp-frames#readme)). This round: [23, approval scope](https://github.com/4w44h9jckz-boop/exp-frames/tree/main/experiments/23-approval-scope), [24, sealed paymaster](https://github.com/4w44h9jckz-boop/exp-frames/tree/main/experiments/24-sealed-paymaster), [25, inclusion lists](https://github.com/4w44h9jckz-boop/exp-frames/tree/main/experiments/25-inclusion-lists), [26, validation CPU](https://github.com/4w44h9jckz-boop/exp-frames/tree/main/experiments/26-validation-cpu) and [27, execution digest](https://github.com/4w44h9jckz-boop/exp-frames/tree/main/experiments/27-execution-digest); for wallets, [28, `wallet_sendCalls`](https://github.com/4w44h9jckz-boop/exp-frames/tree/main/experiments/28-wallet-send-calls), [29, token gas](https://github.com/4w44h9jckz-boop/exp-frames/tree/main/experiments/29-token-gas) and [30, relayer-free withdrawal](https://github.com/4w44h9jckz-boop/exp-frames/tree/main/experiments/30-relayer-free-withdrawal).
+- **The wallet survey** these three came from: [What Wallets Ship Today](https://github.com/4w44h9jckz-boop/exp-frames/blob/main/posts/wallets-and-frames.md).
+- **Mainnet sources for experiment 30:** the pool addresses from [tornado-cli's `config.js`](https://github.com/tornadocash/tornado-cli) and [Privacy Pools' deployments page](https://docs.privacypools.com/deployments), and Railgun's broadcaster fee model from [its documentation](https://docs.railgun.org).
 - **Rust wallet ports:** [kohaku-rs, branch `experiment/frames`](https://github.com/4w44h9jckz-boop/kohaku-rs/tree/experiment/frames).
 - **Companion studies we cite rather than repeat:** [aa](https://github.com/4w44h9jckz-boop/aa), on account abstraction and the gas market for private transactions, including its [questions for the specification authors](https://github.com/4w44h9jckz-boop/aa/blob/main/docs/06-findings/02-questions-for-the-specification-authors.md); and [crops-frame](https://github.com/4w44h9jckz-boop/crops-frame), a composition framework for privacy protocols on frames.
 - **Related reading:** Nero_eth, [Frame transactions and the three gates to privacy](https://ethresear.ch/t/frame-transactions-and-the-three-gates-to-privacy/24666); lightclient, [Mempool Strategies for EIP-8141](https://hackmd.io/@matt/frame-mempool).

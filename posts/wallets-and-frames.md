@@ -1,21 +1,54 @@
 # What Wallets Ship Today, and What Frame Transactions Would Give Them
 
-We read the documentation of 45 wallets, wallet-infrastructure providers and wallet-facing standards on 2026-10-14. For each feature we asked how it is built today and what [EIP-8141](https://eips.ethereum.org/EIPS/eip-8141) frame transactions would change about it. We then tied each feature to what our 27 experiments already measured, and listed the experiments it still needs.
+## TLDR
 
-Sources are the products' own documentation, help centres, repositories and blogs. A claim found only in third-party coverage is marked *second hand*. A page we could not reach is named in the appendix, and nothing was filled in from memory. "Not found" means not in the pages we read, which is not proof of absence.
+We read the documentation of 45 wallets, wallet-infrastructure providers and wallet-facing standards on 2026-10-14. For each feature they ship, we asked how it is built today and what [EIP-8141](https://eips.ethereum.org/EIPS/eip-8141) frame transactions would change about it, and tied it to what our 30 experiments measured:
+1. **Nobody in the survey builds on frames yet.** No wallet mentions EIP-8141, and of the providers only one blog post by Biconomy does. Coinbase is building its own native account abstraction for Base instead (EIP-8130, and "Base Transactions" under EIP-8430). One standard targets frames directly: ERC-8286, a module interface for ERC-7579 accounts with a frame-validator type.
+2. **Almost every advanced feature today is the same three parts:** an EIP-7702 delegate contract on the user's EOA, a relayer or bundler the wallet or its provider runs, and an off-chain policy service, more and more often inside a trusted execution environment (TEE). Frames move the first two into the protocol. The third can move on chain only where it fits the public mempool's rules.
+3. **The biggest change is for EOA-first wallets.** Batching, sponsorship and gas paid in tokens all work for an EOA with no code under frames. MetaMask, Uniswap, Rainbow, OKX, Phantom and Trust each ship a 7702 delegate to get those three things.
+4. **The hardest features to move rely on a server checking state the mempool may not read.** Gas paid in tokens, gas tanks, spending limits over a period and recovery delays all need a live signer, a clock, or storage outside the account.
+5. **The dapp-facing APIs were written for ERC-4337.** EIP-5792's batch call is neutral, and needed no change. Its paymaster capability, ERC-7677, defines fields only for ERC-4337's EntryPoints, and ERC-7715 permissions require ERC-4337, so each needs a frames binding.
 
-If frame transactions are new to you, the first sections of [Is EIP-8141 Done?](frame-transactions-in-practice.md) explain them in five minutes, with a glossary. Three terms recur below:
-- **Default code** is the validation the protocol runs for an account with no code: one secp256k1 signature over the whole transaction.
-- **A `VERIFY` frame** runs an account's own validation logic, read-only, and approves execution, payment or both. **A `SENDER` frame** runs a call as the account.
-- **A payer** is whoever approved payment. A sponsor is a payer other than the sender.
+We then ran three of the eight experiments the survey suggests:
+- **A dapp does not need to change** (experiment 28). A stock viem dapp calling `wallet_sendCalls` ran unchanged on a wallet that sends frame transactions: 90,321 gas for an approve and swap, against 92,143 through an EIP-7702 batch and 167,458 through ERC-4337. But the wallet had to sign twice to estimate gas, and ERC-7677's paymaster service needs two new fields.
+- **Gas in tokens needs no server, at the sponsor's risk** (experiment 29). A sponsor repaid in ETH from a swap in the same atomic batch costs 91,276 gas and needs no signer. Every batch that fails is its loss, up to 4,147,393 gas in one transaction, because the read that would refuse an empty wallet is forbidden.
+- **A privacy withdrawal needs no relayer** (experiment 30). Over 30 days of mainnet, notes paid relayers 224.5 ETH for 3.35 ETH of gas, and 15% of withdrawals were sent from an address that already held ETH, linking the user, to avoid the fee. A pool that pays its own gas and refunds the rest would have charged them 4.65 ETH.
 
-## The short version
+> What frame transactions are, and seven findings about whether EIP-8141 is ready: [Is EIP-8141 Done?](https://github.com/4w44h9jckz-boop/exp-frames/blob/main/posts/frame-transactions-in-practice.md)
+> Twenty open problems, ranked by how hard each is to fix: [Frame Transaction Open Problems](https://github.com/4w44h9jckz-boop/exp-frames/blob/main/posts/frame-transactions-open-problems.md)
+> Every experiment, with its scripts, contracts and transaction hashes: [exp-frames](https://github.com/4w44h9jckz-boop/exp-frames)
 
-1. **Nobody in the survey builds on frames yet.** None of the wallets, and none of the providers except one blog post by Biconomy, mentions EIP-8141. Coinbase is building its own native account abstraction for Base instead (EIP-8130, and "Base Transactions" under EIP-8430). One standard targets frames directly: ERC-8286, a module interface for ERC-7579 accounts with a frame-validator type.
-2. **Almost every advanced feature today is the same three parts.** An EIP-7702 delegate contract on the user's EOA; a relayer or bundler the wallet or its provider runs; and an off-chain policy service, increasingly inside a trusted execution environment (TEE). Frames move the first two into the protocol. The third can move on chain as `VERIFY` logic only where it fits the public mempool's rules.
-3. **The biggest change is for EOA-first wallets.** Batching, sponsorship and gas paid in tokens all work for an EOA with no code under frames, through default code (our experiment 15). MetaMask, Uniswap, Rainbow, OKX, Phantom and Trust each ship a 7702 delegate to get those three things. Under frames they would need delegation only for a second key, a session policy or recovery.
-4. **The hardest features to move are the ones that rely on a server checking state the mempool may not read.** Gas paid in tokens, gas tanks, spending limits over a period, and recovery delays all need either a live signer, a clock, or storage outside the account. Those are exactly the limits our experiments hit (sections 3 and 7 of the post).
-5. **The dapp-facing APIs are written for ERC-4337.** EIP-5792's batch call is neutral, but its paymaster capability (ERC-7677) defines fields only for EntryPoint v0.6 and v0.7, and ERC-7715 permissions require ERC-4337. A wallet adopting frames needs a frames binding for each, and none exists.
+## Introduction
+
+A transaction today is one secp256k1 signature over one call, paid by the account that signed. A frame transaction (EIP-8141, type `0x06`, scheduled for the Hegota upgrade) is a list of *frames*, each a call with its own mode. It allows:
+- an account to authorize a transaction in its own code, in a read-only `VERIFY` frame that approves execution, payment or both;
+- someone else to pay, by approving payment in a `VERIFY` frame of its own;
+- several calls to run as the account, in `SENDER` frames, optionally as an atomic batch that succeeds or reverts together;
+- anyone to broadcast it, since it carries its own authorization.
+
+An account with no code gets *default code*: the protocol approves for it when the transaction carries a secp256k1 signature by its key over the whole transaction. So a plain EOA can batch and be sponsored without any contract. A *payer* is whoever approved payment, and a *sponsor* is a payer other than the sender.
+
+That is why the three parts of today's wallet stack map onto frames so differently:
+
+```
+ TODAY                                         WITH FRAMES
+ ------------------------------------------    -----------------------------------------------
+ EOA --7702--> delegate contract               EOA with no code: default code approves
+              (batch executor, keys, policy)     [0] VERIFY -> EOA      APPROVE(EXECUTION)
+                    |                            [1] VERIFY -> sponsor  APPROVE(PAYMENT)
+ user signs an intent                            [2] SENDER -> call 0   \ atomic batch
+                    v                            [3] SENDER -> call 1   /
+ relayer / bundler (wallet's server)           anyone broadcasts it: no relayer
+   pays gas, submits, takes a fee              the sponsor's VERIFY is on chain
+                    |
+ policy service (often in a TEE)               a policy service only where VERIFY cannot
+   prices tokens, checks balances,               read what it needs: another account's
+   co-signs                                      storage, the clock, a price
+```
+
+The left column is three things a user has to trust or run. The right column keeps only the last, and the survey below is mostly about which features still need it.
+
+Sources are the products' own documentation, help centres, repositories and blogs. A claim found only in third-party coverage is marked *second hand*. A page we could not reach is named in the appendix, and nothing was filled in from memory. "Not found" means not in the pages we read, which is not proof of absence. Where a feature cites "the post", it means [Is EIP-8141 Done?](https://github.com/4w44h9jckz-boop/exp-frames/blob/main/posts/frame-transactions-in-practice.md), whose sections and smaller fixes are numbered.
 
 ## Feature by feature
 
@@ -26,24 +59,36 @@ Each row: which products ship the feature (examples, not a complete list), how t
 - **Who:** MetaMask, Rainbow, Uniswap Wallet, OKX, Coinbase, Ambire, Safe, and every provider through EIP-5792's `wallet_sendCalls`.
 - **Today:** an EIP-7702 delegate with a batch executor (MetaMask's Delegator; Uniswap's Calibur, which uses ERC-7821; Rainbow's own delegate), an ERC-4337 user operation (Coinbase), or Safe's MultiSend through `delegatecall`. Rabby has no batching; Brave has an open request for EIP-5792 since May 2025.
 - **With frames:** consecutive `SENDER` frames, optionally flagged as an atomic batch that succeeds or reverts together. It works for an EOA with no code, through default code, with no delegation and no executor contract.
-- **Measured:** experiment 03 (approve and swap, mined); experiment 15 (a code-less EOA batches and is sponsored).
-- **Missing:** a receipt status for frames rolled back with their batch; all four clients we probed report them `SUCCESS` while their logs and state are gone (post, smaller fixes row 10). A wallet showing "step 2 failed" needs it.
+- **Measured:**
+  - experiment 03 (approve and swap, mined); experiment 15 (a code-less EOA batches and is sponsored);
+  - experiment 28: a stock viem dapp's `wallet_sendCalls` ran unchanged on a wallet that sends frame transactions. The steady-state approve and swap cost 90,321 gas, against 92,143 through a 7702 delegate's `executeBatch` and 167,458 through ERC-4337's EntryPoint v0.8, and the frames wallet needed no 58,052-gas delegation first. One frame transaction carries both of EIP-5792's modes: with `atomicRequired` the calls stand or fall together, and without it two of three calls persisted after the second failed, which a 7702 `executeBatch` cannot do.
+- **Missing:**
+  - a receipt status for frames rolled back with their batch. All four clients we probed report them `SUCCESS` while their logs and state are gone (post, smaller fixes row 10), so experiment 28's wallet had to remember which frames formed each batch to report its EIP-5792 status. ethrex's derived transaction `status` calls a partial success a failure;
+  - an estimate without signing. The node simulates only a transaction whose validation approves, so the wallet signed twice per transaction, and it reports no state gas per frame, so every call got a fixed 379,440 of state budget (post, smaller fixes row 18);
+  - a call without `to`, which EIP-5792 allows as a deployment, has no frame: a `SENDER` frame with no target calls the sender.
 
 ### Sponsored gas
 
 - **Who:** MetaMask ("Paid by MetaMask" on Monad and SEI), Rainbow (free swaps, sends and unstakes through its relay), Phantom (gasless swaps), Coinbase (ERC-7677 paymaster service), Fluidkey (20 sponsored transactions a day on six L2s), and Privy, Dynamic, Turnkey, ZeroDev, Alchemy, Pimlico and thirdweb for apps.
 - **Today:** a relayer the wallet runs submits the user's signed intent through a 7702 delegate (Privy, Dynamic, Turnkey, Phantom, Rainbow), or an ERC-4337 paymaster pays (Coinbase, Pimlico, ZeroDev, Alchemy). Alchemy also offers "bundler sponsored operations" with no on-chain paymaster.
 - **With frames:** the sponsor adds its own `VERIFY` frame that approves payment. The sponsor can be an ordinary key-held account, the canonical paymaster contract, or any other paymaster. No relayer is needed: anyone can broadcast the transaction.
-- **Measured:** experiments 04, 09, 24 and 27. The canonical paymaster backed four users in one block (09). One owner signature was completed by two sponsors in turn, the second mined (23, 27).
-- **Missing:** payers are rationed in the public mempool. The canonical paymaster may back many pending transactions; any other paymaster one; a code-less sponsor is bounded only by its balance, which lets one transfer invalidate thousands of pending sponsorships (post, section 2). The canonical paymaster needs its signer online for each transaction.
+- **Measured:** experiments 04, 09, 24, 27 and 28. The canonical paymaster backed four users in one block (09). One owner signature was completed by two sponsors in turn, the second mined (23, 27). A paymaster service in ERC-7677's shape in front of the canonical paymaster sponsored a dapp's batch for 9,821 more gas than paying for itself, and the user's own wallet broadcast it (28).
+- **Missing:**
+  - payers are rationed in the public mempool. The canonical paymaster may back many pending transactions; any other paymaster one; a code-less sponsor is bounded only by its balance, which lets one transfer invalidate thousands of pending sponsorships (post, section 2). The canonical paymaster needs its signer online for each transaction;
+  - ERC-7677 has no field for the pay frame's state budget or the payer's signature entries, and no error code for a policy refusal, so a dapp sees a generic `-32603`. Its stub signature is useless to a frames simulation, so the service is called three times instead of two (28).
 
 ### Gas paid in tokens
 
 - **Who:** MetaMask ("gas included", in USDC, USDT, DAI and others on seven chains), Trust Wallet (FlexGas), Tangem (Smart Gas), Phantom, Coinbase, ZeroDev (USDC, 5% premium), Pimlico, Alchemy, Biconomy, thirdweb; Railgun broadcasters take their fee in the token being moved.
 - **Today:** the user signs a 7702 authorization plus an EIP-712 fee quote, and the wallet's backend submits (Tangem, Trust, MetaMask; second hand for the mechanism in MetaMask's case). Or an ERC-4337 ERC-20 paymaster, with an off-chain service signing the price (Pimlico, ZeroDev, Alchemy).
 - **With frames:** a sponsor pays the gas, and a `SENDER` frame in the same transaction pays the sponsor in tokens. Experiment 23's `PayThePayer` finds whichever sponsor's frame is present and pays it, so the user can sign before the sponsor is chosen.
-- **Measured:** experiments 04, 23 and 27.
-- **Missing:** a sponsor's `VERIFY` may not read the user's token balance (it is not the sender's storage). So the sponsor either signs each transaction after an off-chain check, which is today's model under another name, or bears the risk: a user who emptied their wallet first cost our sponsor 218,760 gas (experiment 04). This is the clearest case where frames replace the relayer but not the server.
+- **With frames, and no server:** the sponsor is repaid in ETH, not tokens, out of a swap in the same atomic batch, and a last frame refunds the unused gas. Its `VERIFY` checks the layout with `FRAMEPARAM` (the swap and the repayment form one atomic batch, and the repayment covers the maximum cost), so it needs no signer, no oracle and no storage.
+- **Measured:** experiments 04, 23, 27 and 29. The server-free sponsor paid for a user who held only tokens at 91,276 gas, or 274,876 on the user's first transaction, which creates the account (29).
+- **Missing:** a sponsor's `VERIFY` may not read the user's token balance, because it is not the sender's storage. ERC-4337's mempool allows that read (ERC-7562's rule STO-021, storage associated with the sender), and the frame mempool refused it with `StorageReadNonSender` (29). So the sponsor either signs each transaction after an off-chain check, which is today's model under another name, or bears the risk. Experiment 29 priced the risk: every failed batch is the sponsor's loss and costs the user nothing.
+  - a user who held no tokens: 57,595 gas; a swap that slipped: 53,999; a call built to burn its budget: 4,147,393, close to the sponsor's cap;
+  - with no storage, the sponsor cannot remember who cost it money, and the cap of one pending transaction per non-canonical paymaster limits it to one user per block, honest or not.
+
+  This is the clearest case where frames replace the relayer but not the server.
 
 ### Gas tanks and gas accounts
 
@@ -134,8 +179,11 @@ Each row: which products ship the feature (examples, not a complete list), how t
 - **Who:** Railgun and Railway (broadcasters over Waku; fee about 10% of gas, in the token moved; a 7702 flow with a fresh EOA per operation), Privacy Pools (relayers paid from the withdrawn amount, a signed fee quote valid 20 seconds), Umbra (a relayer paid in the withdrawn tokens), Fluidkey (a 1-of-1 Safe per stealth address), Kohaku, the Ethereum Foundation's privacy wallet (an ERC-4337 privacy paymaster for Tornado Cash and Railgun on Sepolia; a reference extension forked from Ambire).
 - **Today:** every one of them needs a third party to submit the withdrawal, because a fresh address has no ETH to pay gas, and that third party sees the user's network address and must be paid.
 - **With frames:** the pool is its own sender and pays its own gas from the withdrawn funds. No relayer, no broadcaster, no fee quote.
-- **Measured:** experiment 06: Tornado Cash's circuit, `VERIFY` 244,808 to 248,991 gas, three withdrawals from one sender in one block in the design with keyed nonces.
-- **Missing:** without EIP-8250 a pool has one pending withdrawal network-wide, about 300 spends an hour; a Groth16 proof is above the public mempool's 100,000 gas; and inclusion lists, as scheduled, do not cover frame transactions, and where they are built, whether a withdrawal is admitted depends on the order its lists arrive in (post, sections 4 and 7).
+- **Measured:**
+  - experiment 06: Tornado Cash's circuit, `VERIFY` 244,808 to 248,991 gas, three withdrawals from one sender in one block in the design with keyed nonces;
+  - experiment 30, on 30 days of mainnet: notes in Tornado Cash's four ETH pools and Privacy Pools' ETH pool paid 33 relayers 224.5 ETH for 3.35 ETH of gas. Tornado's relayers charge gas plus 41 to 175 bps of the note, so a 100 ETH note's median fee was 1,053 times its gas; Privacy Pools' relayer charged 1.4 times gas. 15% of withdrawals, 49% in the 10 ETH pool, were sent from an address that already held ETH, which is the link relayers exist to prevent;
+  - experiment 30, on the testnet: a pool that pays its own gas has to take a fee that covers the maximum cost, 2.56 times the gas at ordinary headroom. A last frame that refunds the difference brought it to 1.023 times, for 11,820 gas. Priced that way, the same 30 days of withdrawals would have cost 4.65 ETH.
+- **Missing:** without EIP-8250 a pool has one pending withdrawal network-wide, about 300 spends an hour; a Groth16 proof is above the public mempool's 100,000 gas; and inclusion lists, as scheduled, do not cover frame transactions, and where they are built, whether a withdrawal is admitted depends on the order its lists arrive in (post, sections 4 and 7). Frames remove the payment, not the network path: a withdrawal still reaches a node from some IP address, which Railgun's broadcasters over Waku hide today, and frames do not.
 
 ### Post-quantum accounts
 
@@ -150,11 +198,12 @@ Each row: which products ship the feature (examples, not a complete list), how t
 
 ## What a wallet would need that does not exist yet
 
-1. **A frames binding for the dapp APIs.** EIP-5792's `atomic` capability maps directly to an atomic batch. ERC-7677's paymaster fields are defined for EntryPoint v0.6 and v0.7 only; a frames version would carry a sponsor's pay frame. ERC-7715 permissions would need to map onto a session `VERIFY` policy. ERC-8286 does this for ERC-7579 modules only.
-2. **A settled RPC.** One meaning for `gas`, one set of fields, and an error vocabulary a wallet can act on (experiment 22).
-3. **Hardware support for type `0x06`**, or the convention that devices sign the EIP-712 digest $E$, which they can already display.
-4. **A way to pay a sponsor in tokens without a live signer**, which the public mempool's storage rule rules out today.
-5. **A clock in validation**, bounded so that it cannot be abused, for session deadlines, recovery delays and not-before times.
+1. **A frames binding for the dapp APIs, except the one that needs none.** EIP-5792 needed no change: `atomic` maps to an atomic batch, and a non-atomic batch is independent frames of one transaction (experiment 28). ERC-7677 needs two fields, the pay frame's state budget and the payer's signature entries, an error code for a policy refusal, and an agreed JSON for an unsigned frame transaction. ERC-7715 permissions would need to map onto a session `VERIFY` policy. ERC-8286 does this for ERC-7579 modules only.
+2. **A settled RPC.** One meaning for `gas`, one set of fields, and an error vocabulary a wallet can act on (experiment 22). And a simulation that accepts placeholder signatures and reports state gas per frame, so a wallet can price a transaction before the user signs it (experiment 28; the post's smaller fixes, row 18).
+3. **A receipt that describes itself:** a status for frames rolled back with their batch, so an indexer can report a batch without knowing how it was built (experiment 28; row 10).
+4. **Hardware support for type `0x06`**, or the convention that devices sign the EIP-712 digest $E$, which they can already display.
+5. **A way to pay a sponsor in tokens without a live signer** that does not leave the sponsor paying for every failure. Experiment 29 shows the layout works; what it lacks is the one storage read that would refuse an empty wallet.
+6. **A clock in validation**, bounded so that it cannot be abused, for session deadlines, recovery delays and not-before times.
 
 ## Experiments this suggests
 
@@ -162,16 +211,33 @@ Ranked by how many products ship the feature, and by whether our testnet can sho
 
 | # | Experiment | Why | Who ships the feature |
 |---|---|---|---|
-| W1 | **`wallet_sendCalls` over frames.** Turn an EIP-5792 request, with `atomic` and a paymaster capability, into one frame transaction through viem; compare gas and the number of signatures with the 7702 and ERC-4337 paths | the API every wallet and provider already serves; shows dapps need no change | MetaMask, Coinbase, Privy, Dynamic, thirdweb, Alchemy |
+| W1, done: experiment 28 | **`wallet_sendCalls` over frames.** Turn an EIP-5792 request, with `atomic` and a paymaster capability, into one frame transaction through viem; compare gas and the number of signatures with the 7702 and ERC-4337 paths | the API every wallet and provider already serves; shows dapps need no change | MetaMask, Coinbase, Privy, Dynamic, thirdweb, Alchemy |
 | W2 | **A gas account.** One user-controlled account pays for the user's other accounts, Rabby- and Ambire-style; measure how many pending sponsorships each client admits, and the fan-out of one transfer | the EIP's own use case, and the rule we propose to change | Rabby, Ambire, Avocado, Fireblocks |
-| W3 | **Token gas without a server.** A sponsor reimbursed from a swap's output in the same atomic batch, and what it costs the sponsor when the swap fails | the most common feature, and the clearest gap | MetaMask, Trust, Tangem, Phantom, ZeroDev, Pimlico |
+| W3, done: experiment 29 | **Token gas without a server.** A sponsor reimbursed from a swap's output in the same atomic batch, and what it costs the sponsor when the swap fails | the most common feature, and the clearest gap | MetaMask, Trust, Tangem, Phantom, ZeroDev, Pimlico |
 | W4 | **ERC-7715 permissions as a frames policy.** A periodic ERC-20 allowance and a Coinbase-style spend permission on experiment 12's and 16's accounts; where the mempool's rules on storage and time stop them | permissions are how dapps and agents ask wallets for standing access | MetaMask, Coinbase, ZeroDev, Rhinestone, Alchemy |
 | W5 | **A passkey in a real browser.** Chromium's virtual authenticator against experiment 11's WebAuthn account, and Coinbase's WebAuthn signature format | experiment 11 used a software authenticator | Coinbase, Safe, Uniswap, OKX, Sequence |
-| W6 | **A privacy withdrawal with no relayer, priced against today's relayers.** Experiment 06's pool paying its own gas from the withdrawal, against Privacy Pools' and Railgun's fee quotes | the feature frames change most | Privacy Pools, Railgun, Umbra, Kohaku |
+| W6, done: experiment 30 | **A privacy withdrawal with no relayer, priced against today's relayers.** Experiment 06's pool paying its own gas from the withdrawal, against Privacy Pools' and Railgun's fee quotes | the feature frames change most | Privacy Pools, Railgun, Umbra, Kohaku |
 | W7 | **What a device can show.** An ERC-7730 descriptor for $E$, and what each field looks like when signed as typed data | blind signing is the open question for hardware | Ledger, Trezor, GridPlus, Keystone |
 | W8 | **One signature on two chains.** A chain-agnostic digest for owner rotation, on the testnet and the devnet, and its replay risks | the only feature frames do not touch | Avocado, Coinbase, Porto, Ambire |
 
-We would start with W1, W3 and W6: W1 because it decides whether dapps need to change at all, W3 because it is the feature most wallets ship and the one frames help least, and W6 because it is the one frames help most.
+We started with W1, W3 and W6: W1 because it decides whether dapps need to change at all, W3 because it is the feature most wallets ship and the one frames help least, and W6 because it is the one frames help most. They became experiments 28 to 30, and the features above carry their numbers. In one line each:
+- **W1:** dapps need no change, and a frames batch costs about what a 7702 batch does and 46% less than ERC-4337. Estimation and ERC-7677 are what need work.
+- **W3:** token gas needs no server, but the sponsor then carries every failure, and the frame mempool forbids the one read that would refuse most of them.
+- **W6:** with the pool as its own sender and a refund frame, the note pays 1.023 times its gas. Against 30 days of mainnet relayers that is 4.65 ETH instead of 224.5 ETH. Privacy Pools' relayer already charges close to gas, so there the gain is removing the party, not the price.
+
+W2, W4, W5, W7 and W8 remain.
+
+## Conclusions
+
+Wallets today rebuild the same three parts for every advanced feature: a delegate contract, a relayer, and a policy server. Frames take the first two into the protocol, and the survey sorts features by what is left of the third.
+
+Batching-wise, and for most sponsorship, nothing is left. An EOA with no code batches and is sponsored through default code, a dapp written against EIP-5792 does not notice the difference, and anyone can broadcast the result. This is where frames are simply better, and where EOA-first wallets gain the most: a 7702 delegate becomes optional rather than the price of entry.
+
+Token-wise, the server stays, or its risk moves to the sponsor. Gas paid in tokens, gas tanks, spending limits and recovery delays all need something `VERIFY` may not read: another contract's storage, the clock, or a price. That limit is deliberate, because it is what keeps validation cheap enough for every node to run and for inclusion lists to enforce, and experiment 29 shows exactly what it costs.
+
+Privacy-wise, frames remove a party. A withdrawal no longer needs somebody else to pay its gas, and on today's numbers that saves users most of what they pay relayers, and removes the reason 15% of withdrawals came from an address that links the user. What it does not remove is the network path, and it needs EIP-8250's keyed nonces, which are only Considered for Hegota, before a pool can serve more than one user at a time.
+
+So a wallet adopting frames needs less from the protocol than from its neighbours: an ERC-7677 with two more fields, an RPC that can price an unsigned transaction, a receipt that says when a frame was rolled back, and hardware that can show what it signs.
 
 ## Appendix: the inventory
 
