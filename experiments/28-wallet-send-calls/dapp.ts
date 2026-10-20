@@ -12,6 +12,7 @@
 //   H  a call with no `to`
 //
 // usage: npx tsx experiments/28-wallet-send-calls/dapp.ts
+//        RUST_WALLET=<kohaku-rs>/crates/target/release/frame-wallet npx tsx experiments/28-wallet-send-calls/dapp.ts
 import { type Address, type Hex, concatHex, createWalletClient, custom, encodeFunctionData, keccak256, parseEther, toHex } from 'viem'
 import { privateKeyToAddress } from 'viem/accounts'
 import { sendFrames } from '../../src/deploy.js'
@@ -19,6 +20,7 @@ import { loadKey } from '../../src/env.js'
 import { type Frame, NEW_ACCOUNT_STATE_GAS, STORAGE_SET_STATE_GAS, hegotaTestnet, makeClient, senderFrame } from '../../src/frametx/index.js'
 import { TOKEN_A, TOKEN_B, TOY_DEX, dex, token } from '../03-atomic-batch/setup.js'
 import { paymasterInstance, startPaymasterService } from './paymaster.js'
+import { rustWallet } from './rust-wallet.js'
 import { framesWallet } from './wallet.js'
 
 const client = makeClient()
@@ -65,12 +67,15 @@ const service = await startPaymasterService({
 })
 const paymasterService = { url: service.url, context: { policyId: 'toy-dex' } }
 
-const walletOf = (u: { key: Hex; address: Address }) => {
-  const w = framesWallet({ client, key: u.key, chainId, log: console.log })
+// RUST_WALLET names kohaku-rs's `frame-wallet` binary: the wallet transport becomes the Rust
+// wallet, and nothing the dapp does changes.
+const RUST_WALLET = process.env.RUST_WALLET
+const walletOf = async (u: { key: Hex; address: Address }) => {
+  const w = RUST_WALLET ? await rustWallet({ bin: RUST_WALLET, key: u.key, log: console.log }) : framesWallet({ client, key: u.key, chainId, log: console.log })
   return { w, dapp: createWalletClient({ account: u.address, chain: hegotaTestnet, transport: custom(w) }) }
 }
-const A = walletOf(alice)
-const B = walletOf(bob)
+const A = await walletOf(alice)
+const B = await walletOf(bob)
 
 const approve = (amount: bigint) => ({ to: TOKEN_A, abi: token.abi, functionName: 'approve', args: [TOY_DEX, amount] }) as const
 const swap = (amountIn: bigint, minOut: bigint) => ({ to: TOY_DEX, abi: dex.abi, functionName: 'swap', args: [amountIn, minOut] }) as const
@@ -79,7 +84,7 @@ const allowance = (u: Address) => read(TOKEN_A, token.abi, 'allowance', [u, TOY_
 type Row = { case: string; status: string; hash?: Hex; gasUsed?: bigint; frames?: string; payer?: Address; trace?: string; maxCost?: string; note: string }
 const rows: Row[] = []
 
-async function run(label: string, who: ReturnType<typeof walletOf>, params: Parameters<typeof who.dapp.sendCalls>[0], note: (r: Row) => Promise<string> = async () => '') {
+async function run(label: string, who: Awaited<ReturnType<typeof walletOf>>, params: Parameters<typeof who.dapp.sendCalls>[0], note: (r: Row) => Promise<string> = async () => '') {
   console.log(`\n=== ${label} ===`)
   let id: string
   try {
