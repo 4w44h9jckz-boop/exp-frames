@@ -75,7 +75,7 @@ The plan, also fixed before the run:
 | [`kohaku-rs-output.txt`](kohaku-rs-output.txt) | The run's output |
 
 The reader, the servers and the third party are kohaku-rs's `kohaku-checked-read` (branch
-`experiment/checked-read`), over experiment 37's `kohaku-ticket-read` and experiment 36's
+`experiment/checked-read`; the run is `examples/checked_read.rs` at `7159ed4`), over experiment 37's `kohaku-ticket-read` and experiment 36's
 `kohaku-frame-ticket`.
 
 ## Run
