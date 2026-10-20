@@ -1,4 +1,4 @@
-// The parts of snarkjs and circomlibjs this experiment uses; neither ships types.
+// The parts of snarkjs and circomlibjs experiments 32 to 35 use; neither ships types.
 
 declare module 'snarkjs' {
   export type Groth16Proof = { pi_a: string[]; pi_b: string[][]; pi_c: string[]; protocol: string; curve: string }
@@ -18,4 +18,6 @@ declare module 'circomlibjs' {
     multiHash(arr: bigint[], key?: bigint, numOutputs?: number): unknown
   }
   export function buildMimcSponge(): Promise<MimcSponge>
+  export type Poseidon = ((inputs: bigint[]) => unknown) & { F: { toObject(x: unknown): bigint } }
+  export function buildPoseidon(): Promise<Poseidon>
 }
