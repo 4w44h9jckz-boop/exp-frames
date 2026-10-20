@@ -1,0 +1,11 @@
+{"t":"2026-10-20T06:00:56.430Z","node":"A","event":"start","profile":"hegota-testnet","head":479753,"handoff":true}
+{"t":"2026-10-20T06:01:41.356Z","node":"A","event":"rpc","hash":"0x5ce6a700497946b229178ad77233febfb473584531f58c3ddab93664405d2e52","result":"ok","client":"valid","head":479760}
+{"t":"2026-10-20T06:01:41.359Z","node":"A","event":"relay","hash":"0x5ce6a700497946b229178ad77233febfb473584531f58c3ddab93664405d2e52","error":"PublishError.InsufficientPeers"}
+{"t":"2026-10-20T06:01:41.359Z","node":"A","event":"relay","hash":"0x5ce6a700497946b229178ad77233febfb473584531f58c3ddab93664405d2e52","peers":0}
+{"t":"2026-10-20T06:01:41.472Z","node":"A","event":"handoff","hash":"0x5ce6a700497946b229178ad77233febfb473584531f58c3ddab93664405d2e52","agrees":true}
+{"t":"2026-10-20T06:01:41.753Z","node":"A","event":"rpc","hash":"0xe2e65ff9e541e298fbd17fde4eb7b977f3906248eee076f32accbaf8b34bde74","result":"ok","client":"valid","head":479760}
+{"t":"2026-10-20T06:01:41.753Z","node":"A","event":"relay","hash":"0xe2e65ff9e541e298fbd17fde4eb7b977f3906248eee076f32accbaf8b34bde74","error":"PublishError.InsufficientPeers"}
+{"t":"2026-10-20T06:01:41.753Z","node":"A","event":"relay","hash":"0xe2e65ff9e541e298fbd17fde4eb7b977f3906248eee076f32accbaf8b34bde74","peers":0}
+{"t":"2026-10-20T06:01:41.911Z","node":"A","event":"handoff","hash":"0xe2e65ff9e541e298fbd17fde4eb7b977f3906248eee076f32accbaf8b34bde74","agrees":true}
+{"t":"2026-10-20T06:01:42.603Z","node":"A","event":"rpc","hash":"0x82134f23a3e8ad26bf27eceb82dd0b7e52d9b474ce410a7566e9da090fc2fcfa","result":"ErrReplaceUnderpriced","client":"valid","head":479760}
+{"t":"2026-10-20T06:01:44.078Z","node":"A","event":"head","head":479761,"asked":[],"verdicts":{},"resimulated":[],"removed":["0x5ce6a700497946b229178ad77233febfb473584531f58c3ddab93664405d2e52","0xe2e65ff9e541e298fbd17fde4eb7b977f3906248eee076f32accbaf8b34bde74"],"pending":[]}

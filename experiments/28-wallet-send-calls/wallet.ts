@@ -50,7 +50,7 @@ export class ProviderRpcError extends Error {
   }
 }
 
-type Call = { to?: Address; data?: Hex; value?: Hex; capabilities?: Record<string, { optional?: boolean }> }
+export type Call = { to?: Address; data?: Hex; value?: Hex; capabilities?: Record<string, { optional?: boolean }> }
 type SendCallsParams = {
   version: string
   id?: string
@@ -88,6 +88,40 @@ const DRAFT_EXECUTION = 400_000n
 const STATE_PER_CALL = 2n * 97_920n + 183_600n
 const VERIFY_EXECUTION = 20_000n
 
+/** Splice the payer's answer into the transaction: the pay frame, its post-op, its entries. */
+export function withPayer(tx: FrameTx, p: PaymasterResult, address: Address): FrameTx {
+  const payFrame: Frame = {
+    mode: Mode.VERIFY,
+    flags: Approve.PAYMENT,
+    target: getAddress(p.paymaster),
+    limits: { execution: hexToBigInt(p.paymasterVerificationGasLimit), state: hexToBigInt(p.paymasterStateGasLimit ?? '0x0') },
+    value: 0n,
+    data: p.paymasterData,
+  }
+  const calls = tx.frames.filter((f) => f.mode === Mode.SENDER)
+  const postOp = hexToBigInt(p.paymasterPostOpGasLimit ?? '0x0')
+  const frames = [
+    tx.frames[0],
+    payFrame,
+    ...calls,
+    ...(postOp > 0n ? [{ mode: Mode.DEFAULT, flags: 0, target: payFrame.target, limits: { execution: postOp, state: 0n }, value: 0n, data: '0x' as Hex }] : []),
+  ]
+  const own = tx.signatures.filter((s) => s.signer === null || isAddressEqual(s.signer, address))
+  return { ...tx, frames, signatures: [...own, ...(p.paymasterSignatures ?? []).map(frameSignatureFromRpc)] }
+}
+
+/** The sender's VERIFY, then one SENDER frame per call; every call frame but the last is atomic when `atomic`. */
+export function batchFrames(calls: Call[], opts: { atomic: boolean; sponsored: boolean; execution: bigint[] }): Frame[] {
+  const n = calls.length
+  const own = verifyFrame({ scope: opts.sponsored ? Approve.EXECUTION : Approve.EXECUTION_AND_PAYMENT, execution: VERIFY_EXECUTION })
+  const callFrame = (c: Call, i: number) =>
+    senderFrame({ target: getAddress(c.to!), value: c.value ? hexToBigInt(c.value) : 0n, data: c.data ?? '0x', atomic: opts.atomic && i < n - 1, execution: opts.execution[i], state: STATE_PER_CALL })
+  return [own, ...calls.map(callFrame)]
+}
+
+/** A call frame's execution budget from its use in the draft: a quarter over, plus 5,000. */
+export const tightened = (used: bigint) => (used * 5n) / 4n + 5_000n
+
 export function framesWallet(opts: { client: PublicClient; key: Hex; chainId: bigint; log?: (line: string) => void }) {
   const { client, key, chainId } = opts
   const address = privateKeyToAddress(key)
@@ -104,28 +138,6 @@ export function framesWallet(opts: { client: PublicClient; key: Hex; chainId: bi
     const body = (await res.json()) as { result?: PaymasterResult; error?: { code: number; message: string } }
     if (body.error) throw new ProviderRpcError(-32603, `paymaster service refused (${method}): ${body.error.message}`)
     return body.result!
-  }
-
-  /** Splice the payer's answer into the transaction: the pay frame, its post-op, its entries. */
-  function withPayer(tx: FrameTx, p: PaymasterResult): FrameTx {
-    const payFrame: Frame = {
-      mode: Mode.VERIFY,
-      flags: Approve.PAYMENT,
-      target: getAddress(p.paymaster),
-      limits: { execution: hexToBigInt(p.paymasterVerificationGasLimit), state: hexToBigInt(p.paymasterStateGasLimit ?? '0x0') },
-      value: 0n,
-      data: p.paymasterData,
-    }
-    const calls = tx.frames.filter((f) => f.mode === Mode.SENDER)
-    const postOp = hexToBigInt(p.paymasterPostOpGasLimit ?? '0x0')
-    const frames = [
-      tx.frames[0],
-      payFrame,
-      ...calls,
-      ...(postOp > 0n ? [{ mode: Mode.DEFAULT, flags: 0, target: payFrame.target, limits: { execution: postOp, state: 0n }, value: 0n, data: '0x' as Hex }] : []),
-    ]
-    const own = tx.signatures.filter((s) => s.signer === null || isAddressEqual(s.signer, address))
-    return { ...tx, frames, signatures: [...own, ...(p.paymasterSignatures ?? []).map(frameSignatureFromRpc)] }
   }
 
   async function simulate(tx: FrameTx, trace: string[], what: string): Promise<SimulateResult> {
@@ -145,7 +157,7 @@ export function framesWallet(opts: { client: PublicClient; key: Hex; chainId: bi
     const frames = tx.frames.map((f, i) => {
       if (!callFrames.includes(i)) return f
       const used = hexToBigInt(sim.frames![i].gasUsed)
-      return { ...f, limits: { ...f.limits, execution: (used * 5n) / 4n + 5_000n } }
+      return { ...f, limits: { ...f.limits, execution: tightened(used) } }
     })
     return { ...tx, frames }
   }
@@ -172,20 +184,17 @@ export function framesWallet(opts: { client: PublicClient; key: Hex; chainId: bi
     const trace: string[] = []
 
     const n = p.calls.length
-    const callFrame = (c: Call, i: number, execution: bigint) =>
-      senderFrame({ target: getAddress(c.to!), value: c.value ? hexToBigInt(c.value) : 0n, data: c.data ?? '0x', atomic: atomic && i < n - 1, execution, state: STATE_PER_CALL })
-    const own = verifyFrame({ scope: sponsored ? Approve.EXECUTION : Approve.EXECUTION_AND_PAYMENT, execution: VERIFY_EXECUTION })
     let tx = await prepareFrameTx(client, {
       sender: address,
-      frames: [own, ...p.calls.map((c, i) => callFrame(c, i, DRAFT_EXECUTION))],
+      frames: batchFrames(p.calls, { atomic, sponsored, execution: Array(n).fill(DRAFT_EXECUTION) }),
       signatures: [secp256k1Placeholder()],
     })
-    if (sponsored) tx = withPayer(tx, await pm(pmCap!.url!, 'pm_getPaymasterStubData', tx, pmCap!.context, trace))
+    if (sponsored) tx = withPayer(tx, await pm(pmCap!.url!, 'pm_getPaymasterStubData', tx, pmCap!.context, trace), address)
     const callFrames = tx.frames.flatMap((f, i) => (f.mode === Mode.SENDER ? [i] : []))
 
     // Estimation. The node simulates only a transaction whose prefix approves, so the stub
     // cannot be simulated: the draft needs the payer's real signature and the user's.
-    if (sponsored) tx = withPayer(tx, await pm(pmCap!.url!, 'pm_getPaymasterData', tx, pmCap!.context, trace))
+    if (sponsored) tx = withPayer(tx, await pm(pmCap!.url!, 'pm_getPaymasterData', tx, pmCap!.context, trace), address)
     const draft = await sign(tx, trace, 'draft, for estimation')
     const sim = await simulate(draft, trace, 'draft')
     const draftMaxCost = maxCost(draft)
@@ -193,7 +202,7 @@ export function framesWallet(opts: { client: PublicClient; key: Hex; chainId: bi
 
     // The final transaction: execution budgets tightened, everything else as estimated.
     tx = tighten(tx, sim, callFrames)
-    if (sponsored) tx = withPayer(tx, await pm(pmCap!.url!, 'pm_getPaymasterData', tx, pmCap!.context, trace))
+    if (sponsored) tx = withPayer(tx, await pm(pmCap!.url!, 'pm_getPaymasterData', tx, pmCap!.context, trace), address)
     tx = await sign(tx, trace, 'final')
     const final = await simulate(tx, trace, 'final')
     trace.push('eth_sendRawTransaction')

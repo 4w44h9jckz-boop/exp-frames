@@ -1,0 +1,31 @@
+snapshot: block 26231840
+1. "I deposited into this pool before date D"
+  Tornado 0.1 ETH before 2021-01-01 (block 11565018): 6796 could make this statement
+  Tornado 1 ETH before 2021-01-01 (block 11565018): 7428 could make this statement
+  Tornado 10 ETH before 2021-01-01 (block 11565018): 7789 could make this statement
+  Tornado 100 ETH before 2021-01-01 (block 11565018): 4925 could make this statement
+  Tornado 0.1 ETH before 2023-01-01 (block 16308189): 26744 could make this statement
+  Tornado 1 ETH before 2023-01-01 (block 16308189): 52673 could make this statement
+  Tornado 10 ETH before 2023-01-01 (block 16308189): 46131 could make this statement
+  Tornado 100 ETH before 2023-01-01 (block 16308189): 30834 could make this statement
+  Tornado 0.1 ETH before 2025-01-01 (block 21525890): 33254 could make this statement
+  Tornado 1 ETH before 2025-01-01 (block 21525890): 62341 could make this statement
+  Tornado 10 ETH before 2025-01-01 (block 21525890): 56395 could make this statement
+  Tornado 100 ETH before 2025-01-01 (block 21525890): 38184 could make this statement
+  Tornado 0.1 ETH before 2026-01-01 (block 24136052): 46683 could make this statement
+  Tornado 1 ETH before 2026-01-01 (block 24136052): 75734 could make this statement
+  Tornado 10 ETH before 2026-01-01 (block 24136052): 66880 could make this statement
+  Tornado 100 ETH before 2026-01-01 (block 24136052): 44088 could make this statement
+2. "I hold an unspent note worth at least T"
+  a Tornado note of at least 0.1 ETH: 15168 could make this statement
+  a Tornado note of at least 1 ETH: 8879 could make this statement
+  a Tornado note of at least 10 ETH: 4556 could make this statement
+  a Tornado note of at least 100 ETH: 2266 could make this statement
+3. "My deposit is in the association set"
+  root 0x159468033166d899094389d667b75820c8b891d0de322cfb7bec896c3c4bc8d9 of block 26231272, CID bafybeiga4t7rfpantxizdlqyd5pc6l2sfgkjb7uigoruge7vhpmtw7gu4i: the tree hashes to it, 14 levels
+  a deposit in the association set: 7022 could make this statement
+  an approved deposit into the ETH pool: 5418 could make this statement
+  an approved ETH-pool deposit of at least 0.1 ETH: 3019 could make this statement
+  an approved ETH-pool deposit of at least 1 ETH: 792 could make this statement
+  an approved ETH-pool deposit of at least 10 ETH: only 96 could make this statement: it narrows you down
+  an approved ETH-pool deposit of at least 100 ETH: only 3 could make this statement: it would all but name you
