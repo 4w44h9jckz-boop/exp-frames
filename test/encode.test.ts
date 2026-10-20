@@ -13,6 +13,8 @@ import {
   serializeSignature,
   size,
   slice,
+  fromRlp,
+  toRlp,
 } from 'viem'
 import { generatePrivateKey, privateKeyToAddress } from 'viem/accounts'
 import { describe, expect, it } from 'vitest'
@@ -92,6 +94,39 @@ describe('ethrex golden vector (scripts/hegota-testnet/frametx.py)', () => {
 
   it('round-trips through the decoder', () => {
     expect(parseFrameTx(serializeFrameTx(golden))).toEqual(golden)
+  })
+})
+
+describe('decoder refusals (EIP-8141, EIP-8250; exp-e2e-frames interop entry I2)', () => {
+  const golden = parseFrameTx(
+    '0x06f8b201c1800794000000000000000000000000000000000000abcdeccc010380c48252088080821122de0280940000000000000000000000000000000000001234c4829c40808080f85cf85a0194000000000000000000000000000000000000abcd80b8410101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101cc843b9aca008506fc23ac0080c0',
+  )
+  const body = serializeFrameTx(golden).slice(4) // after 0x06
+  const refuses = (tx: Partial<FrameTx>, message: RegExp) => expect(() => parseFrameTx(serializeFrameTx({ ...golden, ...tx }))).toThrow(message)
+
+  it('starts from a valid transaction', () => expect(body.startsWith('f8b201c18007')).toBe(true))
+  it('refuses no nonce keys', () => refuses({ nonceKeys: [] }, /nonce_keys/))
+  it('refuses 17 nonce keys', () => refuses({ nonceKeys: Array.from({ length: 17 }, (_, i) => BigInt(i + 1)) }, /nonce_keys/))
+  it('refuses keys out of order', () => refuses({ nonceKeys: [2n, 1n] }, /strictly increasing/))
+  it('refuses a repeated key', () => refuses({ nonceKeys: [1n, 1n] }, /strictly increasing/))
+  it('refuses key 0 beside another', () => refuses({ nonceKeys: [0n, 5n] }, /key 0/))
+  it('refuses no frames', () => refuses({ frames: [] }, /frames/))
+  it('refuses a nonce sequence of 2^64', () => refuses({ nonceSeq: 1n << 64n }, /uint64/))
+  it('refuses limits of three fields', () => {
+    // Frame 0's limits [0x5208, 0] given a third field, re-encoded canonically.
+    type Rlp = Hex | Rlp[]
+    const fields = fromRlp(`0x${body}`, 'hex') as Rlp[]
+    const frame0 = (fields[4] as Rlp[])[0] as Rlp[]
+    frame0[3] = [...(frame0[3] as Rlp[]), '0x01']
+    expect(() => parseFrameTx(`0x06${toRlp(fields).slice(2)}`)).toThrow(/limits: 3 fields/)
+  })
+  it('refuses a single byte under 0x80 given a length prefix', () => {
+    // The chain ID, 0x01, written as 0x8101.
+    expect(() => parseFrameTx(`0x06f8b38101${body.slice(6)}`)).toThrow(/canonical/)
+  })
+  it('refuses a long-form length for a short list', () => {
+    // The nonce keys [0], c180, written as f80180.
+    expect(() => parseFrameTx(`0x06f8b301f80180${body.slice(10)}`)).toThrow(/canonical/)
   })
 })
 
