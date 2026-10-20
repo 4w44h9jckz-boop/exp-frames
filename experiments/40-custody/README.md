@@ -87,6 +87,11 @@ separate vaults, and:
 The kernel, its proving and verifying keys, the verifier and the hasher are experiment 32's and
 experiment 06's, unchanged and already on the testnet.
 
+kohaku-rs's `kohaku-frame-registry` (branch `experiment/custody`, commit `ab2fcd9`, module
+`custody`) does the same from Rust: its `tests/custody.rs` rebuilds the three mined updates byte
+for byte, computes the same scopes and leaves, verifies each proof under its own vault and fees
+and under no other, and traces every payment to the note's vault.
+
 ## Run
 
 ```bash
