@@ -50,7 +50,9 @@ its EIP-8250 nonce keys at sequence 0, and exactly this layout:
 The fee reimburses the registry's gas, so `VERIFY` requires the fees to cover the transaction's
 maximum cost, and floors frame 2's gas so nobody can starve it after the nonce keys are consumed.
 The registry accepts one update, or a pair whose `link` words name each other's nullifier, so that
-neither proof is valid alone. The pair is for experiment 33's swap and is not exercised here.
+neither proof is valid alone. The pair is not exercised here, and it is not fair: it binds only
+the other side's nullifier, so the other side could spend its note in the same transaction and
+keep the change. Experiment 33's version 2 binds the other side's change note too.
 
 `VERIFY` reads no storage. The root comes from frame 0, which the protocol checks against the
 predeploy; a spent nullifier is a used nonce key, which the protocol refuses; the rule is a call

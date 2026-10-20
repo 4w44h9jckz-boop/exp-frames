@@ -169,8 +169,8 @@ export function treeOf(leaves: bigint[]) {
 // ---- chain reads ----
 
 /** Every leaf, deposits and change notes alike, in insertion order. */
-export async function registryLeaves(client: PublicClient): Promise<{ leaf: bigint; app: Address }[]> {
-  const logs = await client.getContractEvents({ address: registry.address, abi: registryAbi, eventName: 'Inserted', fromBlock: 'earliest' })
+export async function registryLeaves(client: PublicClient, at: Address = registry.address): Promise<{ leaf: bigint; app: Address }[]> {
+  const logs = await client.getContractEvents({ address: at, abi: registryAbi, eventName: 'Inserted', fromBlock: 'earliest' })
   const out: { leaf: bigint; app: Address }[] = []
   for (const l of logs) out[Number(l.args.index)] = { leaf: hexToBigInt(l.args.leaf as Hex), app: getAddress(l.args.app as Address) }
   if (out.some((x) => x === undefined)) throw new Error('gap in the Inserted events')
@@ -178,14 +178,14 @@ export async function registryLeaves(client: PublicClient): Promise<{ leaf: bigi
 }
 
 /** The latest EIP-8272 slot in which the registry published `root`. */
-export async function rootSlot(client: PublicClient, root: bigint): Promise<bigint | undefined> {
-  const logs = await client.getContractEvents({ address: registry.address, abi: registryAbi, eventName: 'RecentRoot', fromBlock: 'earliest' })
+export async function rootSlot(client: PublicClient, root: bigint, at: Address = registry.address): Promise<bigint | undefined> {
+  const logs = await client.getContractEvents({ address: at, abi: registryAbi, eventName: 'RecentRoot', fromBlock: 'earliest' })
   return logs.filter((l) => hexToBigInt(l.args.root as Hex) === root).at(-1)?.args.slot
 }
 
 /** Spent: the nullifier's nonce key has been used. */
-export async function isSpent(client: PublicClient, nullifier: bigint): Promise<boolean> {
-  const v = await client.getStorageAt({ address: NONCE_MANAGER, slot: keyedNonceSlot(registry.address, nullifier) })
+export async function isSpent(client: PublicClient, nullifier: bigint, at: Address = registry.address): Promise<boolean> {
+  const v = await client.getStorageAt({ address: NONCE_MANAGER, slot: keyedNonceSlot(at, nullifier) })
   return !!v && hexToBigInt(v) > 0n
 }
 
@@ -207,9 +207,13 @@ export function depositFrame(app: Address, inner: bigint, value: bigint, first =
 
 // ---- proofs ----
 
-/** What the registry binds to a proof: keccak256(recipient || fee || link) >> 8. */
-export function bindingOf(recipient: Address, fee: bigint, link: bigint): bigint {
-  return hexToBigInt(keccak256(concatHex([pad(recipient), word(fee), word(link)]))) >> 8n
+/**
+ * What the registry binds to a proof: keccak256(recipient || fee || link) >> 8, and with
+ * experiment 33's version 2, keccak256(recipient || fee || link || deadline) >> 8.
+ */
+export function bindingOf(recipient: Address, fee: bigint, link: bigint, deadline?: bigint): bigint {
+  const words = [pad(recipient), word(fee), word(link), ...(deadline === undefined ? [] : [word(deadline)])]
+  return hexToBigInt(keccak256(concatHex(words))) >> 8n
 }
 
 /** One update: 15 words in frame 2's data. */
@@ -236,8 +240,10 @@ export type Spend = {
   newInner?: bigint
   recipient: Address
   fee: bigint
-  /** The other update's nullifier in a pair; 0 alone. */
+  /** In a pair, what the other update is (version 1: its nullifier); 0 alone. */
   link?: bigint
+  /** Version 2 (experiment 33): the deadline of the transaction's expiry frame. */
+  deadline?: bigint
 }
 
 /** The circuit's input for a spend against `leaves`. */
@@ -254,7 +260,7 @@ export function kernelInput(s: Spend, leaves: bigint[]) {
     newCommitment,
     tag,
     withdrawn: s.withdrawn,
-    binding: bindingOf(s.recipient, s.fee, link),
+    binding: bindingOf(s.recipient, s.fee, link, s.deadline),
     nullifierSecret: s.secrets.nullifierSecret,
     secret: s.secrets.secret,
     state: s.state,
