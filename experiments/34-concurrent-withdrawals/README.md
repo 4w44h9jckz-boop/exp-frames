@@ -15,12 +15,12 @@ two concurrent spends linked by something the chain or a node sees?
 - **The pool:** experiment 06's keyed pool, `0x73e47a8DA2C83Beb802708Fc473B5B7D094f3eE6`. Each
   withdrawal has the pool as sender and payer and no signature, and its nullifier hash is its
   only EIP-8250 nonce key.
-- **The wallet:** kohaku-rs, branch `claude/nifty-einstein-llp9cd`,
+- **The wallet:** kohaku-rs, branch `experiment/frames`,
   `crates/frame-pool/examples/concurrent_withdrawals.rs`. It deposits two fresh notes and builds
   both withdrawals against the root after the second deposit, each priced as experiment 30
   prices one. It hands both to the node back to back. Then it hands over a second spend of the
   first note, to another recipient, while the first is still pending.
-- **The node:** skandha at the mempool session's `7697963` (branch `claude/zealous-ptolemy-g7w9h5`),
+- **The node:** skandha at the mempool session's `7697963`,
   built with `bun install && bun run build`. One node, with `--frames.enable --frames.handoff`, as
   in its `FRAMES.md`, so that what it admits goes to ethrex's `eth_sendRawTransaction`. Its log
   for the run is [`node-a.frames.jsonl`](node-a.frames.jsonl).

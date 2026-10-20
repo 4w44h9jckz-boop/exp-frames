@@ -186,7 +186,7 @@ kohaku-rs's `kohaku-frame-pool` now builds RefundPool's layout as a fifth layout
 builder, and prices it the way `refund.ts` does: simulate, tighten each limit to $1.25\,u + 5{,}000$
 above the pool's floors, then fix the fee at the worst-case max cost of that shape. Its example
 `crates/frame-pool/examples/refund_withdrawal.rs`, on kohaku-rs branch
-`claude/nifty-einstein-llp9cd`, deposited a fresh note and withdrew it from Rust alone, at the same
+`experiment/frames`, deposited a fresh note and withdrew it from Rust alone, at the same
 fees as part 2:
 
 | | Tx | Block |

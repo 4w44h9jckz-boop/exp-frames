@@ -149,7 +149,7 @@ simulation names the reason.
 Every mined transaction above is a fixture in `test/fixtures/chain/`. `rebuild.test.ts` rebuilds
 the three updates with `updateTx` from what they carried, byte for byte, verifies each proof
 against `build/kernel.vkey.json`, and recomputes each deposit's leaf from its call. kohaku-rs's
-`kohaku-frame-registry` (branch `claude/nifty-einstein-llp9cd`) does the same from Rust, with
+`kohaku-frame-registry` (branch `experiment/frames`) does the same from Rust, with
 `kohaku-tornadocash`'s MiMC and a Groth16 check of its own, and matches this experiment's kernel
 input for a spend, signal by signal.
 

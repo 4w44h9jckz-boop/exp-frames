@@ -53,7 +53,7 @@ Short answers:
 | [`kohaku-rs-output.txt`](kohaku-rs-output.txt) | The run's output, every review as a device would list it |
 | [`erc7730-lint.txt`](erc7730-lint.txt) | The ERC-7730 files through the ERC's own linter |
 
-The renderer is kohaku-rs's `kohaku-frame-display` (branch `claude/nifty-einstein-llp9cd`, commit
+The renderer is kohaku-rs's `kohaku-frame-display` (branch `experiment/frames`, commit
 `30497a9`). Its `tests/fixtures` hold copies of `descriptors/`, of the chain fixtures and of
 experiment 27's cases files. `kohaku-frame-wallet`'s experiment 28 test checks the wallet's
 batches against it.

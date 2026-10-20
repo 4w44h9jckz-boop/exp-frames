@@ -114,7 +114,7 @@ Every refusal was given by simulation and again by `eth_sendRawTransaction`. Eve
 transaction is a fixture in `test/fixtures/chain/`. `rebuild.test.ts` rebuilds the swap and the two
 owners' updates with `updateTx`, byte for byte. Every proof verifies with its deadline bound, and
 fails with experiment 32's binding. kohaku-rs's `kohaku-frame-registry` (branch
-`claude/nifty-einstein-llp9cd`) rebuilds the same three, verifies the proofs in Rust, seals
+`experiment/frames`) rebuilds the same three, verifies the proofs in Rust, seals
 `vector.json` to the same bytes, and scans the testnet board from Rust: with the experiment's
 keys, its `scan_board` example found the 3 offers and 3 answers. For N1, the two notes the swap
 had to create, computed from the decrypted terms alone, were both in the registry.

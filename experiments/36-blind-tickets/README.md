@@ -45,7 +45,7 @@ Short answers:
 | [`kohaku-rs-output.txt`](kohaku-rs-output.txt) | The run's output |
 
 The issuers, the buyers and the spends are kohaku-rs's `kohaku-frame-ticket` (branch
-`claude/nifty-einstein-llp9cd`, commit `08ec235`), on Commonware's `commonware-cryptography`
+`experiment/frames`, commit `08ec235`), on Commonware's `commonware-cryptography`
 2026.9.0.
 
 ## Run
