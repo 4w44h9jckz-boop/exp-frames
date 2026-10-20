@@ -132,7 +132,7 @@ exactly.
    pending transaction per payer.
 3. **A code-less sponsor is capped like a paymaster.** The EIP exempts the empty code hash from the
    cap ("not a paymaster … governed by the per-payer exposure rule alone"), and ethrex caps it
-   anyway. The `aa` repository measured the same on chain 81410. This confirms it on the Hegota
+   anyway. An earlier account-abstraction study measured the same on chain 81410. This confirms it on the Hegota
    testnet with the current client. It is the tier that matters most for "a gas account that pays
    for my other accounts", which is the EIP's own motivation for non-canonical payers.
 4. **Reservation works; a pending withdrawal is ignored.** Funded for 2.5 transactions, an instance

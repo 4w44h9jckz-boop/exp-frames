@@ -189,9 +189,8 @@ data, so the cost is linear in frames and bytes. All of it is far below `MAX_VER
    - **Last look.** A payer could condition the transaction on the outcome by appending a trailing
      `VERIFY` frame. The public mempool refuses that shape, and $E$ refuses it anywhere, because it
      pins the number of frames.
-   - **Linkability.** The `aa` repository's question 13
-     (`docs/06-findings/02-questions-for-the-specification-authors.md`) asks whether the fee fields
-     can leave the canonical hash. For a blind-voucher design, re-signing to raise a fee is a second
+   - **Linkability.** An earlier account-abstraction study asked the EIP's authors whether the fee
+     fields can leave the canonical hash. For a blind-voucher design, re-signing to raise a fee is a second
      contact with the issuer, which links the spender. $E$ answers that at the account level,
      without changing the EIP. The default code cannot do it: an EOA's sponsored transaction is two
      signatures over one hash, so a new payer or a new fee means the EOA signs again.

@@ -1,7 +1,7 @@
 # 21 — ERC-4337 side by side: one transfer, through the EntryPoint and through frames
 
-The plan's Track E carries two rows that only a side-by-side run can settle. **Gas**: `aa`
-measured an ERC-4337 self-paid transfer at 120,162 against 47,573 as frames, on chain 81410, and
+The plan's Track E carries two rows that only a side-by-side run can settle. **Gas**: an earlier
+account-abstraction study measured an ERC-4337 self-paid transfer at 120,162 against 47,573 as frames, on chain 81410, and
 asked for a re-measurement on 8141. **No bundler, no EntryPoint, no deposits**: what does the
 ERC-4337 machinery cost beyond gas?
 
@@ -85,8 +85,8 @@ initcode. It binds over the 578,699 intrinsic and 153,970 of execution, because 
 mostly bytes. The frame rail deploys nothing. `FrameAccount`'s 109 bytes are per account, paid in
 the account's first transaction.
 
-`aa` built the same EntryPoint from source (solc 0.8.30, 200 runs) and got 16,067 bytes of
-runtime and 27,257,484 gas (`aa`, `bench/results/erc4337-rail-2026-09-18.md`, section 1). The npm
+That study built the same EntryPoint from source (solc 0.8.30, 200 runs) and got 16,067 bytes of
+runtime and 27,257,484 gas. The npm
 package's build is 21,738 bytes. A chain that ships ERC-4337 ships somebody's build. On this
 schedule the 5,671 bytes between these two builds are 8,676,630 gas of state.
 
@@ -117,9 +117,8 @@ Every operation succeeded. The four frame transactions are fixtures in `test/fix
 ([`0x47f60879…`](https://dora.privacy.ethrex.xyz/tx/0x47f608790a1e7a059e5b80f41d2a7be373b04731c77781b315de71171d713994),
 **15,000**), and one with 1 wei
 ([`0x13f55eae…`](https://dora.privacy.ethrex.xyz/tx/0x13f55eaebd34916b9ad667279cfadcddf95a7d8318adf44718ef4fe14a8eb2b1),
-**21,000**). EIP-2780 is therefore live on 8141, as `aa` found on 81410: the base cost is 12,000,
-the recipient's touch 3,000, and value 6,000 (`aa`, `bench/results/frames-yardstick-2026-09-10.md`,
-section 1). Every row then splits exactly:
+**21,000**). EIP-2780 is therefore live on 8141, as that study found on 81410: the base cost is
+12,000, the recipient's touch 3,000, and value 6,000. Every row then splits exactly:
 
 | Sender | `gasUsed` | Split | Over type 2 |
 |---|---|---|---|
@@ -131,12 +130,12 @@ section 1). Every row then splits exactly:
 
 The SENDER frame's 30,357 is the type-2 transfer's 27,357 plus 3,000. That 3,000 is the
 recipient's cold touch: the frame pays it on entry, the type-2 transaction inside its intrinsic.
-It is `aa`'s finding to the gas (30,063 against 27,063 there, with its own token build). The call
+It is that study's finding to the gas (30,063 against 27,063 there, with its own token build). The call
 prices the same on both rails. `FrameAccount` costs 508 more than the default code: its VERIFY
 runs code (288 against 100), and its signature entry names a signer, 20 non-zero bytes at 16.
 
 **The ERC-4337 SimpleAccount costs 2.41 times the frame account for the same transfer**: 116,735
-against 48,435, or 68,300 more. `aa`'s figures on 81410 were 120,162 against 47,573. The two runs
+against 48,435, or 68,300 more. That study's figures on 81410 were 120,162 against 47,573. The two runs
 use different builds of the account and the token and different gas fields, and the gap is the
 same size.
 
@@ -202,8 +201,8 @@ slot, written inside the window. The deposit slot is the other 97,920, and the b
 The SimpleAccount's gap moves by 98,832, which is $97{,}920 + 912$: the 912 is the `initCode`'s
 calldata, which a fixed `preVerificationGas` does not track.
 
-`aa`'s run did not see this. Its script calls `depositTo(account)` before the creating operation
-(`aa`, `bench/sim/erc4337_rail.py`), so the slot already existed, and its creating row has the
+That study's run did not see this. Its script calls `depositTo(account)` before the creating
+operation, so the slot already existed, and its creating row has the
 EntryPoint charging 1,056,240 against a transaction of 1,011,416. On mainnet's schedule the same
 late write costs 20,000. The clear in step 2 has already put 19,900 in the refund counter, so the
 bundler loses about 100. That is derived from EIP-2200 and EIP-3529, not measured here. **A state
@@ -245,7 +244,7 @@ against limits the sender declares.
 
 1. **Steady state: 2.41 times.** The same ERC-20 transfer costs 116,735 through the reference
    ERC-4337 account and 48,435 through a frame account on chain 8141, a difference of 68,300.
-   That re-measures `aa`'s 120,162 against 47,573 on 81410 at the same size. The frame account
+   That re-measures the earlier study's 120,162 against 47,573 on 81410 at the same size. The frame account
    costs 5,446 over a type-2 transaction; the ERC-4337 account costs 73,746 over it.
 
 2. **Being new to the EntryPoint costs 195,840.** On a schedule that charges 97,920 a slot, the
@@ -263,8 +262,8 @@ against limits the sender declares.
    On mainnet the same ordering costs about 100 gas.
 
 4. **The infrastructure is 54.8 million gas of state before the first operation, and its size
-   depends on the build.** The npm build of the EntryPoint is 21,738 bytes against `aa`'s 16,067
-   from source, 8.7 million gas apart on this schedule. The frame rail needs nothing deployed.
+   depends on the build.** The npm build of the EntryPoint is 21,738 bytes against the earlier study's
+   16,067 from source, 8.7 million gas apart on this schedule. The frame rail needs nothing deployed.
    Its per-account code is the account's own business.
 
 5. **Deposits strand ETH, and deposit history changes the price.** After two transfers, 0.0024 ETH
