@@ -1,0 +1,33 @@
+# erc7730 1.0.12 (LedgerHQ python-erc7730, from PyPI), Python 3.12, run 2026-10-20 from this directory:
+# uv tool run --python 3.12 --from erc7730==1.0.12 erc7730 lint --skip-abi-validation descriptors/erc7730
+
+🔍 checking 3 v2 descriptor files…
+
+➡️ checking calldata-vector-token.json…
+🟠 warning: Could not fetch ABI: Fetching reference ABI for chain id 8141 failed, display fields 
+will not be validated against ABI: contract source is not available on Sourcify, and fetching from 
+Etherscan failed: Received unexpected response from https://api.etherscan.io/v2/api: Missing or 
+unsupported chainid parameter (required for v2 api), please see 
+https://api.etherscan.io/v2/chainlist for the list of supported chainids
+🟠 warning: Display intent too long: Display intent(s) `Approve {spender} to spend {amount}` exceed 
+30 characters and may be truncated on Ledger devices.
+
+➡️ checking calldata-token-a.json…
+🟠 warning: Could not fetch ABI: Fetching reference ABI for chain id 8141 failed, display fields 
+will not be validated against ABI: contract source is not available on Sourcify, and fetching from 
+Etherscan failed: Received unexpected response from https://api.etherscan.io/v2/api: Missing or 
+unsupported chainid parameter (required for v2 api), please see 
+https://api.etherscan.io/v2/chainlist for the list of supported chainids
+🟠 warning: Display intent too long: Display intent(s) `Approve {spender} to spend {amount}` exceed 
+30 characters and may be truncated on Ledger devices.
+
+➡️ checking calldata-toy-dex.json…
+🟠 warning: Could not fetch ABI: Fetching reference ABI for chain id 8141 failed, display fields 
+will not be validated against ABI: contract source is not available on Sourcify, and fetching from 
+Etherscan failed: Received unexpected response from https://api.etherscan.io/v2/api: Missing or 
+unsupported chainid parameter (required for v2 api), please see 
+https://api.etherscan.io/v2/chainlist for the list of supported chainids
+🟠 warning: Display intent too long: Display intent(s) `Swap {amountIn} for at least {minOut}` 
+exceed 30 characters and may be truncated on Ledger devices.
+
+checked 3 v2 descriptor files, some warnings found ⚠️
