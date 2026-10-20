@@ -88,7 +88,7 @@ Values:
 
 | Field | Value |
 |---|---|
-| `nonceKeysHash` | EIP-8250's `nonce_keys_hash(tx)`, which `TXPARAM(0x0F)` returns. On a chain without EIP-8250, `nonce_keys_hash` of `[0]`: `keccak256(uint256(1) ‖ uint256(0))` |
+| `nonceKeysHash` | EIP-8250's `nonce_keys_hash(tx)`, which `TXPARAM(0x0F)` returns. On a chain without EIP-8250, `nonce_keys_hash` of `[]`, the legacy nonce: `keccak256(uint256(0))` |
 | `nonceSeq` | `tx.nonce_seq` (`TXPARAM(0x01)`). On a chain without EIP-8250, `tx.nonce` |
 | `frames[i]`, not a pay frame | `mode`, `flags`, `resolved_target`, `limits.execution`, `limits.state`, `value`, `data` of `tx.frames[i]` |
 | `frames[i]`, a pay frame | `mode`, `flags` and `value` of `tx.frames[i]`; `target = address(0)`, `executionLimit = 0`, `stateLimit = 0`, `data` empty |
@@ -102,9 +102,11 @@ with `domainSeparator` and `hashStruct` as EIP-712 defines them. In particular `
 `keccak256` of the concatenated `hashStruct(Frame)` values, so each frame's position and the number
 of frames are part of `E`. `data` is hashed as `keccak256(data)`.
 
-A plain EIP-8141 transaction with nonce `n` and an EIP-8250 transaction with `nonce_keys = [0]`
+A plain EIP-8141 transaction with nonce `n` and an EIP-8250 transaction with `nonce_keys = []`
 and `nonce_seq = n` have the same `nonceKeysHash` and `nonceSeq`. The two forms of one operation
-therefore share one `E`. That is intended: `nonce_keys = [0]` is the legacy nonce.
+therefore share one `E`. That is intended: `nonce_keys = []` is the legacy nonce. (Before
+EIP-8250's commit `56b645be`, `[0]` was, and a chain that still follows such a revision maps the
+plain nonce to `[0]`. The test cases include a set under that revision.)
 
 ### Accounts
 
@@ -192,7 +194,7 @@ digest.
   and an empty target and an explicit `tx.sender` execute identically.
 - **The nonce as a hash and a sequence.** EIP-8250 exposes the keys only as
   `nonce_keys_hash` (`TXPARAM(0x0F)`), their count and the first key. Mapping the plain nonce to
-  `[0]` gives both envelopes one layout.
+  `[]`, EIP-8250's legacy selection, gives both envelopes one layout.
 
 ### Why the signature list is excluded
 
@@ -278,25 +280,28 @@ None. An account opts in by accepting `E`; nothing else changes.
 
 ## Test Cases
 
-In exp-frames, branch `exp/27-execution-digest`, directory `experiments/27-execution-digest/`:
-- `vectors.json`: ten transactions with their domain separators, struct hashes and `E`, each with
-  the raw signed transaction. The shapes are a sponsored transfer, an expiry frame, an atomic
-  batch, a deploy frame, two keyed nonces, nonce 7 on key `[0]`, value and `DEFAULT` frames, two
-  blobs, twelve frames with data of 0 to 1,000 bytes, and a self-paying transaction.
-- `ethrex/cases.txt`: nineteen signed transactions, with the verdict the reference account must
-  give inside ethrex's validation-prefix simulation. Eleven are accepted, including the same owner
+In the assets folder (`../assets/erc-TBD/`), under EIP-8250 at commit `1a086d5c`:
+- `vectors.json`: eleven transactions, each with its fields, its domain separator, struct hash and
+  `E`, and the raw signed transaction. The shapes are a sponsored transfer, an expiry frame, an
+  atomic batch, a deploy frame, two keyed nonces, the legacy nonce (`[]`) at 7, value and
+  `DEFAULT` frames, two blobs, twelve frames with data of 0 to 1,000 bytes, a self-paying
+  transaction, and key 0 as an ordinary key.
+- `cases.txt`: twenty signed transactions, with the verdict the reference account must give
+  inside a client's validation-prefix simulation. Twelve are accepted, including the same owner
   entry under another payer and other fees, and an empty target written out as the sender. Eight
   are refused: a frame inserted, a frame appended, a state limit lowered, a target changed, a blob
   swapped, another account with the same owner, the account named as its own payer, and
   self-payment on `E`.
+- `vectors-eip8250-f3079a0.json` and `cases-eip8250-f3079a0.txt`: the same, without the key-0
+  vector, under EIP-8250 at `f3079a09e8`, where `[0]` selected the legacy nonce.
 
 ## Reference Implementation
 
+In the assets folder:
 - `digest.ts`: `E` through viem's EIP-712 encoder, and by hand from the layout above.
+- `digest.rs`: `E` through alloy's EIP-712 derive.
 - `ExecutionScopeAccount.yul`: an account that accepts `E` for execution-only approval and the
   canonical hash for self-payment (617 bytes of code, then the owner).
-- kohaku-rs, branch `experiment/frames`, `crates/frame-kit/src/digest.rs`: `E` through alloy's
-  EIP-712 derive.
 
 ## Security Considerations
 

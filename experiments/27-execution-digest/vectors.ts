@@ -2,8 +2,14 @@
 // and, for the in-process ethrex run, signed copies that the account must accept or refuse.
 //
 // Run: npx tsx experiments/27-execution-digest/vectors.ts
-// Writes vectors.json (name, raw signed transaction, domain separator, struct hash, E) and
-// ethrex/cases.txt (the account, the sponsors, and every signed case with the verdict expected).
+// Writes, into erc-assets/, two sets, one per EIP-8250 revision:
+// - vectors.json and cases.txt under EIP-8250 at master (1a086d5), where `nonce_keys == []`
+//   selects the legacy nonce and key 0 is an ordinary key;
+// - vectors-eip8250-f3079a0.json and cases-eip8250-f3079a0.txt under f3079a09e8, which the Hegota
+//   testnet pins, where `[0]` selected the legacy nonce.
+// A vector holds the transaction's fields, the raw signed transaction, the domain separator, the
+// struct hash and E. A cases file holds the account, the sponsors, and every signed case with the
+// verdict expected, for the in-process ethrex run.
 //
 // The keys are derived from public labels: these are test vectors, not accounts.
 import { readFileSync, writeFileSync } from 'node:fs'
@@ -26,7 +32,12 @@ import {
   signAll,
   verifyFrame,
 } from '../../src/frametx/index.js'
-import { domainSeparator, executionDigest, executionTypedData, isPayFrame, structHash } from './digest.js'
+import { type Eip8250, domainSeparator, executionDigest, executionTypedData, isPayFrame, structHash } from './digest.js'
+
+/** The EIP-8250 commits each set follows. */
+export const EIP8250: Record<Eip8250, string> = { master: '1a086d5c67cdcf3a134cc571eb4bb4b9bed6fb02', f3079a0: 'f3079a09e8c606afcb0e5e1a309ff228b88dc067' }
+/** The nonce keys that select the legacy nonce. */
+const legacy = (rules: Eip8250): bigint[] => (rules === 'master' ? [] : [0n])
 
 const key = (label: string): Hex => keccak256(stringToHex(`exp-frames/27 ${label}`))
 const at = (n: number): Address => numberToHex(0x2700n * 2n ** 144n + BigInt(n), { size: 20 })
@@ -51,10 +62,10 @@ const transfer = (to: Address, amount: bigint): Hex =>
 const onlyVerify = (target: Address | null = null) => verifyFrame({ scope: Approve.EXECUTION, target, execution: 30_000n })
 const pay = (sponsor = 0) => verifyFrame({ scope: Approve.PAYMENT, target: SPONSORS[sponsor], execution: 10_000n })
 
-function base(frames: Frame[], over: Partial<FrameTx> = {}): FrameTx {
+function base(rules: Eip8250, frames: Frame[], over: Partial<FrameTx> = {}): FrameTx {
   return {
     chainId: 8141n,
-    nonceKeys: [0n],
+    nonceKeys: legacy(rules),
     nonceSeq: 0n,
     sender: SENDER,
     frames,
@@ -69,21 +80,28 @@ const blob = (b: number): Hex => `0x01${toHex(b, { size: 1 }).slice(2).repeat(31
 
 export type Case = { name: string; note: string; tx: FrameTx }
 
-export const CASES: Case[] = [
+/** The vectors under one EIP-8250 revision. */
+export function cases(rules: Eip8250): Case[] {
+  const base_ = (frames: Frame[], over: Partial<FrameTx> = {}) => base(rules, frames, over)
+  const legacyNote =
+    rules === 'master'
+      ? 'nonce_keys [] at sequence 7, the legacy nonce: also what a plain EIP-8141 envelope with nonce 7 digests to'
+      : 'nonce_keys [0] at sequence 7: also what a plain EIP-8141 envelope with nonce 7 digests to'
+  const all: Case[] = [
   {
     name: 'sponsored-transfer',
     note: 'only_verify | pay, then one token transfer: the shape the draft exists for',
-    tx: base([onlyVerify(), pay(), senderFrame({ target: TOKEN, data: transfer(FRIEND, 10n ** 18n), execution: 60_000n, state: 97_920n })]),
+    tx: base_([onlyVerify(), pay(), senderFrame({ target: TOKEN, data: transfer(FRIEND, 10n ** 18n), execution: 60_000n, state: 97_920n })]),
   },
   {
     name: 'with-expiry',
     note: 'the expiry verifier frame first, which E pins like any other frame',
-    tx: base([expiryFrame(1_900_000_000n), onlyVerify(), pay(), senderFrame({ target: TOKEN, data: transfer(FRIEND, 1n), execution: 60_000n })]),
+    tx: base_([expiryFrame(1_900_000_000n), onlyVerify(), pay(), senderFrame({ target: TOKEN, data: transfer(FRIEND, 1n), execution: 60_000n })]),
   },
   {
     name: 'atomic-approve-swap',
     note: 'an approve batched with the swap that spends it',
-    tx: base([
+    tx: base_([
       onlyVerify(),
       pay(),
       senderFrame({ target: TOKEN, data: concatHex(['0x095ea7b3', numberToHex(BigInt(POOL), { size: 32 }), numberToHex(10n ** 19n, { size: 32 })]), execution: 50_000n, state: 97_920n, atomic: true }),
@@ -93,7 +111,7 @@ export const CASES: Case[] = [
   {
     name: 'deploy-first',
     note: 'a deploy frame before the verification, pinned with the rest',
-    tx: base([
+    tx: base_([
       defaultFrame({ target: FACTORY, data: concatHex(['0xdeadbeef', numberToHex(1n, { size: 32 })]), execution: 70_000n, state: 200_000n }),
       onlyVerify(SENDER),
       pay(),
@@ -104,19 +122,19 @@ export const CASES: Case[] = [
     name: 'keyed-nonces',
     note: 'two EIP-8250 nonce keys at sequence 0',
     // The first use of a keyed nonce charges the frame that approves payment (EIP-8250): the payer's frame.
-    tx: base([onlyVerify(), { ...pay(), limits: { execution: 10_000n, state: 2n * STORAGE_SET_STATE_GAS } }, senderFrame({ target: FRIEND, value: 5n, execution: 30_000n })], {
+    tx: base_([onlyVerify(), { ...pay(), limits: { execution: 10_000n, state: 2n * STORAGE_SET_STATE_GAS } }, senderFrame({ target: FRIEND, value: 5n, execution: 30_000n })], {
       nonceKeys: [3n, 9n],
     }),
   },
   {
     name: 'legacy-nonce-7',
-    note: 'nonce_keys [0] at sequence 7: also what a plain EIP-8141 envelope with nonce 7 digests to',
-    tx: base([onlyVerify(), pay(), senderFrame({ target: FRIEND, value: 5n, execution: 30_000n })], { nonceSeq: 7n, sender: SEVENTH }),
+    note: legacyNote,
+    tx: base_([onlyVerify(), pay(), senderFrame({ target: FRIEND, value: 5n, execution: 30_000n })], { nonceSeq: 7n, sender: SEVENTH }),
   },
   {
     name: 'value-and-default',
     note: 'a value transfer and a DEFAULT frame after the sender frames',
-    tx: base([
+    tx: base_([
       onlyVerify(),
       pay(),
       senderFrame({ target: FRIEND, value: 10n ** 17n, execution: 30_000n }),
@@ -126,7 +144,7 @@ export const CASES: Case[] = [
   {
     name: 'blobs',
     note: 'two blob versioned hashes, which BLOBHASH exposes to every frame',
-    tx: base([onlyVerify(), pay(), senderFrame({ target: POOL, data: '0xaabbccdd', execution: 80_000n })], {
+    tx: base_([onlyVerify(), pay(), senderFrame({ target: POOL, data: '0xaabbccdd', execution: 80_000n })], {
       blobVersionedHashes: [blob(0x11), blob(0x22)],
       fees: { maxPriorityFeePerGas: 1_000n, maxFeePerGas: 2_000_000_000n, maxFeePerBlobGas: 1_000_000n },
     }),
@@ -134,7 +152,7 @@ export const CASES: Case[] = [
   {
     name: 'many-frames',
     note: 'twelve frames, data of 0, 1, 31, 32, 33 and 1,000 bytes',
-    tx: base([
+    tx: base_([
       onlyVerify(),
       pay(),
       ...[0, 1, 31, 32, 33, 1000, 0, 1, 31, 32].map((len, i) =>
@@ -145,19 +163,34 @@ export const CASES: Case[] = [
   {
     name: 'self-paying',
     note: 'self_verify: E is defined, but the draft forbids approving payment on it',
-    tx: base([verifyFrame({ scope: Approve.EXECUTION_AND_PAYMENT, execution: 30_000n }), senderFrame({ target: FRIEND, value: 1n, execution: 30_000n })], {
+    tx: base_([verifyFrame({ scope: Approve.EXECUTION_AND_PAYMENT, execution: 30_000n }), senderFrame({ target: FRIEND, value: 1n, execution: 30_000n })], {
       signatures: [secp256k1Placeholder(OWNER, '0x')],
     }),
   },
-]
+  ]
+  if (rules === 'master')
+    all.push({
+      name: 'key-zero',
+      note: 'nonce_keys [0] at sequence 0: key 0 as an ordinary key, a NONCE_MANAGER sequence; at f3079a09e8 the same bytes selected the legacy nonce',
+      // A keyed nonce's first use charges the payer's frame (EIP-8250).
+      tx: base_([onlyVerify(), { ...pay(), limits: { execution: 10_000n, state: STORAGE_SET_STATE_GAS } }, senderFrame({ target: FRIEND, value: 3n, execution: 30_000n })], {
+        nonceKeys: [0n],
+      }),
+    })
+  return all
+}
+
+/** The vectors under EIP-8250 at master. */
+export const CASES: Case[] = cases('master')
 
 /**
  * Sign as a wallet would: the owner through eth_signTypedData_v4 (viem's `signTypedData`), its
  * output turned into the frame entry's `yParity ‖ r ‖ s`; then the sponsor over the canonical
  * sig hash, which covers the owner's entry.
  */
-export async function signCase(tx: FrameTx, sponsorKey: Hex = SPONSOR_KEYS[0], digest = executionDigest(tx)): Promise<FrameTx> {
-  const sig = parseSignature(await privateKeyToAccount(OWNER_KEY).signTypedData(executionTypedData(tx)))
+export async function signCase(tx: FrameTx, sponsorKey: Hex = SPONSOR_KEYS[0], rules: Eip8250 = 'master'): Promise<FrameTx> {
+  const digest = executionDigest(tx, rules)
+  const sig = parseSignature(await privateKeyToAccount(OWNER_KEY).signTypedData(executionTypedData(tx, rules)))
   const entry0 = {
     ...tx.signatures[0],
     msg: digest,
@@ -178,11 +211,11 @@ async function mutate(signed: FrameTx, change: (tx: FrameTx) => FrameTx, sponsor
 
 const withFrames = (frames: Frame[]) => (tx: FrameTx): FrameTx => ({ ...tx, frames })
 
-export async function harnessCases(): Promise<{ name: string; expect: 'valid' | 'refused'; note: string; tx: FrameTx }[]> {
+export async function harnessCases(rules: Eip8250 = 'master'): Promise<{ name: string; expect: 'valid' | 'refused'; note: string; tx: FrameTx }[]> {
   const out: { name: string; expect: 'valid' | 'refused'; note: string; tx: FrameTx }[] = []
   const signed = new Map<string, FrameTx>()
-  for (const c of CASES) {
-    const tx = await signCase(c.tx)
+  for (const c of cases(rules)) {
+    const tx = await signCase(c.tx, SPONSOR_KEYS[0], rules)
     signed.set(c.name, tx)
     out.push({ name: c.name, expect: c.name === 'self-paying' ? 'refused' : 'valid', note: c.note, tx })
   }
@@ -261,28 +294,50 @@ export function accountRuntime(owner: Address): Hex {
   return concatHex([`0x${contract.evm.deployedBytecode.object}`, numberToHex(BigInt(owner), { size: 32 })])
 }
 
-async function main() {
-  const vectors = CASES.map((c) => ({
-    name: c.name,
-    note: c.note,
-    domainSeparator: domainSeparator(c.tx.chainId, c.tx.sender),
-    structHash: structHash(c.tx),
-    executionDigest: executionDigest(c.tx),
-    payFrames: c.tx.frames.flatMap((f, i) => (isPayFrame(f) ? [i] : [])),
-  }))
-  const raws: Record<string, Hex> = {}
-  for (const c of CASES) raws[c.name] = serializeFrameTx(await signCase(c.tx))
+/** Marked on every exported file: the release the assets are meant for. */
+export const LICENSE = 'CC0-1.0, pending the copyright waiver'
+
+/** A transaction's fields as the vectors hold them, so an implementation needs no decoder. */
+export const txFields = (tx: FrameTx) => ({
+  chainId: Number(tx.chainId),
+  sender: tx.sender,
+  nonceKeys: tx.nonceKeys.map((k) => numberToHex(k)),
+  nonceSeq: Number(tx.nonceSeq),
+  frames: tx.frames.map((f) => ({
+    mode: f.mode,
+    flags: f.flags,
+    target: f.target,
+    executionLimit: Number(f.limits.execution),
+    stateLimit: Number(f.limits.state),
+    value: numberToHex(f.value),
+    data: f.data,
+  })),
+  blobVersionedHashes: tx.blobVersionedHashes,
+})
+
+/** One set: the vectors and the harness's cases under `rules`, written into erc-assets/. */
+async function write(rules: Eip8250, suffix: string) {
+  const set = cases(rules)
+  const vectors = []
+  for (const c of set)
+    vectors.push({
+      name: c.name,
+      note: c.note,
+      tx: txFields(c.tx),
+      domainSeparator: domainSeparator(c.tx.chainId, c.tx.sender),
+      structHash: structHash(c.tx, rules),
+      executionDigest: executionDigest(c.tx, rules),
+      payFrames: c.tx.frames.flatMap((f, i) => (isPayFrame(f) ? [i] : [])),
+      raw: serializeFrameTx(await signCase(c.tx, SPONSOR_KEYS[0], rules)),
+    })
   writeFileSync(
-    new URL('./vectors.json', import.meta.url),
-    `${JSON.stringify(
-      { owner: OWNER, sponsors: SPONSORS, cases: vectors.map((v) => ({ ...v, raw: raws[v.name] })) },
-      null,
-      2,
-    )}\n`,
+    new URL(`./erc-assets/vectors${suffix}.json`, import.meta.url),
+    `${JSON.stringify({ license: LICENSE, eip8250: EIP8250[rules], owner: OWNER, sponsors: SPONSORS, cases: vectors }, null, 2)}\n`,
   )
 
   const lines = [
-    '# exp-frames/27: generated by vectors.ts. account <address> <balance> <nonce> <code>; case <name> <expect> <raw> # note',
+    `# SPDX-License-Identifier: ${LICENSE}`,
+    `# exp-frames/27: generated by vectors.ts under EIP-8250 at ${EIP8250[rules]}. account <address> <balance> <nonce> <code>; case <name> <expect> <raw> # note`,
     `account ${SENDER} 0x${(10n ** 20n).toString(16)} 0 ${accountRuntime(OWNER)}`,
     `account ${TWIN} 0x${(10n ** 20n).toString(16)} 0 ${accountRuntime(OWNER)}`,
     `account ${SEVENTH} 0x${(10n ** 20n).toString(16)} 7 ${accountRuntime(OWNER)}`,
@@ -290,9 +345,15 @@ async function main() {
     // EIP-8141's expiry verifier: an ordinary contract, so a fresh genesis needs it.
     `account ${EXPIRY_VERIFIER} 0x0 1 0x60083614600a575f5ffd5b5f3560c01c4211601657005b5f5ffd`,
   ]
-  for (const c of await harnessCases()) lines.push(`case ${c.name} ${c.expect} ${serializeFrameTx(c.tx)} # ${c.note}`)
-  writeFileSync(new URL('./ethrex/cases.txt', import.meta.url), `${lines.join('\n')}\n`)
-  console.log(`${vectors.length} vectors -> vectors.json; ${lines.length - 7} cases -> ethrex/cases.txt`)
+  const harness = await harnessCases(rules)
+  for (const c of harness) lines.push(`case ${c.name} ${c.expect} ${serializeFrameTx(c.tx)} # ${c.note}`)
+  writeFileSync(new URL(`./erc-assets/cases${suffix}.txt`, import.meta.url), `${lines.join('\n')}\n`)
+  console.log(`EIP-8250 at ${EIP8250[rules].slice(0, 10)}: ${vectors.length} vectors -> vectors${suffix}.json; ${harness.length} cases -> cases${suffix}.txt`)
+}
+
+async function main() {
+  await write('master', '')
+  await write('f3079a0', '-eip8250-f3079a0')
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) await main()

@@ -14,11 +14,14 @@ implementations that share no code.
 | [`erc-draft.md`](erc-draft.md) | The draft: $E$ as EIP-712 typed data, the rules for accounts, wallets and payers, the operation identifier, rationale, security considerations |
 | [`digest.ts`](digest.ts) | $E$ through viem's EIP-712 encoder, and by hand from the draft's layout |
 | [`ExecutionScopeAccount.yul`](ExecutionScopeAccount.yul) | An account that approves `EXECUTION` on $E$, recomputed by introspection, and pays for itself only over the canonical hash. 617 bytes of code, then the owner |
-| [`vectors.ts`](vectors.ts) | Ten vector transactions, and nineteen signed cases with the verdict each must get; writes [`vectors.json`](vectors.json) and [`ethrex/cases.txt`](ethrex/cases.txt) |
+| [`vectors.ts`](vectors.ts) | The vector transactions and the signed cases with the verdict each must get, in two sets, one per EIP-8250 revision; writes them into [`erc-assets/`](erc-assets/) |
+| [`erc-assets/`](erc-assets/) | The draft's assets, each marked for a CC0 release: both sets of vectors and cases, `digest.ts` and `digest.rs` with no repository imports, and the account |
 | [`digest.test.ts`](digest.test.ts) | The two TypeScript implementations agree; what $E$ pins and what it leaves; one $E$ for both envelopes; a wallet's typed-data signature is the frame entry; the mined transactions carry $E$ |
-| [`ethrex/exp27_execution_digest.rs`](ethrex/exp27_execution_digest.rs) | The account against the nineteen cases, inside ethrex's validation-prefix simulation |
+| [`ethrex/exp27_execution_digest.rs`](ethrex/exp27_execution_digest.rs) | The account against a cases file, inside ethrex's validation-prefix simulation |
+| [`ethrex/eip8250-master.patch`](ethrex/eip8250-master.patch) | The change that makes ethrex `c94964843d` apply EIP-8250 master's nonce-key rules, for the master cases |
 | [`example-digest.ts`](example-digest.ts) | The same on the Hegota testnet: setup, A (two payers), B (refusals), C (gas) |
-| [`results/live-2026-10-08.md`](results/live-2026-10-08.md) | Every log, command and commit |
+| [`results/live-2026-10-08.md`](results/live-2026-10-08.md) | Every log, command and commit of the first run |
+| [`results/ethrex-2026-10-20.md`](results/ethrex-2026-10-20.md) | Both sets inside ethrex, after the vectors were regenerated for EIP-8250 master |
 
 ## The digest
 
@@ -39,7 +42,35 @@ What changed from experiment 23's layout, and why:
 | blob versioned hashes | left out | pinned | `BLOBHASH` reads them in every frame, so a relay could swap the blobs under a frame that posts them |
 | pay frame | its index and a marker | its index, mode, flags and value | none of the three can differ in a valid pay frame today; pinning them means a future flag, or value on `VERIFY`, cannot reach the sender through an open field |
 | the account paying on $E$ | not allowed | not allowed, also when the relay names the account as payer | the relay chooses the pay frame's target, so it can choose the sender |
-| plain EIP-8141 envelope | not covered | `nonce` digests as `nonce_keys = [0]` | the two envelopes of one operation share one $E$ |
+| plain EIP-8141 envelope | not covered | `nonce` digests as the legacy nonce, `nonce_keys = []` (`[0]` before EIP-8250's `56b645be`) | the two envelopes of one operation share one $E$ |
+
+## Regenerated for EIP-8250 master (2026-10-20)
+
+EIP-8250 changed which nonce keys select the legacy nonce: since its commit
+[`56b645be`](https://github.com/ethereum/EIPs/commit/56b645be8a4c7830ee3ea94aa7eda1e3b5ed7fe7)
+(2026-10-16) it is `nonce_keys == []`, and key 0 is an ordinary key. The Hegota testnet pins
+[`f3079a09e8`](https://github.com/ethereum/EIPs/blob/f3079a09e8c606afcb0e5e1a309ff228b88dc067/EIPS/eip-8250.md),
+where it was `[0]`. So the vectors now come in two sets, both in [`erc-assets/`](erc-assets/):
+
+| Set | EIP-8250 | Vectors | Cases | Inside ethrex |
+|---|---|---|---|---|
+| `vectors.json`, `cases.txt` | master, `1a086d5c` | 11: the ten below with `[]` for the legacy nonce, and key 0 as an ordinary key | 20 | 20 verdicts as stated, in `c94964843d` with [`ethrex/eip8250-master.patch`](ethrex/eip8250-master.patch) |
+| `vectors-eip8250-f3079a0.json`, `cases-eip8250-f3079a0.txt` | `f3079a09e8` | the ten below, byte for byte the earlier `vectors.json` | 19, byte for byte the earlier `ethrex/cases.txt` | 19 verdicts as stated, in `c94964843d` |
+
+Every vector that uses the legacy nonce has a new $E$ in the master set; the keyed-nonce vector's
+is unchanged. The key-0 vector, `nonce_keys [0]` at sequence 0, digests the same bytes the old
+legacy-nonce shape did. It now names another nonce domain, a `NONCE_MANAGER` sequence, so the two
+revisions agree on $E$'s layout and disagree only on what the nonce field means.
+
+Unpatched, ethrex `c94964843d` refuses every master case that uses `[]` in its static checks
+("nonce_keys count must be between 1 and 16"). Those refusals test nothing of the account, so the
+master run uses the patch: a small change that makes `[]` the legacy nonce and key 0 an ordinary
+key, and nothing else. No client implements master's rule yet. Both runs are in
+[`results/ethrex-2026-10-20.md`](results/ethrex-2026-10-20.md).
+
+The TypeScript implementations, the exported `erc-assets/digest.ts` and `erc-assets/digest.rs`, and
+kohaku-rs's `frame-kit` (decoding each set under its own rules, `FrameTx::decode_with`) agree on
+every vector of both sets.
 
 ## Results
 
@@ -153,12 +184,13 @@ recompute $E$ rather than read `TXPARAM(0x08)`.
 
 ```bash
 npx vitest run experiments/27-execution-digest
-npx tsx experiments/27-execution-digest/vectors.ts           # regenerates vectors.json and ethrex/cases.txt
+npx tsx experiments/27-execution-digest/vectors.ts           # regenerates both sets in erc-assets/
 npx tsx experiments/27-execution-digest/example-digest.ts all # testnet: setup, A, B, C
 # ethrex, from a checkout at c94964843d:
 cp experiments/27-execution-digest/ethrex/exp27_execution_digest.rs crates/blockchain/tests/
-EXP27_CASES=$PWD/.../ethrex/cases.txt cargo test -q --release -p ethrex-blockchain \
+EXP27_CASES=$PWD/.../erc-assets/cases-eip8250-f3079a0.txt cargo test -q --release -p ethrex-blockchain \
   --features ethrex-crypto/default --test exp27_execution_digest -- --nocapture
+# the master cases: the same, with ethrex/eip8250-master.patch applied and EXP27_CASES=.../erc-assets/cases.txt
 # kohaku-rs, branch experiment/frames:
 cargo test -p kohaku-frame-kit --test execution_digest
 ```
