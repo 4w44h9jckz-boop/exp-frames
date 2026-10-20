@@ -1,10 +1,10 @@
-shop 0xa0753BFfc903a326d5a9A821502701A629BE627F: bought 4 in 0x3b4a854510ac6727239db643ae77b9df10a81c765a3cc2c789b3e4b3ba6df2a1 (block 480956)
-table at block 480957: 40 accounts, 480 x 15 bytes
-eth_getBalance(0x35be31B0dE16d67106F5cf0FA113dB6617B51FAf): "0x37484e19d1f1d" by Pir; the node at 480957: "0x37484e19d1f1d"
-eth_getTransactionCount(0x35be31B0dE16d67106F5cf0FA113dB6617B51FAf): "0x1" by Pir; the node at 480957: "0x1"
-eth_getBalance(0x827628270c21652EcB1A3F152de8d1EfF560F6d6): "0x0" by Pir; the node at 480957: "0x0"
+shop 0x7c0Ae8aBd821E273F8d194C96702B1338ACa8A6B: bought 4 in 0x836730dc981947826257b52053f7f1bd9dc2ee9cf51ea5e41364afb0d4ee154b (block 481082)
+table at block 481083: 47 accounts, 480 x 18 bytes
+eth_getBalance(0x35be31B0dE16d67106F5cf0FA113dB6617B51FAf): "0x37484e19d1f1d" by Pir; the node at 481083: "0x37484e19d1f1d"
+eth_getTransactionCount(0x35be31B0dE16d67106F5cf0FA113dB6617B51FAf): "0x1" by Pir; the node at 481083: "0x1"
+eth_getBalance(0x265fE6E8aDe04d5790dCF559Bb5f4D00FC246bbE): "0x0" by Pir; the node at 481083: "0x0"
 a spent ticket: refused: a spent ticket
 a ticket for another server: refused: no ticket for this server
 a signature that is no ticket: refused: no ticket for this server
-cost: {"answerNanos":{"large":21108880,"largeBytes":67108864,"table":7939,"tableBytes":7200},"bytesPerSecond":3179176915,"ticketCheckNanos":997581}
-recorded in /tmp/claude-0/-home-user/d664dc85-3211-5eee-9347-028a2ecc300f/scratchpad/record37.json
+cost: {"answerNanos":{"large":22160569,"largeBytes":67108864,"table":2266,"tableBytes":8640},"bytesPerSecond":3028300581,"ticketCheckNanos":991080}
+recorded in /tmp/claude-0/-home-user/d664dc85-3211-5eee-9347-028a2ecc300f/scratchpad/record37b.json

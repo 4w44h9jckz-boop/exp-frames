@@ -14,11 +14,11 @@ Short answers:
    router, each spending one ticket, and each answer matched the node's. The server's log holds,
    per request, a ticket's serial, its verdict, timings and sizes, and no address. A spent ticket,
    a ticket for another server and a forged one were refused before any work.
-2. **On the testnet's table, the ticket check is the cost.** The table of the 40 code-free
-   accounts active in the last 3,000 blocks is 7,200 bytes. An answer took 4 to 9 microseconds,
+2. **On the testnet's table, the ticket check is the cost.** The table of the 47 code-free
+   accounts active in the last 3,000 blocks is 8,640 bytes. An answer took 5 to 10 microseconds,
    and checking the ticket about 1.1 milliseconds. The server's work grows with the table at
-   3.18 GB per second on one core: a 64 MiB table took 21.1 ms. So the work behind a ticket
-   passes the check at about 3.2 MB of table.
+   3.03 GB per second on one core: a 64 MiB table took 22.2 ms. So the work behind a ticket
+   passes the check at about 3.0 MB of table.
 
 | File | What |
 |---|---|
@@ -27,7 +27,7 @@ Short answers:
 | [`kohaku-rs-output.txt`](kohaku-rs-output.txt) | The run's output |
 
 The reader, the server and the issuers are kohaku-rs's `kohaku-ticket-read` and
-`kohaku-frame-ticket` (branch `claude/nifty-einstein-llp9cd`, commit `cbb77e6`).
+`kohaku-frame-ticket` (branch `claude/nifty-einstein-llp9cd`, commit `eea02a3`).
 
 ## Run
 
@@ -60,10 +60,10 @@ ticket. The namespace keeps either from paying for the other. Naming the server 
 own spent set: another server would not know the ticket was spent.
 
 **The shop** is experiment 36's `TicketPaymaster`, deployed for this committee's key, at
-`0xa0753BFfc903a326d5a9A821502701A629BE627F`. The funder deployed it and bought 4 tickets in one
+`0x7c0Ae8aBd821E273F8d194C96702B1338ACa8A6B`. The funder deployed it and bought 4 tickets in one
 transaction,
-[`0x3b4a8545…`](https://dora.privacy.ethrex.xyz/tx/0x3b4a854510ac6727239db643ae77b9df10a81c765a3cc2c789b3e4b3ba6df2a1),
-block 480,956. Its ether can only pay for gas, so it cannot pay the read server. How a server
+[`0x836730dc…`](https://dora.privacy.ethrex.xyz/tx/0x836730dc981947826257b52053f7f1bd9dc2ee9cf51ea5e41364afb0d4ee154b),
+block 481,082. Its ether can only pay for gas, so it cannot pay the read server. How a server
 redeems spent tickets is not part of this experiment.
 
 **The read.** The server holds the account table as `kohaku-pir-rpc` decodes an account:
@@ -83,11 +83,11 @@ Tor, and leaves the scheme to a body codec to come; `TicketLookup` is such a cod
 
 ## Results (Hegota testnet, chain 8141, 2026-10-20)
 
-The table at block 480,957: 40 accounts, every account without code that sent or received a
-transaction in blocks 477,957 to 480,957. In buckets of 8 records, it is 480 rows by 15 columns:
-7,200 bytes.
+The table at block 481,083: 47 accounts, every account without code that sent or received a
+transaction in blocks 478,083 to 481,083. In buckets of 8 records, it is 480 rows by 18 columns:
+8,640 bytes.
 
-| Read, through the router | PIR's answer | The node's, at 480,957 |
+| Read, through the router | PIR's answer | The node's, at 481,083 |
 |---|---|---|
 | `eth_getBalance` of experiment 36's second buyer, `0x35be31B0…` | `0x37484e19d1f1d` | `0x37484e19d1f1d` |
 | `eth_getTransactionCount` of the same | `0x1` | `0x1` |
@@ -100,23 +100,23 @@ What the server saw, from its log:
 
 | Request | Ticket | Verdict | Ticket check | Answer |
 |---|---|---|---|---|
-| 1 | `0x031dfc0f…` | answered | 1,108 us | 4 us |
-| 2 | `0xb670320f…` | answered | 1,243 us | 4 us |
-| 3 | `0x53d9a90e…` | answered | 1,114 us | 9 us |
-| 4 | `0x031dfc0f…` again | refused: "a spent ticket" | 1,555 us | none |
-| 5 | `0xe2d6e606…`, issued for another server | refused: "no ticket for this server" | 1,180 us | none |
-| 6 | a random point | refused: "no ticket for this server" | 1,103 us | none |
+| 1 | `0x96dd6d96…` | answered | 1,100 us | 10 us |
+| 2 | `0x79faffb6…` | answered | 1,250 us | 5 us |
+| 3 | `0x83726af7…` | answered | 1,065 us | 10 us |
+| 4 | `0x96dd6d96…` again | refused: "a spent ticket" | 1,067 us | none |
+| 5 | `0x02025ddb…`, issued for another server | refused: "no ticket for this server" | 1,369 us | none |
+| 6 | a random point | refused: "no ticket for this server" | 3,252 us | none |
 
-Every request carried 60 bytes of query, one word per bucket, and every answer was 1,920 bytes,
+Every request carried 72 bytes of query, one word per bucket, and every answer was 1,920 bytes,
 one word per row. The hint, downloaded once, is 1,966,080 bytes: 1,024 words per row.
 
 **The cost**, medians on one core of the machine that ran it:
 
 | | Time |
 |---|---|
-| checking a ticket (Commonware's `ops::verify_message`, 101 runs) | 0.998 ms |
-| an answer on the testnet's table, 7,200 bytes (101 runs) | 7.9 us |
-| an answer on a 64 MiB table (11 runs) | 21.1 ms, 3.18 GB/s |
+| checking a ticket (Commonware's `ops::verify_message`, 101 runs) | 0.991 ms |
+| an answer on the testnet's table, 8,640 bytes (101 runs) | 2.3 us |
+| an answer on a 64 MiB table (11 runs) | 22.2 ms, 3.03 GB/s |
 
 A ticket costs 0.001 ETH. That is a testnet price, with no market behind it. It is also what
 the paymaster takes for a gas ticket, whose spend used 330,600 gas in experiment 36.
@@ -133,13 +133,13 @@ the paymaster takes for a gas ticket, whose spend used 330,600 gas in experiment
    about a millisecond, so a server that verifies a junk ticket loses a millisecond, and the
    table's size does not change that.
 
-3. **At the testnet's size the ticket is most of the server's work.** The answer took 4 to 9
-   microseconds against a millisecond for the ticket. The work grows with the table, at 3.18 GB
-   a second here, and passes the check at about 3.2 MB of table. Checking first is a defence
+3. **At the testnet's size the ticket is most of the server's work.** The answer took 5 to 10
+   microseconds against a millisecond for the ticket. The work grows with the table, at 3.03 GB
+   a second here, and passes the check at about 3.0 MB of table. Checking first is a defence
    for tables well above that size, and for this one it is the larger cost.
 
 4. **At the testnet's size PIR's hint is larger than the table.** The hint is 1,024 words per
-   row, 1,966,080 bytes for a 7,200-byte table. Downloading the whole table once would have been
+   row, 1,966,080 bytes for an 8,640-byte table. Downloading the whole table once would have been
    cheaper and as private, with no server work per read. A PIR scheme with a hint pays off only
    on a table much larger than its hint.
 

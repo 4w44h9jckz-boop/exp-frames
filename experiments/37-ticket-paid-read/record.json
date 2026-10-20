@@ -2,90 +2,90 @@
   "answerBytes": 1920,
   "blocks": 3000,
   "bought": {
-    "block": "0x756bc",
+    "block": "0x7573a",
     "count": 4,
-    "hash": "0x3b4a854510ac6727239db643ae77b9df10a81c765a3cc2c789b3e4b3ba6df2a1"
+    "hash": "0x836730dc981947826257b52053f7f1bd9dc2ee9cf51ea5e41364afb0d4ee154b"
   },
   "committee": {
     "issuers": 4,
-    "key": "0x959cfbe52308623b622300c6e8194697efef4e172d55879e290dd01cb0144b26c2b1acf1f9b92693a3a149804d4800a202f6dd8499b09a878eda47990ea75a01e42da303b32c1e7a31354dcee82436f72cdcc42f25ac8d329d090b9fbec6f0cc",
+    "key": "0x86e530ddbd51644f8a05d3637ea3aca7d3b64164045a1920815e126467cba857b4c7bb5f0358c92efc7275950d91a48516ad0e2b445b381cbca1749febbc88d7fedb7f1d59c64a13daffe644c49f2d3e980b62fe72a6e4ca40e82727f4f5afd4",
     "quorum": 3
   },
   "cost": {
     "answerNanos": {
-      "large": 21108880,
+      "large": 22160569,
       "largeBytes": 67108864,
-      "table": 7939,
-      "tableBytes": 7200
+      "table": 2266,
+      "tableBytes": 8640
     },
-    "bytesPerSecond": 3179176915,
-    "ticketCheckNanos": 997581
+    "bytesPerSecond": 3028300581,
+    "ticketCheckNanos": 991080
   },
   "denomination": "0x38d7ea4c68000",
   "hintBytes": 1966080,
   "issuance": [
     {
-      "blinded": "0xadb42ce30280997ef4d9691c1a1c8706fc29b4e160a2654706354cfac2f6952b60c7811d9369698ad8b34fd5d4e13bee",
-      "issuer": 0
-    },
-    {
-      "blinded": "0xadb42ce30280997ef4d9691c1a1c8706fc29b4e160a2654706354cfac2f6952b60c7811d9369698ad8b34fd5d4e13bee",
-      "issuer": 3
-    },
-    {
-      "blinded": "0xadb42ce30280997ef4d9691c1a1c8706fc29b4e160a2654706354cfac2f6952b60c7811d9369698ad8b34fd5d4e13bee",
-      "issuer": 2
-    },
-    {
-      "blinded": "0x8e7107753986e3ad2284f1136c3c036f380e86fd0012a4d6b1ae65d7decd9845bf63a5402b92b35911140f168c4153f0",
+      "blinded": "0x865c99b1bd964918e77a5e7ffbf0129a74bfc4900167178aef33e6926dde829afbc069f4a6af3c4ce641f1e942b82786",
       "issuer": 1
     },
     {
-      "blinded": "0x8e7107753986e3ad2284f1136c3c036f380e86fd0012a4d6b1ae65d7decd9845bf63a5402b92b35911140f168c4153f0",
-      "issuer": 3
-    },
-    {
-      "blinded": "0x8e7107753986e3ad2284f1136c3c036f380e86fd0012a4d6b1ae65d7decd9845bf63a5402b92b35911140f168c4153f0",
-      "issuer": 2
-    },
-    {
-      "blinded": "0xa551837705a525579acd01be1f446d6c5964590e40172c820a83d4c6d37123949c3911fc73443ee1f93ce887699f593d",
-      "issuer": 1
-    },
-    {
-      "blinded": "0xa551837705a525579acd01be1f446d6c5964590e40172c820a83d4c6d37123949c3911fc73443ee1f93ce887699f593d",
+      "blinded": "0x865c99b1bd964918e77a5e7ffbf0129a74bfc4900167178aef33e6926dde829afbc069f4a6af3c4ce641f1e942b82786",
       "issuer": 0
     },
     {
-      "blinded": "0xa551837705a525579acd01be1f446d6c5964590e40172c820a83d4c6d37123949c3911fc73443ee1f93ce887699f593d",
+      "blinded": "0x865c99b1bd964918e77a5e7ffbf0129a74bfc4900167178aef33e6926dde829afbc069f4a6af3c4ce641f1e942b82786",
       "issuer": 2
     },
     {
-      "blinded": "0xace609d300cf2776c94655c9efc4eb815e4d7e23527dcc62b5fd207d9110b923672ea408009d03bf1257c6843392c34f",
-      "issuer": 1
+      "blinded": "0xb51b14603f8b81b0f8d41ba7591606a0b4220c5be5d0217fc9a6140d72afa218dd8dd79aa9e004a17d75039c58f10e4e",
+      "issuer": 3
     },
     {
-      "blinded": "0xace609d300cf2776c94655c9efc4eb815e4d7e23527dcc62b5fd207d9110b923672ea408009d03bf1257c6843392c34f",
+      "blinded": "0xb51b14603f8b81b0f8d41ba7591606a0b4220c5be5d0217fc9a6140d72afa218dd8dd79aa9e004a17d75039c58f10e4e",
       "issuer": 0
     },
     {
-      "blinded": "0xace609d300cf2776c94655c9efc4eb815e4d7e23527dcc62b5fd207d9110b923672ea408009d03bf1257c6843392c34f",
+      "blinded": "0xb51b14603f8b81b0f8d41ba7591606a0b4220c5be5d0217fc9a6140d72afa218dd8dd79aa9e004a17d75039c58f10e4e",
+      "issuer": 2
+    },
+    {
+      "blinded": "0xa36111ff46b82405d18bc6f8151e19546ce38e0f48dd339d9d190448faaed0d23e4f5a9e2541f656ce31ecbc05fdc1ba",
       "issuer": 3
+    },
+    {
+      "blinded": "0xa36111ff46b82405d18bc6f8151e19546ce38e0f48dd339d9d190448faaed0d23e4f5a9e2541f656ce31ecbc05fdc1ba",
+      "issuer": 1
+    },
+    {
+      "blinded": "0xa36111ff46b82405d18bc6f8151e19546ce38e0f48dd339d9d190448faaed0d23e4f5a9e2541f656ce31ecbc05fdc1ba",
+      "issuer": 2
+    },
+    {
+      "blinded": "0xb852b7948076462d41e8b863462fb54f205d7f1237610524bad19f91f12c307df3cc45ce758232edb594928a28a3491a",
+      "issuer": 3
+    },
+    {
+      "blinded": "0xb852b7948076462d41e8b863462fb54f205d7f1237610524bad19f91f12c307df3cc45ce758232edb594928a28a3491a",
+      "issuer": 1
+    },
+    {
+      "blinded": "0xb852b7948076462d41e8b863462fb54f205d7f1237610524bad19f91f12c307df3cc45ce758232edb594928a28a3491a",
+      "issuer": 0
     }
   ],
   "manifest": {
     "capacity": 8,
-    "cols": 15,
-    "entries": 40,
-    "key": "0x959cfbe52308623b622300c6e8194697efef4e172d55879e290dd01cb0144b26c2b1acf1f9b92693a3a149804d4800a202f6dd8499b09a878eda47990ea75a01e42da303b32c1e7a31354dcee82436f72cdcc42f25ac8d329d090b9fbec6f0cc",
+    "cols": 18,
+    "entries": 47,
+    "key": "0x86e530ddbd51644f8a05d3637ea3aca7d3b64164045a1920815e126467cba857b4c7bb5f0358c92efc7275950d91a48516ad0e2b445b381cbca1749febbc88d7fedb7f1d59c64a13daffe644c49f2d3e980b62fe72a6e4ca40e82727f4f5afd4",
     "namespace": "kohaku-read-ticket-v1",
     "record": 60,
     "rows": 480,
-    "salt": "0x75cb625cbd637946fdad4fa0a86a0a61530cf5f511a8aa04a8a242ac72ed7ec1",
-    "seed": "0x2bad109e83f106323a7befbfe0a1ceb55b31db5c33cfd49b31fe869f904ca9b0",
-    "server": "0xbd8204489f96bec142ac59f09eb236bb2496fc54291b70874a4c38bd9068f1b2"
+    "salt": "0x41d076759fa61b91f76c66156772660248c4c8913cdad812363ecd2a8adb9eef",
+    "seed": "0xd5446ea7641adc03738f8513bf87216087fc018df1880ff142ba1bc9c016d0df",
+    "server": "0x643bf26e2f40a9d40df9b4db0f157f20de47fc766b8a7696a416e9f48fc6f34f"
   },
-  "queryBytes": 60,
+  "queryBytes": 72,
   "reads": [
     {
       "address": "0x35be31b0de16d67106f5cf0fa113db6617b51faf",
@@ -104,7 +104,7 @@
       "value": "0x1"
     },
     {
-      "address": "0x827628270c21652ecb1a3f152de8d1eff560f6d6",
+      "address": "0x265fe6e8ade04d5790dcf559bb5f4d00fc246bbe",
       "inTable": false,
       "method": "eth_getBalance",
       "node": "0x0",
@@ -129,76 +129,76 @@
   "serverLog": [
     {
       "answerBytes": 1920,
-      "answerMicros": 4,
-      "bytesScanned": 7200,
-      "queryBytes": 60,
-      "serial": "0x031dfc0f5aa03ceff0076ec39c31c73dd505bd8d85d646c15b5adfd366c3f2f1",
-      "ticketCheckMicros": 1108
+      "answerMicros": 10,
+      "bytesScanned": 8640,
+      "queryBytes": 72,
+      "serial": "0x96dd6d9647c2352fdb91a91b213dadad70fc71809edad83b3b97a24840a363fd",
+      "ticketCheckMicros": 1100
     },
     {
       "answerBytes": 1920,
-      "answerMicros": 4,
-      "bytesScanned": 7200,
-      "queryBytes": 60,
-      "serial": "0xb670320fe5089107f35fbcdf6248d7f30be3fc449a3773a1250690bcfc21f11d",
-      "ticketCheckMicros": 1243
+      "answerMicros": 5,
+      "bytesScanned": 8640,
+      "queryBytes": 72,
+      "serial": "0x79faffb62add14ec85a0f26ee0ff44803de5ba06415358610f2d45d9c5a9e556",
+      "ticketCheckMicros": 1250
     },
     {
       "answerBytes": 1920,
-      "answerMicros": 9,
-      "bytesScanned": 7200,
-      "queryBytes": 60,
-      "serial": "0x53d9a90ea6257ba73d9991497db63fe960e665df56c2eb5e9d8e0811ef8fa31d",
-      "ticketCheckMicros": 1114
+      "answerMicros": 10,
+      "bytesScanned": 8640,
+      "queryBytes": 72,
+      "serial": "0x83726af73fddb9a7b4874d6a28f12417b8599d5627d59d83dea4d6a30cc73c0b",
+      "ticketCheckMicros": 1065
     },
     {
-      "queryBytes": 60,
+      "queryBytes": 72,
       "refused": "a spent ticket",
-      "serial": "0x031dfc0f5aa03ceff0076ec39c31c73dd505bd8d85d646c15b5adfd366c3f2f1",
-      "ticketCheckMicros": 1555
+      "serial": "0x96dd6d9647c2352fdb91a91b213dadad70fc71809edad83b3b97a24840a363fd",
+      "ticketCheckMicros": 1067
     },
     {
-      "queryBytes": 60,
+      "queryBytes": 72,
       "refused": "no ticket for this server",
-      "serial": "0xe2d6e6066d284e8071695c74559c830086a1a48638a6112a904d502fd82792e1",
-      "ticketCheckMicros": 1180
+      "serial": "0x02025ddbd7a085a2bbbb46c0a94be503650e10de1ccadfe3907599795e2c67d1",
+      "ticketCheckMicros": 1369
     },
     {
-      "queryBytes": 60,
+      "queryBytes": 72,
       "refused": "no ticket for this server",
-      "serial": "0xa432511b664ac2472748c34991cb22b620e60c2668520cb9dd943d7e73dc3e78",
-      "ticketCheckMicros": 1103
+      "serial": "0xf992dfcdb0d0b39a137bbcc6fd0e7defcd639498af55aaadefa3037c85fd16f2",
+      "ticketCheckMicros": 3252
     }
   ],
-  "shop": "0xa0753bffc903a326d5a9a821502701a629be627f",
-  "snapshot": 480957,
+  "shop": "0x7c0ae8abd821e273f8d194c96702b1338aca8a6b",
+  "snapshot": 481083,
   "table": {
-    "bytes": 7200,
+    "bytes": 8640,
     "capacity": 8,
-    "cols": 15,
-    "entries": 40,
+    "cols": 18,
+    "entries": 47,
     "rows": 480
   },
   "tickets": [
     {
-      "serial": "0x031dfc0f5aa03ceff0076ec39c31c73dd505bd8d85d646c15b5adfd366c3f2f1",
-      "server": "0xbd8204489f96bec142ac59f09eb236bb2496fc54291b70874a4c38bd9068f1b2",
-      "signature": "0x8eee8b4a4b08c60ac63249b23c5610a13566972e106c2fefcd47d0a0f738af548ae6d64b0c0ed2803041ed9d01e072b2"
+      "serial": "0x96dd6d9647c2352fdb91a91b213dadad70fc71809edad83b3b97a24840a363fd",
+      "server": "0x643bf26e2f40a9d40df9b4db0f157f20de47fc766b8a7696a416e9f48fc6f34f",
+      "signature": "0x9727c8b811d0d8c2ce9e29e459a1cd691cb7e18f04c4ad8ef7229590995cd3e1a57e111fdbfd97af7e5788446614dd7e"
     },
     {
-      "serial": "0xb670320fe5089107f35fbcdf6248d7f30be3fc449a3773a1250690bcfc21f11d",
-      "server": "0xbd8204489f96bec142ac59f09eb236bb2496fc54291b70874a4c38bd9068f1b2",
-      "signature": "0x8cbc445021f5558977636ed0c2d761ac8d5be0e3b6ffe5b781d3a671cda67d6721153c3c0c127c0a39250586613671bd"
+      "serial": "0x79faffb62add14ec85a0f26ee0ff44803de5ba06415358610f2d45d9c5a9e556",
+      "server": "0x643bf26e2f40a9d40df9b4db0f157f20de47fc766b8a7696a416e9f48fc6f34f",
+      "signature": "0xa76c85a5da5c724d34268013a20120b9aa678d34b127bf2d3aa65abe5801ea09c2071cebefd7a9d899628295cb548443"
     },
     {
-      "serial": "0x53d9a90ea6257ba73d9991497db63fe960e665df56c2eb5e9d8e0811ef8fa31d",
-      "server": "0xbd8204489f96bec142ac59f09eb236bb2496fc54291b70874a4c38bd9068f1b2",
-      "signature": "0x8cd972820da1507ba8a2a2942895a2ee2dbff8a505c928b64280a7667f774b61f83c99bdc041cf44f598afb438a5db27"
+      "serial": "0x83726af73fddb9a7b4874d6a28f12417b8599d5627d59d83dea4d6a30cc73c0b",
+      "server": "0x643bf26e2f40a9d40df9b4db0f157f20de47fc766b8a7696a416e9f48fc6f34f",
+      "signature": "0xb86a17a43a310079c3bf272a32dd16972942ce50204ff99c911a29fa2f58818bff398046b655f23ff074c922f0756d2c"
     },
     {
-      "serial": "0xe2d6e6066d284e8071695c74559c830086a1a48638a6112a904d502fd82792e1",
+      "serial": "0x02025ddbd7a085a2bbbb46c0a94be503650e10de1ccadfe3907599795e2c67d1",
       "server": "0x0000000000000000000000000000000000000000000000000000000000000000",
-      "signature": "0x962d72ae5f10d20e4e1413046d45d0ac781bd0600acbecabaa2327f045a7021de812e0558228edd5bc72d8baf62ecfd7"
+      "signature": "0xaca7517dd8eb308dc032457c3d217e20c4cf76009de69777522789ac8e47cc046a5665edeb2ce701411fc1e46aaecc9a"
     }
   ]
 }

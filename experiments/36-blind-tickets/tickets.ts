@@ -22,7 +22,7 @@ import { compileYul } from '../../src/contracts.js'
 import { create2Address } from '../../src/deploy.js'
 import { Approve, type FrameTx, Mode, senderFrame, verifyFrame } from '../../src/frametx/index.js'
 
-export const NAMESPACE = 'kohaku-ticket-v1'
+export const NAMESPACE = 'FRAME_TICKET_V1'
 /** Commonware's `MinSig` message tag: RFC 9380's BLS12381G1_XMD:SHA-256_SSWU_RO_ with POP. */
 export const DST = 'BLS_SIG_BLS12381G1_XMD:SHA-256_SSWU_RO_POP_'
 export const EPOCH_SECONDS = 384n

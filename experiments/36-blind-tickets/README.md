@@ -45,7 +45,7 @@ Short answers:
 | [`kohaku-rs-output.txt`](kohaku-rs-output.txt) | The run's output |
 
 The issuers, the buyers and the spends are kohaku-rs's `kohaku-frame-ticket` (branch
-`claude/nifty-einstein-llp9cd`, commit `2770696`), on Commonware's `commonware-cryptography`
+`claude/nifty-einstein-llp9cd`, commit `08ec235`), on Commonware's `commonware-cryptography`
 2026.9.0.
 
 ## Run
@@ -69,12 +69,13 @@ pay data = epoch (8) || salt (32) || signature (128, EIP-2537's G1)          168
 
 `nonce_keys_hash` is EIP-8250's, the word `TXPARAM(0x0F)` reads. The epoch is the block timestamp
 divided by 384; the paymaster does not check it, and it is there for a mempool that admits
-tickets per epoch. The salt lets a sender hold two tickets for one slot. The message layout is
-this experiment's. A mempool that checks tickets before admission may fix another, and the run
-would be repeated with it.
+tickets per epoch. The salt lets a sender hold two tickets for one slot. A mempool that checks
+tickets before admission checks these same bytes: the mempool session's claim-gated admission
+took this layout, with the namespace below in place of this experiment's first,
+`kohaku-ticket-v1`, and this run is the one under it.
 
 **The signature** is Commonware's `MinSig` (signatures in G1, keys in G2), over
-`union_unique(namespace, message)`, the namespace's length as a varint, then `kohaku-ticket-v1`,
+`union_unique(namespace, message)`, the namespace's length as a varint, then `FRAME_TICKET_V1`,
 then the message. It is hashed with RFC 9380's `BLS12381G1_XMD:SHA-256_SSWU_RO_` suite under the
 tag `BLS_SIG_BLS12381G1_XMD:SHA-256_SSWU_RO_POP_`, exactly as `ops::verify_message::<MinSig>`
 checks it.
@@ -119,14 +120,14 @@ public share, and `threshold::recover` to interpolate.
 
 ## Results (Hegota testnet, chain 8141, 2026-10-20)
 
-Paymaster `0xaac74de2Ec4DD90656B7f029610dc9fE2F19CEb4`,
+Paymaster `0x273795F6EB2730D50C3544CbEF1E0C1ADbA4f541`,
 0.001 ETH a ticket. The funder `0xEB8e3354…` deployed it, bought 3 tickets and funded a second
-buyer, `0x35be31B0…`, who bought 3:
+buyer, `0x67B37Cb3…`, who bought 3:
 
 | Transaction | Block | Gas |
 |---|---|---|
-| deploy, buy 3, fund the second buyer: [`0xcc5ac779…`](https://dora.privacy.ethrex.xyz/tx/0xcc5ac779755b146bd9c98c6a28b9c7833c27d40d0e1924d4d3e17aca42e22a0b) | 480,699 | 2,625,936 |
-| the second buyer buys 3: [`0x9941554a…`](https://dora.privacy.ethrex.xyz/tx/0x9941554a01980fb70d8bec1a8582f4378cd7d60f92390f52a5487cbe7f1e1d3c) | 480,701 | 27,461 |
+| deploy, buy 3, fund the second buyer: [`0x91ba62b3…`](https://dora.privacy.ethrex.xyz/tx/0x91ba62b3ff3ba58592cad92eb466eea63be10ae80d5a5646e9de7b7fe6c5aaba) | 481,062 | 2,624,342 |
+| the second buyer buys 3: [`0xe42bfcc1…`](https://dora.privacy.ethrex.xyz/tx/0xe42bfcc17c6b8c3e49e076892f3190d9222e4da76567a275bad8d178199071c8) | 481,063 | 27,437 |
 
 **Issuance.** Six tickets, each from a different quorum: every ticket's request went to every
 issuer but one, in turn. Every answer checked against its issuer's share, and every unblinded
@@ -137,26 +138,26 @@ reached: "has no ticket left to be issued".
 
 | Spend | Ticket of | Block | Gas used | Ticket check (pay `VERIFY`) |
 |---|---|---|---|---|
-| [`0x31181599…`](https://dora.privacy.ethrex.xyz/tx/0x31181599fa5f180659d69d8dca1699ad33b2e9823de76e2ffedc17b5013ead5e) | second buyer | 480,703 | 330,604 | 122,006, state 183,600 |
-| [`0xc7c6f19f…`](https://dora.privacy.ethrex.xyz/tx/0xc7c6f19fbef1ba591adc532c9103259ae8bc4b4f28af97e15729ea5a52109fd2) | funder | 480,705 | 330,592 | 122,006, state 183,600 |
-| [`0x38329fb7…`](https://dora.privacy.ethrex.xyz/tx/0x38329fb7e5f47f7f0f704e91b899ca24adb280716a05e0915fe3d09b1c419cb5) | second buyer | 480,707 | 330,616 | 122,006, state 183,600 |
-| [`0xb7c37cc3…`](https://dora.privacy.ethrex.xyz/tx/0xb7c37cc3b669520803ba1ccae9e1ce60b0c9ff1db0b86ad3b35336e4867a11d1) | funder | 480,709 | 330,616 | 122,006, state 183,600 |
+| [`0x0bba93ca…`](https://dora.privacy.ethrex.xyz/tx/0x0bba93cad87f2438a5481f333e2f42323db2da8626cf2a76b14f998bf52b6d5b) | second buyer | 481,065 | 330,592 | 122,006, state 183,600 |
+| [`0x7114ff70…`](https://dora.privacy.ethrex.xyz/tx/0x7114ff70cede3997f1a986cb537f554317d9980a890a69f8d42e4b39bfb5bba9) | second buyer | 481,066 | 330,580 | 122,006, state 183,600 |
+| [`0xa91b63ce…`](https://dora.privacy.ethrex.xyz/tx/0xa91b63cec5befc6ef021b473887bbeea30b53076360f67bd09e4aa8d0452a86c) | funder | 481,068 | 330,592 | 122,006, state 183,600 |
+| [`0xfff0d624…`](https://dora.privacy.ethrex.xyz/tx/0xfff0d62405c5f4e98d572381037ee53840b5a887cd4c92441e916be15c6024d5) | funder | 481,070 | 330,604 | 122,006, state 183,600 |
 
 **Two at once**, one ticket of each buyer, the second sent before the first was mined:
 
 | Spend | Sent at once | Block |
 |---|---|---|
-| [`0xb6454e7c…`](https://dora.privacy.ethrex.xyz/tx/0xb6454e7c06fc1b703289629e39d0f6648c8c78bece439908984f0d4414dbaf41) | admitted | 480,711 |
-| [`0x7c0944bb…`](https://dora.privacy.ethrex.xyz/tx/0x7c0944bb5e2d7737d9bf59bb927a462d56a45e2b2137d3ffe61fa813a4a4c952) | refused: "Non-canonical paymaster already sponsors the maximum number of pending frame transactions"; sent again once the first was mined | 480,713 |
+| [`0xfbb18a8e…`](https://dora.privacy.ethrex.xyz/tx/0xfbb18a8e6d6860f0c3bcfb419a138e499b56aa25fb55c871c919e9fb67f320c6) | admitted | 481,072 |
+| [`0x9341c2ad…`](https://dora.privacy.ethrex.xyz/tx/0x9341c2ada20e5d88b853d2ec6cefbd20cf6737a5e5df36a51bc432cf87b1b1d7) | refused: "Non-canonical paymaster already sponsors the maximum number of pending frame transactions"; sent again once the first was mined | 481,074 |
 
 **Refused at the paymaster's `VERIFY`.** Each was refused by `ethrex_simulateFrameTransaction` and
 by `eth_sendRawTransaction` with "validation prefix frame reverted":
 
 | Transaction | What |
 |---|---|
-| `0x0f1f9e98…` | a fresh sender with a random G1 point for a signature |
-| `0x0a6863c8…` | the first spend's ticket, carried by another fresh sender |
-| `0x13f9087a…` | the first spend's ticket, by its own sender at nonce 1 |
+| `0xe178b6f6…` | a fresh sender with a random G1 point for a signature |
+| `0x01d9a6d1…` | the first spend's ticket, carried by another fresh sender |
+| `0x2af5f559…` | the first spend's ticket, by its own sender at nonce 1 |
 
 **Read back here.** `rebuild.test.ts` rebuilds every mined spend byte for byte from what the
 wallet decides (the sender, the fees, the pay data). It checks every ticket with noble's
