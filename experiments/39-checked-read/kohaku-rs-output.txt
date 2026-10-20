@@ -1,0 +1,18 @@
+shop 0x81747040327ECa208BcDcC2794C42DA70659Ba30: bought 8 in 0xecaec1be193903e56bd61c9fab0bf38eff81255ff0cc6354e978dde89563e7a4 (block 484104)
+snapshot 484165: 9 accounts, branches of 5 to 6 nodes
+split at depth 5
+the reader's header 484165: 0xd39934f8830c3b9e103ce72a5c6e35afd84a3987ac2e7fbe59662399e2153bc3 (hashed again), state root 0xff5a9584943ad3ba7c36173010af7e66301293e8cb3419921ea517ca9e2be183
+eth_getBalance(0x35be31B0dE16d67106F5cf0FA113dB6617B51FAf): "0x37484e19d1f1d" by Pir, checked; the node at 484165: "0x37484e19d1f1d"
+eth_getTransactionCount(0x35be31B0dE16d67106F5cf0FA113dB6617B51FAf): "0x1" by Pir, checked; the node at 484165: "0x1"
+0x0cdBBdE8265f6A737CdEaa5d643Eb173d1edd046, not in the table: no record for the key in its bucket, so no branch: unanswered
+honest, whole branch: proven: 0x00000000000000000000000000000000000000000000000000037484e19d1f1d0000000000000001
+liar, balance changed, true branch: refused: the branch proves another account
+liar, balance changed, leaf forged: refused: the branch does not reach the header's state root: no node 0xbb553082084cd53b42fa34bff790090a8c56020d002bc4025276184fdd2becdd among those given
+a spent ticket: refused: a spent ticket
+a ticket for another server: refused: no ticket for this server
+a signature that is no ticket: refused: no ticket for this server
+the third party: wrong: the server signed balance 1000972538999807773 for 0x35be31B0dE16d67106F5cf0FA113dB6617B51FAf, the chain holds 972538999807773
+the third party, on the forged leaf: wrong: the server signed balance 1000972538999807773 for 0x35be31B0dE16d67106F5cf0FA113dB6617B51FAf, the chain holds 972538999807773
+cost: {"answers":[{"answerBytes":1920,"answerNanos":646,"layout":"no branch (experiment 37)","tableBytes":1920},{"answerBytes":5344,"answerNanos":1654,"layout":"split","split":5,"tableBytes":5344},{"answerBytes":66848,"answerNanos":20202,"layout":"whole branch","split":0,"tableBytes":66848}],"readerWalkNanos":1759,"signNanos":91835,"ticketCheckNanos":1059321}
+evidence in evidence.json
+recorded in record.json
