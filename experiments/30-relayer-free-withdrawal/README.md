@@ -19,12 +19,21 @@ prices it:
 | [`mainnet.ts`](mainnet.ts) | Every withdrawal from four Tornado Cash ETH pools and Privacy Pools' ETH pool in a block window: fee, sender, gas |
 | [`RefundPool.yul`](RefundPool.yul) | Experiment 06's keyed pool, trimmed to the layout where the pool pays, plus a last frame that refunds the fee's surplus |
 | [`refund.ts`](refund.ts) | One withdrawal from experiment 06's keyed pool and one from RefundPool, priced alike |
+| [`layout.ts`](layout.ts) | Both layouts, the worst-case fee and the tightened limits, without the chain |
+| [`layout.test.ts`](layout.test.ts) | Every withdrawal mined from these layouts, rebuilt byte for byte from its fixture, including kohaku-rs's |
 
 ## Run
 
 ```bash
 npx tsx experiments/30-relayer-free-withdrawal/mainnet.ts 26188878 30   # mainnet, read-only
 npx tsx experiments/30-relayer-free-withdrawal/refund.ts                # testnet: setup (once), then two withdrawals
+npx vitest run experiments/30-relayer-free-withdrawal                   # offline: rebuild every mined withdrawal
+```
+
+From kohaku-rs, the same RefundPool withdrawal in Rust (part 3):
+
+```bash
+PRIVATE_KEY=0x... cargo run --release -p kohaku-frame-pool --example refund_withdrawal
 ```
 
 `mainnet.ts` reads from `https://mainnet.gateway.tenderly.co` unless `MAINNET_RPC_URL` is set. The
@@ -170,6 +179,40 @@ change against fee less gas less refund.
 - **RefundPool.** The note paid **1.023 times** its gas. RefundPool's bound on the charge was 13,469
   gas above the actual charge, which is exactly the refund frame's 25,000 limit less the 11,531 it
   used. The refund frame cost 11,820 gas: 2% of the withdrawal.
+
+## Part 3: the same withdrawal from Rust (2026-10-20)
+
+kohaku-rs's `kohaku-frame-pool` now builds RefundPool's layout as a fifth layout of its withdrawal
+builder, and prices it the way `refund.ts` does: simulate, tighten each limit to $1.25\,u + 5{,}000$
+above the pool's floors, then fix the fee at the worst-case max cost of that shape. Its example
+`crates/frame-pool/examples/refund_withdrawal.rs`, on kohaku-rs branch
+`claude/nifty-einstein-llp9cd`, deposited a fresh note and withdrew it from Rust alone, at the same
+fees as part 2:
+
+| | Tx | Block |
+|---|---|---|
+| deposit | [`0x70346def...`](https://dora.privacy.ethrex.xyz/tx/0x70346def0670b891c564372cd0a620b2792c0b50b144a13473d193453631a73f) | 477,921 |
+| withdrawal | [`0x339af560...`](https://dora.privacy.ethrex.xyz/tx/0x339af560b79b175b240b4250809cc14e84b34799023cb2a847053bd2e7119659) | 477,924 |
+
+| Pool | `gasUsed` | Frames | Fee in the note | Gas charged | Refunded | Recipient got | Left in the pool |
+|---|---|---|---|---|---|---|---|
+| RefundPool, from Rust | 579,697 | 1:5,579 / 1:244,744+97,920 / 1:14,255+183,600 / 1:11,531 | 0.0001506582 | 0.000057969704057879 | 0.000091341595847838 | 0.000940683395847838 | 0.000001346900094283 |
+
+Run on 2026-10-20 against ethrex `v23.0.0-hegota-testnet-hotfix-64b8fc09`. The deposit came from a
+fresh account funded by the faucet; the recipient is a fresh address.
+- **Rust chose what TypeScript chose.** Its limits were 11,973 / 310,930 / 100,000 / 25,000, the
+  same as part 2's RefundPool withdrawal, and its fee was the same 150,658,200,000,000 wei. Its
+  `gasUsed` is 36 higher, all of it calldata: of the 620 bytes of frame data and nonce key, the
+  Rust withdrawal's proof and nullifier have 150 zero bytes against 153, and each zero byte costs
+  12 gas less.
+- **The note paid 1.023 times its gas again**, and RefundPool's bound was again 13,469 gas over
+  the charge: the refund frame's limit less its use.
+- **Each side rebuilds the other's.** `layout.test.ts` rebuilds part 2's two withdrawals and
+  this one byte for byte from their fixtures. It reads only what a wallet decides: the proof and
+  its inputs, the root's slot and the fees. It derives the limits by tightening each frame's use
+  from the receipt, and it checks that the note's fee is the worst-case max cost of the
+  rebuilt shape. kohaku-rs's `crates/frame-pool/tests/withdrawal.rs` rebuilds the same three in
+  Rust, beside experiment 06's.
 
 ## Observations
 

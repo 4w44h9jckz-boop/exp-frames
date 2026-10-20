@@ -14,11 +14,11 @@
 // covers the proof's bytes.
 //
 // usage: npx tsx experiments/30-relayer-free-withdrawal/refund.ts [--dry-run]
-import { type Address, type Hex, concatHex, formatEther, keccak256, numberToHex, pad, parseGwei, toHex } from 'viem'
+import { type Address, type Hex, concatHex, formatEther, keccak256, numberToHex, pad, toHex } from 'viem'
 import { compileYul } from '../../src/contracts.js'
 import { deployFrame, saltOf } from '../../src/deploy.js'
 import { DRY_RUN, execute } from '../../src/execute.js'
-import { type Frame, type FrameTx, type FrameTxFees, defaultFrame, frameReceiptGas, frameReceiptStatus, makeClient, maxCost, simulateFrameTx } from '../../src/frametx/index.js'
+import { type FrameTx, frameReceiptGas, frameReceiptStatus, makeClient, maxCost, simulateFrameTx } from '../../src/frametx/index.js'
 import { hasher, keyedPool, note, patchedVerifier, recipient, sendFrames } from '../06-privacy-pool/deployment.js'
 import {
   DENOMINATION,
@@ -30,17 +30,15 @@ import {
   poolLeaves,
   prove,
   recentRoots,
-  withdrawalTx,
 } from '../06-privacy-pool/pool.js'
+import { REFUND_POOL_SALT, layoutTx, tighten, worstMaxCost } from './layout.js'
 
 const client = makeClient()
 const chainId = BigInt(await client.getChainId())
-const FEES: FrameTxFees = { maxPriorityFeePerGas: parseGwei('0.1'), maxFeePerGas: parseGwei('0.2'), maxFeePerBlobGas: 0n }
-const POST_OP_FLOOR = 25_000n
 const FEE_REFUND_TOPIC = keccak256(toHex('FeeRefund(address,uint256,uint256)'))
 
 // ---- RefundPool: experiment 06's hasher and patched verifier, 0.001 ETH notes ----
-const salt = keccak256(toHex('exp-frames/30/refund-pool'))
+const salt = REFUND_POOL_SALT
 const initcode = concatHex([compileYul('experiments/30-relayer-free-withdrawal/RefundPool.yul'), pad(patchedVerifier.address), pad(hasher.address), numberToHex(DENOMINATION, { size: 32 }), salt])
 const deployed = deployFrame(initcode, saltOf('exp-frames/30/refund-pool/v1'))
 // The shape experiment 06's withdrawal builder takes: mode 1 (keyed) is the layout's first three frames.
@@ -63,19 +61,8 @@ type Built = { tx: FrameTx; fee: bigint; to: Address }
 function layout(pool: FramePoolInstance, withRefund: boolean, labelOf: string, leaves: Hex[], slot: bigint, fee: bigint, limits?: bigint[]): Built {
   const to = recipient(labelOf)
   const proof = prove(note(labelOf), leaves, to, pool.address, fee)
-  const tx = withdrawalTx({ chainId, pool, proof, slot, fees: FEES, verifyExecution: 400_000n })
-  if (withRefund) tx.frames.push(defaultFrame({ target: pool.address, execution: 50_000n }))
-  if (limits) tx.frames = tx.frames.map((f, i) => ({ ...f, limits: { ...f.limits, execution: limits[i] } }))
-  return { tx, fee, to }
+  return { tx: layoutTx({ chainId, pool, proof, slot, withRefund, limits }), fee, to }
 }
-
-/** The maximum cost of `tx` with every byte of every frame's data and of the nonce key non-zero. */
-function worstMaxCost(tx: FrameTx): bigint {
-  const ff = (d: Hex) => (`0x${'ff'.repeat((d.length - 2) / 2)}`) as Hex
-  return maxCost({ ...tx, nonceKeys: tx.nonceKeys.map(() => 2n ** 256n - 1n), frames: tx.frames.map((f) => ({ ...f, data: ff(f.data) })) })
-}
-
-const floors = (withRefund: boolean) => [0n, 0n, 100_000n, ...(withRefund ? [POST_OP_FLOOR] : [])]
 
 async function build(pool: FramePoolInstance, withRefund: boolean, labelOf: string): Promise<Built> {
   const leaves = await poolLeaves(client, pool.address)
@@ -90,11 +77,7 @@ async function build(pool: FramePoolInstance, withRefund: boolean, labelOf: stri
   if (!sim.valid || !sim.frames) throw new Error(`${pool.label}: draft rejected: ${sim.violation}`)
   const used = sim.frames.map((f) => BigInt(f.gasUsed))
   // 2. Tighten as experiment 28's wallet does, keep the pool's floors, and prove the final fee.
-  const fl = floors(withRefund)
-  const limits = used.map((u, i) => {
-    const t = (u * 5n) / 4n + 5_000n
-    return t > fl[i] ? t : fl[i]
-  })
+  const limits = tighten(used, withRefund)
   const shape = layout(pool, withRefund, labelOf, leaves, rr.slot, 1n, limits)
   const fee = worstMaxCost(shape.tx)
   const final = layout(pool, withRefund, labelOf, leaves, rr.slot, fee, limits)
