@@ -235,7 +235,7 @@ In words: approving execution must cover every frame except a sponsor's pay fram
 - one owner signature was completed by two sponsors in turn. The second replaced the first with another payer and higher fees, and was mined (block 315,376). A token fee went to whichever sponsor landed it;
 - `VERIFY` cost 2,914 gas for six frames, against 351 for the canonical hash.
 
-This settles half of a question the companion [`aa`](https://github.com/4w44h9jckz-boop/aa) study put to the EIP's authors: whether fees could leave the canonical hash. They can, for accounts that do not pay, through $E$, with no change to the EIP. That matters most for privacy designs. If a spender's authorization is a blind voucher from an issuer, re-signing to change the price means contacting the issuer again, and that second contact links the spender.
+This settles half of a question a companion study of account abstraction put to the EIP's authors: whether fees could leave the canonical hash. They can, for accounts that do not pay, through $E$, with no change to the EIP. That matters most for privacy designs. If a spender's authorization is a blind voucher from an issuer, re-signing to change the price means contacting the issuer again, and that second contact links the spender.
 
 **What a transaction is.** Across the two payers, $E$ stayed the same while the signature hash and the transaction hash both changed. A wallet that tracked its operation by transaction hash lost it at the replacement. Bitcoin met the same problem as transaction malleability, and fixed it with an identifier for what the signer authorized that leaves the witness out (BIP 141's txid against wtxid). Frames need the same distinction in wallets and RPCs: the *intent* the sender signed, against the *envelope* that carries it. A wallet should watch the nonce and recompute $E$ of whatever consumed it. A contract that wants an operation id should recompute $E$ rather than read the signature hash.
 
@@ -293,7 +293,7 @@ The public mempool stays safe if every action that costs a constant fee has a co
 | **code-less sponsor (master)** | **one transfer by its key** | $\le \lfloor B / c_{\min} \rfloor$ |
 | **PR-12328's "egress-decidable" paymaster, as written** | **one transaction by the paymaster as sender** | **unbounded (measured below)** |
 
-The code-less sponsor's row is the EIP's own text: such a payer "is not a paymaster and is governed by the per-payer exposure rule alone", which bounds the summed maximum cost of its pending transactions by its balance $B$. That bounds the *amount* at risk, not the *number* of transactions. Suppose the smallest maximum cost a sponsored transaction can declare is $c_{\min} \approx 50{,}000$ gas at 2 gwei, that is $10^{-4}$ ETH. Then one ether backs about 10,000 pending transactions, each from its own fresh sender, and one 21,000-gas transfer invalidates them all (derived, not measured). The `aa` study raised the same point with the authors. ethrex does not implement the exemption, and caps such a sponsor at one pending transaction (experiment 09).
+The code-less sponsor's row is the EIP's own text: such a payer "is not a paymaster and is governed by the per-payer exposure rule alone", which bounds the summed maximum cost of its pending transactions by its balance $B$. That bounds the *amount* at risk, not the *number* of transactions. Suppose the smallest maximum cost a sponsored transaction can declare is $c_{\min} \approx 50{,}000$ gas at 2 gwei, that is $10^{-4}$ ETH. Then one ether backs about 10,000 pending transactions, each from its own fresh sender, and one 21,000-gas transfer invalidates them all (derived, not measured). The companion account-abstraction study raised the same point with the authors. ethrex does not implement the exemption, and caps such a sponsor at one pending transaction (experiment 09).
 
 Three open pull requests touch this row, and none bounds it:
 - [PR-12321](https://github.com/ethereum/EIPs/pull/12321) specifies the cleanup. A payer that approved through default code and then acquires code is dropped with everything it backs, and a falling balance evicts transactions until the exposure fits again. That is the fan-out, written down.
@@ -407,7 +407,7 @@ The remaining 0.9% are hashes with a `0x5b` byte (`JUMPDEST`) at an instruction 
 - **It depends on the sponsor staying alive.** If the sponsor stops posting roots, then 8,191 slots after the last one no transaction can name a root, and the balance is stranded for good.
 - **Policies cannot be withdrawn for 8,191 slots** (section 3).
 
-**Not suggested: more exact code hashes.** Nodes recognize the canonical paymaster by an exact match of its code. One unreachable extra byte demoted a copy to "refused" (experiment 09). Every edit to the reference code orphans the deployed instances, a versioning problem the `aa` study also raised. Recognition by a decidable property is the right direction; it only has to decide the right property.
+**Not suggested: more exact code hashes.** Nodes recognize the canonical paymaster by an exact match of its code. One unreachable extra byte demoted a copy to "refused" (experiment 09). Every edit to the reference code orphans the deployed instances, a versioning problem the companion account-abstraction study also raised. Recognition by a decidable property is the right direction; it only has to decide the right property.
 
 **Not suggested: lifting the cap of one for every paymaster.** ERC-7562 uses staking and reputation instead, and EIP-8141 removed both on purpose. The canonical paymaster's 86,400-second timelock is ERC-7562's `MIN_UNSTAKE_DELAY` of one day turned into code. A sealed paymaster is a stake that never unstakes.
 
@@ -457,7 +457,7 @@ To check that excuse, FOCIL's execution-layer rule asks, for each listed transac
 
 > 3. Validate `T` against `S` by checking the nonce and balance of `T.origin`.
 
-A frame transaction has no `T.origin` in that sense. Its validity is whatever its validation prefix decides when run, and its payer may not be its sender. So an attester cannot tell an excused omission from censorship. The `aa` study's explainer on inclusion lists noted the gap.
+A frame transaction has no `T.origin` in that sense. Its validity is whatever its validation prefix decides when run, and its payer may not be its sender. So an attester cannot tell an excused omission from censorship. The companion account-abstraction study's explainer on inclusion lists noted the gap.
 
 EIP-8369 is the proposal that fills it. It defines two profiles of what a node with partial state (VOPS) can check. Profile 1 is ordinary transactions, checked by nonce and balance. *Every* frame transaction goes in Profile 2:
 
@@ -475,9 +475,9 @@ Profile 2 replays the validation prefix of a listed frame transaction against th
 
 EOA-wise, a user whose wallet moves from ordinary transactions to frame batches, the main benefit of the EIP for users, loses inclusion-list protection by doing so.
 
-Sponsorship-wise, sponsored and private transactions are what the companion EIPs exist for, and the `aa` study asks whether a shared payer can be protected at all.
+Sponsorship-wise, sponsored and private transactions are what the companion EIPs exist for, and the companion account-abstraction study asks whether a shared payer can be protected at all.
 
-Privacy-pool-wise, the loss is double. Without EIP-8250, a pool that is its own sender has one pending withdrawal network-wide. Experiment 06 measured it: the pool that tracks spends in storage serializes every user, and a second withdrawal evicted the first. The companion `crops-frame` study computes the ceiling at about 300 spends an hour ([P0005](https://github.com/4w44h9jckz-boop/crops-frame/blob/main/problems/records/P0005-a-shared-sender-has-a-one-transaction-mempool-ceiling.md)). These are the transactions frames help most: a pool that pays its own gas needs no relayer, and relayers took 224.5 ETH from notes in the last 30 days (experiment 30, below).
+Privacy-pool-wise, the loss is double. Without EIP-8250, a pool that is its own sender has one pending withdrawal network-wide. Experiment 06 measured it: the pool that tracks spends in storage serializes every user, and a second withdrawal evicted the first. A companion study, not published, computes the ceiling at about 300 spends an hour. These are the transactions frames help most: a pool that pays its own gas needs no relayer, and relayers took 224.5 ETH from notes in the last 30 days (experiment 30, below).
 
 **What we measured** ([experiment 25](https://github.com/4w44h9jckz-boop/exp-frames/tree/main/experiments/25-inclusion-lists)). We classified the 183 frame transactions mined before experiment 25 under each rule:
 
@@ -636,7 +636,7 @@ The honest summary: Hegota as scheduled makes post-quantum accounts possible and
 - Admit new schemes by what only the protocol can do with them: check them before execution, and aggregate them. On that test BIP-340 Schnorr comes first, and among post-quantum schemes the one with a credible aggregation path beats the one that verifies fastest. Under the calldata floor, bytes are the cost: a 738-byte WOTS signature pays 66,474 gas of floor before any verification.
 - Pair any widening of default code with a way to install code that works for every scheme, so an address derived from a key can still rotate.
 
-**Cost.** Each scheme is consensus code forever, and versioning the canonical paymaster is a migration problem the `aa` study raised. PR-12041 answers it by pinning a code hash per fork and demoting the instances of an unpinned version, which strands their sponsorship capacity, though not their funds, at each upgrade.
+**Cost.** Each scheme is consensus code forever, and versioning the canonical paymaster is a migration problem the companion account-abstraction study raised. PR-12041 answers it by pinning a code hash per fork and demoting the instances of an unpinned version, which strands their sponsorship capacity, though not their funds, at each upgrade.
 
 **Not suggested: post-quantum schemes in default code without rotation.** That would make a key the permanent sole owner of an address that can never acquire code: the same dead end, one scheme later.
 
@@ -903,6 +903,6 @@ Two findings moved. Section 4's budget per list is now a pull request, and secti
 - **The wallet survey** these three came from: [What Wallets Ship Today](https://github.com/4w44h9jckz-boop/exp-frames/blob/main/posts/wallets-and-frames.md).
 - **Mainnet sources for experiment 30:** the pool addresses from [tornado-cli's `config.js`](https://github.com/tornadocash/tornado-cli) and [Privacy Pools' deployments page](https://docs.privacypools.com/deployments), and Railgun's broadcaster fee model from [its documentation](https://docs.railgun.org).
 - **Rust wallet ports:** [kohaku-rs, branch `experiment/frames`](https://github.com/4w44h9jckz-boop/kohaku-rs/tree/experiment/frames).
-- **Companion studies we cite rather than repeat:** [aa](https://github.com/4w44h9jckz-boop/aa), on account abstraction and the gas market for private transactions, including its [questions for the specification authors](https://github.com/4w44h9jckz-boop/aa/blob/main/docs/06-findings/02-questions-for-the-specification-authors.md); and [crops-frame](https://github.com/4w44h9jckz-boop/crops-frame), a composition framework for privacy protocols on frames.
+- **Companion studies we draw on rather than repeat:** an earlier study of account abstraction and the gas market for private transactions, including its questions for the specification authors; and a composition framework for privacy protocols on frames. Neither is published.
 - **Related reading:** Nero_eth, [Frame transactions and the three gates to privacy](https://ethresear.ch/t/frame-transactions-and-the-three-gates-to-privacy/24666); lightclient, [Mempool Strategies for EIP-8141](https://hackmd.io/@matt/frame-mempool).
 - **The same findings ranked by difficulty:** [Frame Transaction Open Problems](https://github.com/4w44h9jckz-boop/exp-frames/blob/main/posts/frame-transactions-open-problems.md).

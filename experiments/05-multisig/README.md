@@ -100,11 +100,11 @@ Signature verification includes the payer's own secp256k1 entry (2,800).
    entry, 6,700 per P256 entry.
 2. **Passkeys come at no extra code cost.** A P256 owner goes through exactly the same code path,
    since `SIGPARAM(0x00)` returns `keccak256(qx ‖ qy)[12:]`. The mixed transfer is the first mined P256 entry
-   among our fixtures (the `aa` repo had not measured one either). The tooling's tests verify it.
+   among our fixtures (an earlier account-abstraction study had not measured one either). The tooling's tests verify it.
 3. **Per-signer cost is mostly the signature, not the account.** Simple multisig transactions sit at
    the calldata floor, so each secp256k1 signer costs 2,800 + 85 bytes × 64 ≈ 8,240 gas, and each P256
-   signer 6,700 + 148 × 64 ≈ 16,170. Above the floor it is 2,800 + ~1,350 of calldata (`aa` measured
-   4,148), or 6,700 + ~2,400.
+   signer 6,700 + 148 × 64 ≈ 16,170. Above the floor it is 2,800 + ~1,350 of calldata (that study
+   measured 4,148), or 6,700 + ~2,400.
 4. **VERIFY grows quadratically, which is this contract's choice.** Each signer is matched against the
    owner list: 30 owners cost 45,285 gas. Requiring signers in ascending address order (as Safe
    does) would make it linear. Under the spec's `MAX_VERIFY_GAS` of 100,000, about 20 secp256k1
@@ -126,5 +126,5 @@ Signature verification includes the payer's own secp256k1 entry (2,800).
 7. **Owners must name themselves.** An entry with an empty `signer` resolves to `tx.sender`, here the
    multisig, which has no key. Explicit `signer` fields cost 20 bytes per owner.
 8. **Which owners signed is public.** Every owner's address sits in the transaction, and the subset
-   that signed is visible. This is the linkability the `aa` repo set out to avoid by choosing one
-   threshold key. A threshold signature (Track B, experiment 06) looks like a single owner.
+   that signed is visible. This is the linkability an earlier account-abstraction study set out to avoid by
+   choosing one threshold key. A threshold signature (Track B, experiment 06) looks like a single owner.

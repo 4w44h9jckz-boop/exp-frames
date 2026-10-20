@@ -49,7 +49,7 @@ const users = {
   framesSelf: derive(`rails/${run}/frames-self`),
   framesSponsored: derive(`rails/${run}/frames-sponsored`),
   t2: derive(`rails/${run}/7702-type2`),
-  aa: derive(`rails/${run}/7702-4337`),
+  erc4337: derive(`rails/${run}/7702-4337`),
 }
 const bundler = derive('rails/bundler')
 const E = (n: number) => parseEther(String(n))
@@ -70,7 +70,7 @@ for (const [k, u] of Object.entries(users)) console.log(`${k} ${u.address}`)
 // ---- setup: ETH for every rail but the sponsored one, Token A for all ----
 {
   const frames: Frame[] = []
-  for (const a of [users.framesSelf.address, users.t2.address, users.aa.address, bundler.address]) {
+  for (const a of [users.framesSelf.address, users.t2.address, users.erc4337.address, bundler.address]) {
     if ((await client.getBalance({ address: a })) < E(0.01)) frames.push(senderFrame({ target: a, value: E(0.03), execution: 30_000n, state: NEW_ACCOUNT_STATE_GAS }))
   }
   for (const u of Object.values(users)) {
@@ -80,7 +80,7 @@ for (const [k, u] of Object.entries(users)) console.log(`${k} ${u.address}`)
   if (frames.length) await sendFrames(client, funderKey, frames, { label: 'setup: ETH and Token A for the rails' })
 }
 const wallet = (key: Hex) => createWalletClient({ account: privateKeyToAccount(key), chain: hegotaTestnet, transport: http(HEGOTA_RPC_URL) })
-for (const u of [users.t2, users.aa]) {
+for (const u of [users.t2, users.erc4337]) {
   const code = (await client.getCode({ address: u.address })) ?? '0x'
   if (code.toLowerCase().startsWith(`0xef0100${s7702.slice(2).toLowerCase()}`)) continue
   const w = wallet(u.key)
@@ -133,7 +133,7 @@ async function type2(round: number) {
 // ---- ERC-4337 through the delegate ----
 const packed = (hi: bigint, lo: bigint) => pad(toHex((hi << 128n) | lo), { size: 32 })
 async function handleOps(round: number) {
-  const sender = users.aa.address
+  const sender = users.erc4337.address
   const nonce = (await client.readContract({ address: entryPoint, abi: ep.abi, functionName: 'getNonce', args: [sender, 0n] })) as bigint
   const op = {
     sender,
@@ -147,7 +147,7 @@ async function handleOps(round: number) {
     signature: '0x' as Hex,
   }
   const opHash = (await client.readContract({ address: entryPoint, abi: ep.abi, functionName: 'getUserOpHash', args: [op] })) as Hex
-  op.signature = serializeSignature(await sign({ hash: opHash, privateKey: users.aa.key }))
+  op.signature = serializeSignature(await sign({ hash: opHash, privateKey: users.erc4337.key }))
   const data = encodeFunctionData({ abi: ep.abi, functionName: 'handleOps', args: [[op], bundler.address] })
   const hash = await wallet(bundler.key).sendTransaction({ to: entryPoint, data, gas: 600_000n, ...fees })
   const r = await client.waitForTransactionReceipt({ hash })

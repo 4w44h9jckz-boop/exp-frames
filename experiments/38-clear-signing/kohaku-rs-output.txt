@@ -1,0 +1,2237 @@
+== exp27-f3079a0/sponsored-transfer: experiment 27, case sponsored-transfer, expected valid
+  intent: Send 1 VEC to a friend
+  [Signature]
+    Signs: the execution digest E: every frame but the payer's, and not the fees (0xce1a8f87...b03e)   (FrameExecution, exp-frames experiment 27)
+    Signer: the owner key 0xCA17f5f5Ac896C0591899ab457eB57310682757c, entry 0, secp256k1   (EIP-8141)
+    Also signed by: sponsor 1, entry 1, over the signature hash   (EIP-8141)
+  [Account]
+    Account: 0x2700000000000000000000000000000000000001: ExecutionScopeAccount, owner 0xCA17f5f5Ac896C0591899ab457eB57310682757c, in your wallet's accounts   (account: ExecutionScopeAccount)
+    Chain: 8141   (EIP-8141)
+  [Nonce]
+    Nonce: the account nonce, 0   (EIP-8250 at f3079a09e8)
+  [Validation]
+    frame 0: Approves: your account; it may approve execution   (EIP-8141)
+    frame 0: With: Your owner key approves the execution; any payer may complete it   (account: ExecutionScopeAccount)
+    frame 1: Payer approves: sponsor 1   (EIP-8141)
+  [Payment]
+    Payer: not signed: any payer may complete it (here sponsor 1; you pay no gas)   (FrameExecution, exp-frames experiment 27)
+    Fees: not signed (here at most 0.000441258 ETH (220629 gas at up to 2 gwei), paid by the payer)   (FrameExecution, exp-frames experiment 27)
+  [Execution]
+    frame 2: Runs: SENDER, as your account, calling Vector token   (EIP-8141)
+    frame 2: Amount: 1 VEC   (ERC-7730: Vector token)
+    frame 2: To: a friend   (ERC-7730: Vector token)
+  withoutAccountDescriptors: 1 blind; gaps [Account (blind)]
+  transactionAlone: 2 blind; gaps [Account (blind), NoDescriptor (blind)]
+
+== exp27-f3079a0/sponsored-transfer (typed data alone)
+  intent: Send 1 VEC to a friend
+  [Signature]
+    Signs: the execution digest E: every frame but the payer's, and not the fees (0xce1a8f87...b03e)   (FrameExecution, exp-frames experiment 27)
+  [Account]
+    Account: 0x2700000000000000000000000000000000000001: ExecutionScopeAccount, owner 0xCA17f5f5Ac896C0591899ab457eB57310682757c, in your wallet's accounts   (account: ExecutionScopeAccount)
+    Chain: 8141   (EIP-8141)
+  [Nonce]
+    Nonce: the account nonce, 0   (EIP-8250 at f3079a09e8)
+  [Validation]
+    frame 0: Approves: your account; it may approve execution   (EIP-8141)
+    frame 0: With: Your owner key approves the execution; any payer may complete it   (account: ExecutionScopeAccount)
+    frame 1: Pay frame: a payer approves payment; who, and its limits and data, are not signed   (FrameExecution, exp-frames experiment 27)
+  [Payment]
+    Payer and fees: not signed: whoever completes the transaction chooses and pays them   (FrameExecution, exp-frames experiment 27)
+  [Execution]
+    frame 2: Runs: SENDER, as your account, calling Vector token   (EIP-8141)
+    frame 2: Amount: 1 VEC   (ERC-7730: Vector token)
+    frame 2: To: a friend   (ERC-7730: Vector token)
+  withoutAccountDescriptors: 1 blind; gaps [Account (blind)]
+  transactionAlone: 2 blind; gaps [Account (blind), NoDescriptor (blind)]
+
+== exp27-f3079a0/with-expiry: experiment 27, case with-expiry, expected valid
+  intent: Send 0.000000000000000001 VEC to a friend
+  [Signature]
+    Signs: the execution digest E: every frame but the payer's, and not the fees (0x509f2ce7...3999)   (FrameExecution, exp-frames experiment 27)
+    Signer: the owner key 0xCA17f5f5Ac896C0591899ab457eB57310682757c, entry 0, secp256k1   (EIP-8141)
+    Also signed by: sponsor 1, entry 1, over the signature hash   (EIP-8141)
+  [Account]
+    Account: 0x2700000000000000000000000000000000000001: ExecutionScopeAccount, owner 0xCA17f5f5Ac896C0591899ab457eB57310682757c, in your wallet's accounts   (account: ExecutionScopeAccount)
+    Chain: 8141   (EIP-8141)
+  [Nonce]
+    Nonce: the account nonce, 0   (EIP-8250 at f3079a09e8)
+  [Validation]
+    frame 0: Valid until: 2030-03-17T17:46:40Z   (EIP-8141 expiry verifier)
+    frame 1: Approves: your account; it may approve execution   (EIP-8141)
+    frame 1: With: Your owner key approves the execution; any payer may complete it   (account: ExecutionScopeAccount)
+    frame 2: Payer approves: sponsor 1   (EIP-8141)
+  [Payment]
+    Payer: not signed: any payer may complete it (here sponsor 1; you pay no gas)   (FrameExecution, exp-frames experiment 27)
+    Fees: not signed (here at most 0.00025636 ETH (128180 gas at up to 2 gwei), paid by the payer)   (FrameExecution, exp-frames experiment 27)
+  [Execution]
+    frame 3: Runs: SENDER, as your account, calling Vector token   (EIP-8141)
+    frame 3: Amount: 0.000000000000000001 VEC   (ERC-7730: Vector token)
+    frame 3: To: a friend   (ERC-7730: Vector token)
+  withoutAccountDescriptors: 1 blind; gaps [Account (blind)]
+  transactionAlone: 2 blind; gaps [Account (blind), NoDescriptor (blind)]
+
+== exp27-f3079a0/with-expiry (typed data alone)
+  intent: Send 0.000000000000000001 VEC to a friend
+  [Signature]
+    Signs: the execution digest E: every frame but the payer's, and not the fees (0x509f2ce7...3999)   (FrameExecution, exp-frames experiment 27)
+  [Account]
+    Account: 0x2700000000000000000000000000000000000001: ExecutionScopeAccount, owner 0xCA17f5f5Ac896C0591899ab457eB57310682757c, in your wallet's accounts   (account: ExecutionScopeAccount)
+    Chain: 8141   (EIP-8141)
+  [Nonce]
+    Nonce: the account nonce, 0   (EIP-8250 at f3079a09e8)
+  [Validation]
+    frame 0: Valid until: 2030-03-17T17:46:40Z   (EIP-8141 expiry verifier)
+    frame 1: Approves: your account; it may approve execution   (EIP-8141)
+    frame 1: With: Your owner key approves the execution; any payer may complete it   (account: ExecutionScopeAccount)
+    frame 2: Pay frame: a payer approves payment; who, and its limits and data, are not signed   (FrameExecution, exp-frames experiment 27)
+  [Payment]
+    Payer and fees: not signed: whoever completes the transaction chooses and pays them   (FrameExecution, exp-frames experiment 27)
+  [Execution]
+    frame 3: Runs: SENDER, as your account, calling Vector token   (EIP-8141)
+    frame 3: Amount: 0.000000000000000001 VEC   (ERC-7730: Vector token)
+    frame 3: To: a friend   (ERC-7730: Vector token)
+  withoutAccountDescriptors: 1 blind; gaps [Account (blind)]
+  transactionAlone: 2 blind; gaps [Account (blind), NoDescriptor (blind)]
+
+== exp27-f3079a0/atomic-approve-swap: experiment 27, case atomic-approve-swap, expected valid
+  intent: Approve 0x2700000000000000000000000000000000000011 to spend 10 VEC and Unknown call in frame 3
+  [Signature]
+    Signs: the execution digest E: every frame but the payer's, and not the fees (0x4e3eb4d3...c5bc)   (FrameExecution, exp-frames experiment 27)
+    Signer: the owner key 0xCA17f5f5Ac896C0591899ab457eB57310682757c, entry 0, secp256k1   (EIP-8141)
+    Also signed by: sponsor 1, entry 1, over the signature hash   (EIP-8141)
+  [Account]
+    Account: 0x2700000000000000000000000000000000000001: ExecutionScopeAccount, owner 0xCA17f5f5Ac896C0591899ab457eB57310682757c, in your wallet's accounts   (account: ExecutionScopeAccount)
+    Chain: 8141   (EIP-8141)
+  [Nonce]
+    Nonce: the account nonce, 0   (EIP-8250 at f3079a09e8)
+  [Validation]
+    frame 0: Approves: your account; it may approve execution   (EIP-8141)
+    frame 0: With: Your owner key approves the execution; any payer may complete it   (account: ExecutionScopeAccount)
+    frame 1: Payer approves: sponsor 1   (EIP-8141)
+  [Payment]
+    Payer: not signed: any payer may complete it (here sponsor 1; you pay no gas)   (FrameExecution, exp-frames experiment 27)
+    Fees: not signed (here at most 0.000662736 ETH (331368 gas at up to 2 gwei), paid by the payer)   (FrameExecution, exp-frames experiment 27)
+  [Execution]
+    frame 2: Runs: SENDER, as your account, calling Vector token   (EIP-8141)
+    frame 2: Spender: 0x2700000000000000000000000000000000000011   (ERC-7730: Vector token)
+    frame 2: Amount: 10 VEC   (ERC-7730: Vector token)
+    frame 3: Runs: SENDER, as your account, calling 0x2700000000000000000000000000000000000011   (EIP-8141)
+    frame 3: Data: 0x123456780000000000000000000000000000000000000000000000008ac7230489e80000   (raw)
+    Atomic: frames 2 to 3 all succeed or all revert   (EIP-8141)
+  gap: BLIND NoDescriptor: frame 3: no ERC-7730 file binds 0x2700000000000000000000000000000000000011
+  withoutAccountDescriptors: 2 blind; gaps [Account (blind), NoDescriptor (blind)]
+  transactionAlone: 3 blind; gaps [Account (blind), NoDescriptor (blind), NoDescriptor (blind)]
+
+== exp27-f3079a0/atomic-approve-swap (typed data alone)
+  intent: Approve 0x2700000000000000000000000000000000000011 to spend 10 VEC and Unknown call in frame 3
+  [Signature]
+    Signs: the execution digest E: every frame but the payer's, and not the fees (0x4e3eb4d3...c5bc)   (FrameExecution, exp-frames experiment 27)
+  [Account]
+    Account: 0x2700000000000000000000000000000000000001: ExecutionScopeAccount, owner 0xCA17f5f5Ac896C0591899ab457eB57310682757c, in your wallet's accounts   (account: ExecutionScopeAccount)
+    Chain: 8141   (EIP-8141)
+  [Nonce]
+    Nonce: the account nonce, 0   (EIP-8250 at f3079a09e8)
+  [Validation]
+    frame 0: Approves: your account; it may approve execution   (EIP-8141)
+    frame 0: With: Your owner key approves the execution; any payer may complete it   (account: ExecutionScopeAccount)
+    frame 1: Pay frame: a payer approves payment; who, and its limits and data, are not signed   (FrameExecution, exp-frames experiment 27)
+  [Payment]
+    Payer and fees: not signed: whoever completes the transaction chooses and pays them   (FrameExecution, exp-frames experiment 27)
+  [Execution]
+    frame 2: Runs: SENDER, as your account, calling Vector token   (EIP-8141)
+    frame 2: Spender: 0x2700000000000000000000000000000000000011   (ERC-7730: Vector token)
+    frame 2: Amount: 10 VEC   (ERC-7730: Vector token)
+    frame 3: Runs: SENDER, as your account, calling 0x2700000000000000000000000000000000000011   (EIP-8141)
+    frame 3: Data: 0x123456780000000000000000000000000000000000000000000000008ac7230489e80000   (raw)
+    Atomic: frames 2 to 3 all succeed or all revert   (EIP-8141)
+  gap: BLIND NoDescriptor: frame 3: no ERC-7730 file binds 0x2700000000000000000000000000000000000011
+  withoutAccountDescriptors: 2 blind; gaps [Account (blind), NoDescriptor (blind)]
+  transactionAlone: 3 blind; gaps [Account (blind), NoDescriptor (blind), NoDescriptor (blind)]
+
+== exp27-f3079a0/deploy-first: experiment 27, case deploy-first, expected valid
+  intent: Unknown call in frame 0 and Send 0.000000000000000001 ETH to a friend
+  [Signature]
+    Signs: the execution digest E: every frame but the payer's, and not the fees (0xba8c5092...e2dc)   (FrameExecution, exp-frames experiment 27)
+    Signer: the owner key 0xCA17f5f5Ac896C0591899ab457eB57310682757c, entry 0, secp256k1   (EIP-8141)
+    Also signed by: sponsor 1, entry 1, over the signature hash   (EIP-8141)
+  [Account]
+    Account: 0x2700000000000000000000000000000000000001: ExecutionScopeAccount, owner 0xCA17f5f5Ac896C0591899ab457eB57310682757c, in your wallet's accounts   (account: ExecutionScopeAccount)
+    Chain: 8141   (EIP-8141)
+  [Nonce]
+    Nonce: the account nonce, 0   (EIP-8250 at f3079a09e8)
+  [Validation]
+    frame 1: Approves: your account; it may approve execution   (EIP-8141)
+    frame 1: With: Your owner key approves the execution; any payer may complete it   (account: ExecutionScopeAccount)
+    frame 2: Payer approves: sponsor 1   (EIP-8141)
+  [Payment]
+    Value sent: 0.000000000000000001 ETH from your account   (EIP-8141)
+    Payer: not signed: any payer may complete it (here sponsor 1; you pay no gas)   (FrameExecution, exp-frames experiment 27)
+    Fees: not signed (here at most 0.000737944 ETH (368972 gas at up to 2 gwei), paid by the payer)   (FrameExecution, exp-frames experiment 27)
+  [Execution]
+    frame 0: Runs: DEFAULT, as the entry point, not your account, calling 0x2700000000000000000000000000000000000012   (EIP-8141)
+    frame 0: Data: 0xdeadbeef0000000000000000000000000000000000000000000000000000000000000001   (raw)
+    frame 3: Runs: SENDER, as your account, calling a friend   (EIP-8141)
+    frame 3: Value: 0.000000000000000001 ETH   (EIP-8141)
+    Before payment: frame 0 runs in the validation prefix, before a payer is approved   (EIP-8141)
+  gap: BLIND NoDescriptor: frame 0: no ERC-7730 file binds 0x2700000000000000000000000000000000000012
+  withoutAccountDescriptors: 2 blind; gaps [Account (blind), NoDescriptor (blind)]
+  transactionAlone: 2 blind; gaps [Account (blind), NoDescriptor (blind)]
+
+== exp27-f3079a0/deploy-first (typed data alone)
+  intent: Unknown call in frame 0 and Send 0.000000000000000001 ETH to a friend
+  [Signature]
+    Signs: the execution digest E: every frame but the payer's, and not the fees (0xba8c5092...e2dc)   (FrameExecution, exp-frames experiment 27)
+  [Account]
+    Account: 0x2700000000000000000000000000000000000001: ExecutionScopeAccount, owner 0xCA17f5f5Ac896C0591899ab457eB57310682757c, in your wallet's accounts   (account: ExecutionScopeAccount)
+    Chain: 8141   (EIP-8141)
+  [Nonce]
+    Nonce: the account nonce, 0   (EIP-8250 at f3079a09e8)
+  [Validation]
+    frame 1: Approves: your account; it may approve execution   (EIP-8141)
+    frame 1: With: Your owner key approves the execution; any payer may complete it   (account: ExecutionScopeAccount)
+    frame 2: Pay frame: a payer approves payment; who, and its limits and data, are not signed   (FrameExecution, exp-frames experiment 27)
+  [Payment]
+    Value sent: 0.000000000000000001 ETH from your account   (EIP-8141)
+    Payer and fees: not signed: whoever completes the transaction chooses and pays them   (FrameExecution, exp-frames experiment 27)
+  [Execution]
+    frame 0: Runs: DEFAULT, as the entry point, not your account, calling 0x2700000000000000000000000000000000000012   (EIP-8141)
+    frame 0: Data: 0xdeadbeef0000000000000000000000000000000000000000000000000000000000000001   (raw)
+    frame 3: Runs: SENDER, as your account, calling a friend   (EIP-8141)
+    frame 3: Value: 0.000000000000000001 ETH   (EIP-8141)
+    Before payment: frame 0 runs in the validation prefix, before a payer is approved   (EIP-8141)
+  gap: BLIND NoDescriptor: frame 0: no ERC-7730 file binds 0x2700000000000000000000000000000000000012
+  withoutAccountDescriptors: 2 blind; gaps [Account (blind), NoDescriptor (blind)]
+  transactionAlone: 2 blind; gaps [Account (blind), NoDescriptor (blind)]
+
+== exp27-f3079a0/keyed-nonces: experiment 27, case keyed-nonces, expected valid
+  intent: Send 0.000000000000000005 ETH to a friend
+  [Signature]
+    Signs: the execution digest E: every frame but the payer's, and not the fees (0x02dbd20e...6e9e)   (FrameExecution, exp-frames experiment 27)
+    Signer: the owner key 0xCA17f5f5Ac896C0591899ab457eB57310682757c, entry 0, secp256k1   (EIP-8141)
+    Also signed by: sponsor 1, entry 1, over the signature hash   (EIP-8141)
+  [Account]
+    Account: 0x2700000000000000000000000000000000000001: ExecutionScopeAccount, owner 0xCA17f5f5Ac896C0591899ab457eB57310682757c, in your wallet's accounts   (account: ExecutionScopeAccount)
+    Chain: 8141   (EIP-8141)
+  [Nonce]
+    Nonce: keys [3, 9] at sequence 0, in NONCE_MANAGER   (EIP-8250 at f3079a09e8)
+  [Validation]
+    frame 0: Approves: your account; it may approve execution   (EIP-8141)
+    frame 0: With: Your owner key approves the execution; any payer may complete it   (account: ExecutionScopeAccount)
+    frame 1: Payer approves: sponsor 1   (EIP-8141)
+  [Payment]
+    Value sent: 0.000000000000000005 ETH from your account   (EIP-8141)
+    Payer: not signed: any payer may complete it (here sponsor 1; you pay no gas)   (FrameExecution, exp-frames experiment 27)
+    Fees: not signed (here at most 0.000588298 ETH (294149 gas at up to 2 gwei), paid by the payer)   (FrameExecution, exp-frames experiment 27)
+  [Execution]
+    frame 2: Runs: SENDER, as your account, calling a friend   (EIP-8141)
+    frame 2: Value: 0.000000000000000005 ETH   (EIP-8141)
+  withoutAccountDescriptors: 1 blind; gaps [Account (blind)]
+  transactionAlone: 1 blind; gaps [Account (blind)]
+
+== exp27-f3079a0/keyed-nonces (typed data alone)
+  intent: Send 0.000000000000000005 ETH to a friend
+  [Signature]
+    Signs: the execution digest E: every frame but the payer's, and not the fees (0x02dbd20e...6e9e)   (FrameExecution, exp-frames experiment 27)
+  [Account]
+    Account: 0x2700000000000000000000000000000000000001: ExecutionScopeAccount, owner 0xCA17f5f5Ac896C0591899ab457eB57310682757c, in your wallet's accounts   (account: ExecutionScopeAccount)
+    Chain: 8141   (EIP-8141)
+  [Nonce]
+    Nonce: keys with hash 0x3b3f4db8...6da5 at sequence 0   (EIP-8250 at f3079a09e8)
+  [Validation]
+    frame 0: Approves: your account; it may approve execution   (EIP-8141)
+    frame 0: With: Your owner key approves the execution; any payer may complete it   (account: ExecutionScopeAccount)
+    frame 1: Pay frame: a payer approves payment; who, and its limits and data, are not signed   (FrameExecution, exp-frames experiment 27)
+  [Payment]
+    Value sent: 0.000000000000000005 ETH from your account   (EIP-8141)
+    Payer and fees: not signed: whoever completes the transaction chooses and pays them   (FrameExecution, exp-frames experiment 27)
+  [Execution]
+    frame 2: Runs: SENDER, as your account, calling a friend   (EIP-8141)
+    frame 2: Value: 0.000000000000000005 ETH   (EIP-8141)
+  gap: HashOnly: the typed data carries the nonce keys' hash, not the keys: the device can name the replay domain only if the wallet sends the keys beside it
+  withoutAccountDescriptors: 1 blind; gaps [HashOnly, Account (blind)]
+  transactionAlone: 1 blind; gaps [HashOnly, Account (blind)]
+
+== exp27-f3079a0/legacy-nonce-7: experiment 27, case legacy-nonce-7, expected valid
+  intent: Send 0.000000000000000005 ETH to a friend
+  [Signature]
+    Signs: the execution digest E: every frame but the payer's, and not the fees (0x894de461...a42d)   (FrameExecution, exp-frames experiment 27)
+    Signer: the owner key 0xCA17f5f5Ac896C0591899ab457eB57310682757c, entry 0, secp256k1   (EIP-8141)
+    Also signed by: sponsor 1, entry 1, over the signature hash   (EIP-8141)
+  [Account]
+    Account: 0x2700000000000000000000000000000000000003: ExecutionScopeAccount, owner 0xCA17f5f5Ac896C0591899ab457eB57310682757c, in your wallet's accounts   (account: ExecutionScopeAccount)
+    Chain: 8141   (EIP-8141)
+  [Nonce]
+    Nonce: the account nonce, 7   (EIP-8250 at f3079a09e8)
+  [Validation]
+    frame 0: Approves: your account; it may approve execution   (EIP-8141)
+    frame 0: With: Your owner key approves the execution; any payer may complete it   (account: ExecutionScopeAccount)
+    frame 1: Payer approves: sponsor 1   (EIP-8141)
+  [Payment]
+    Value sent: 0.000000000000000005 ETH from your account   (EIP-8141)
+    Payer: not signed: any payer may complete it (here sponsor 1; you pay no gas)   (FrameExecution, exp-frames experiment 27)
+    Fees: not signed (here at most 0.000196514 ETH (98257 gas at up to 2 gwei), paid by the payer)   (FrameExecution, exp-frames experiment 27)
+  [Execution]
+    frame 2: Runs: SENDER, as your account, calling a friend   (EIP-8141)
+    frame 2: Value: 0.000000000000000005 ETH   (EIP-8141)
+  withoutAccountDescriptors: 1 blind; gaps [Account (blind)]
+  transactionAlone: 1 blind; gaps [Account (blind)]
+
+== exp27-f3079a0/legacy-nonce-7 (typed data alone)
+  intent: Send 0.000000000000000005 ETH to a friend
+  [Signature]
+    Signs: the execution digest E: every frame but the payer's, and not the fees (0x894de461...a42d)   (FrameExecution, exp-frames experiment 27)
+  [Account]
+    Account: 0x2700000000000000000000000000000000000003: ExecutionScopeAccount, owner 0xCA17f5f5Ac896C0591899ab457eB57310682757c, in your wallet's accounts   (account: ExecutionScopeAccount)
+    Chain: 8141   (EIP-8141)
+  [Nonce]
+    Nonce: the account nonce, 7   (EIP-8250 at f3079a09e8)
+  [Validation]
+    frame 0: Approves: your account; it may approve execution   (EIP-8141)
+    frame 0: With: Your owner key approves the execution; any payer may complete it   (account: ExecutionScopeAccount)
+    frame 1: Pay frame: a payer approves payment; who, and its limits and data, are not signed   (FrameExecution, exp-frames experiment 27)
+  [Payment]
+    Value sent: 0.000000000000000005 ETH from your account   (EIP-8141)
+    Payer and fees: not signed: whoever completes the transaction chooses and pays them   (FrameExecution, exp-frames experiment 27)
+  [Execution]
+    frame 2: Runs: SENDER, as your account, calling a friend   (EIP-8141)
+    frame 2: Value: 0.000000000000000005 ETH   (EIP-8141)
+  withoutAccountDescriptors: 1 blind; gaps [Account (blind)]
+  transactionAlone: 1 blind; gaps [Account (blind)]
+
+== exp27-f3079a0/value-and-default: experiment 27, case value-and-default, expected valid
+  intent: Send 0.1 ETH to a friend and Unknown call in frame 3
+  [Signature]
+    Signs: the execution digest E: every frame but the payer's, and not the fees (0x6b58f238...cd7f)   (FrameExecution, exp-frames experiment 27)
+    Signer: the owner key 0xCA17f5f5Ac896C0591899ab457eB57310682757c, entry 0, secp256k1   (EIP-8141)
+    Also signed by: sponsor 1, entry 1, over the signature hash   (EIP-8141)
+  [Account]
+    Account: 0x2700000000000000000000000000000000000001: ExecutionScopeAccount, owner 0xCA17f5f5Ac896C0591899ab457eB57310682757c, in your wallet's accounts   (account: ExecutionScopeAccount)
+    Chain: 8141   (EIP-8141)
+  [Nonce]
+    Nonce: the account nonce, 0   (EIP-8250 at f3079a09e8)
+  [Validation]
+    frame 0: Approves: your account; it may approve execution   (EIP-8141)
+    frame 0: With: Your owner key approves the execution; any payer may complete it   (account: ExecutionScopeAccount)
+    frame 1: Payer approves: sponsor 1   (EIP-8141)
+  [Payment]
+    Value sent: 0.1 ETH from your account   (EIP-8141)
+    Payer: not signed: any payer may complete it (here sponsor 1; you pay no gas)   (FrameExecution, exp-frames experiment 27)
+    Fees: not signed (here at most 0.00027752 ETH (138760 gas at up to 2 gwei), paid by the payer)   (FrameExecution, exp-frames experiment 27)
+  [Execution]
+    frame 2: Runs: SENDER, as your account, calling a friend   (EIP-8141)
+    frame 2: Value: 0.1 ETH   (EIP-8141)
+    frame 3: Runs: DEFAULT, as the entry point, not your account, calling 0x2700000000000000000000000000000000000011   (EIP-8141)
+    frame 3: Data: 0x01   (raw)
+    Independent: frames 2, 3 each stand alone: one can fail while the others succeed   (EIP-8141)
+  gap: BLIND NoDescriptor: frame 3: no ERC-7730 file binds 0x2700000000000000000000000000000000000011
+  withoutAccountDescriptors: 2 blind; gaps [Account (blind), NoDescriptor (blind)]
+  transactionAlone: 2 blind; gaps [Account (blind), NoDescriptor (blind)]
+
+== exp27-f3079a0/value-and-default (typed data alone)
+  intent: Send 0.1 ETH to a friend and Unknown call in frame 3
+  [Signature]
+    Signs: the execution digest E: every frame but the payer's, and not the fees (0x6b58f238...cd7f)   (FrameExecution, exp-frames experiment 27)
+  [Account]
+    Account: 0x2700000000000000000000000000000000000001: ExecutionScopeAccount, owner 0xCA17f5f5Ac896C0591899ab457eB57310682757c, in your wallet's accounts   (account: ExecutionScopeAccount)
+    Chain: 8141   (EIP-8141)
+  [Nonce]
+    Nonce: the account nonce, 0   (EIP-8250 at f3079a09e8)
+  [Validation]
+    frame 0: Approves: your account; it may approve execution   (EIP-8141)
+    frame 0: With: Your owner key approves the execution; any payer may complete it   (account: ExecutionScopeAccount)
+    frame 1: Pay frame: a payer approves payment; who, and its limits and data, are not signed   (FrameExecution, exp-frames experiment 27)
+  [Payment]
+    Value sent: 0.1 ETH from your account   (EIP-8141)
+    Payer and fees: not signed: whoever completes the transaction chooses and pays them   (FrameExecution, exp-frames experiment 27)
+  [Execution]
+    frame 2: Runs: SENDER, as your account, calling a friend   (EIP-8141)
+    frame 2: Value: 0.1 ETH   (EIP-8141)
+    frame 3: Runs: DEFAULT, as the entry point, not your account, calling 0x2700000000000000000000000000000000000011   (EIP-8141)
+    frame 3: Data: 0x01   (raw)
+    Independent: frames 2, 3 each stand alone: one can fail while the others succeed   (EIP-8141)
+  gap: BLIND NoDescriptor: frame 3: no ERC-7730 file binds 0x2700000000000000000000000000000000000011
+  withoutAccountDescriptors: 2 blind; gaps [Account (blind), NoDescriptor (blind)]
+  transactionAlone: 2 blind; gaps [Account (blind), NoDescriptor (blind)]
+
+== exp27-f3079a0/blobs: experiment 27, case blobs, expected valid
+  intent: Unknown call in frame 2
+  [Signature]
+    Signs: the execution digest E: every frame but the payer's, and not the fees (0x4625ac57...85e4)   (FrameExecution, exp-frames experiment 27)
+    Signer: the owner key 0xCA17f5f5Ac896C0591899ab457eB57310682757c, entry 0, secp256k1   (EIP-8141)
+    Also signed by: sponsor 1, entry 1, over the signature hash   (EIP-8141)
+  [Account]
+    Account: 0x2700000000000000000000000000000000000001: ExecutionScopeAccount, owner 0xCA17f5f5Ac896C0591899ab457eB57310682757c, in your wallet's accounts   (account: ExecutionScopeAccount)
+    Chain: 8141   (EIP-8141)
+  [Nonce]
+    Nonce: the account nonce, 0   (EIP-8250 at f3079a09e8)
+  [Validation]
+    frame 0: Approves: your account; it may approve execution   (EIP-8141)
+    frame 0: With: Your owner key approves the execution; any payer may complete it   (account: ExecutionScopeAccount)
+    frame 1: Payer approves: sponsor 1   (EIP-8141)
+  [Payment]
+    Payer: not signed: any payer may complete it (here sponsor 1; you pay no gas)   (FrameExecution, exp-frames experiment 27)
+    Fees: not signed (here at most 0.000284928144 ETH (142333 gas at up to 2 gwei), paid by the payer)   (FrameExecution, exp-frames experiment 27)
+  [Execution]
+    frame 2: Runs: SENDER, as your account, calling 0x2700000000000000000000000000000000000011   (EIP-8141)
+    frame 2: Data: 0xaabbccdd   (raw)
+  [Blobs]
+    Blobs: 2: 0x01111111...1111, 0x01222222...2222   (EIP-8141)
+  gap: BLIND NoDescriptor: frame 2: no ERC-7730 file binds 0x2700000000000000000000000000000000000011
+  gap: NotInTransaction: the blobs' contents travel beside the transaction; the frames see only their versioned hashes
+  withoutAccountDescriptors: 2 blind; gaps [Account (blind), NoDescriptor (blind), NotInTransaction]
+  transactionAlone: 2 blind; gaps [Account (blind), NoDescriptor (blind), NotInTransaction]
+
+== exp27-f3079a0/blobs (typed data alone)
+  intent: Unknown call in frame 2
+  [Signature]
+    Signs: the execution digest E: every frame but the payer's, and not the fees (0x4625ac57...85e4)   (FrameExecution, exp-frames experiment 27)
+  [Account]
+    Account: 0x2700000000000000000000000000000000000001: ExecutionScopeAccount, owner 0xCA17f5f5Ac896C0591899ab457eB57310682757c, in your wallet's accounts   (account: ExecutionScopeAccount)
+    Chain: 8141   (EIP-8141)
+  [Nonce]
+    Nonce: the account nonce, 0   (EIP-8250 at f3079a09e8)
+  [Validation]
+    frame 0: Approves: your account; it may approve execution   (EIP-8141)
+    frame 0: With: Your owner key approves the execution; any payer may complete it   (account: ExecutionScopeAccount)
+    frame 1: Pay frame: a payer approves payment; who, and its limits and data, are not signed   (FrameExecution, exp-frames experiment 27)
+  [Payment]
+    Payer and fees: not signed: whoever completes the transaction chooses and pays them   (FrameExecution, exp-frames experiment 27)
+  [Execution]
+    frame 2: Runs: SENDER, as your account, calling 0x2700000000000000000000000000000000000011   (EIP-8141)
+    frame 2: Data: 0xaabbccdd   (raw)
+  [Blobs]
+    Blobs: 2: 0x01111111...1111, 0x01222222...2222   (EIP-8141)
+  gap: BLIND NoDescriptor: frame 2: no ERC-7730 file binds 0x2700000000000000000000000000000000000011
+  gap: NotInTransaction: the blobs' contents travel beside the transaction; the frames see only their versioned hashes
+  withoutAccountDescriptors: 2 blind; gaps [Account (blind), NoDescriptor (blind), NotInTransaction]
+  transactionAlone: 2 blind; gaps [Account (blind), NoDescriptor (blind), NotInTransaction]
+
+== exp27-f3079a0/many-frames: experiment 27, case many-frames, expected valid
+  intent: Call 0x2700000000000000000000000000000000000020 with no data and Unknown call in frame 3 and Unknown call in frame 4 and Unknown call in frame 5 and Unknown call in frame 6 and Unknown call in frame 7 and Call 0x2700000000000000000000000000000000000026 with no data and Unknown call in frame 9 and Unknown call in frame 10 and Unknown call in frame 11
+  [Signature]
+    Signs: the execution digest E: every frame but the payer's, and not the fees (0x8fd3d636...5233)   (FrameExecution, exp-frames experiment 27)
+    Signer: the owner key 0xCA17f5f5Ac896C0591899ab457eB57310682757c, entry 0, secp256k1   (EIP-8141)
+    Also signed by: sponsor 1, entry 1, over the signature hash   (EIP-8141)
+  [Account]
+    Account: 0x2700000000000000000000000000000000000001: ExecutionScopeAccount, owner 0xCA17f5f5Ac896C0591899ab457eB57310682757c, in your wallet's accounts   (account: ExecutionScopeAccount)
+    Chain: 8141   (EIP-8141)
+  [Nonce]
+    Nonce: the account nonce, 0   (EIP-8250 at f3079a09e8)
+  [Validation]
+    frame 0: Approves: your account; it may approve execution   (EIP-8141)
+    frame 0: With: Your owner key approves the execution; any payer may complete it   (account: ExecutionScopeAccount)
+    frame 1: Payer approves: sponsor 1   (EIP-8141)
+  [Payment]
+    Payer: not signed: any payer may complete it (here sponsor 1; you pay no gas)   (FrameExecution, exp-frames experiment 27)
+    Fees: not signed (here at most 0.00057033 ETH (285165 gas at up to 2 gwei), paid by the payer)   (FrameExecution, exp-frames experiment 27)
+  [Execution]
+    frame 2: Runs: SENDER, as your account, calling 0x2700000000000000000000000000000000000020   (EIP-8141)
+    frame 3: Runs: DEFAULT, as the entry point, not your account, calling 0x2700000000000000000000000000000000000021   (EIP-8141)
+    frame 3: Data: 0x5a   (raw)
+    frame 4: Runs: SENDER, as your account, calling 0x2700000000000000000000000000000000000022   (EIP-8141)
+    frame 4: Data: 0x5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a   (raw)
+    frame 5: Runs: DEFAULT, as the entry point, not your account, calling 0x2700000000000000000000000000000000000023   (EIP-8141)
+    frame 5: Data: 0x5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a   (raw)
+    frame 6: Runs: SENDER, as your account, calling 0x2700000000000000000000000000000000000024   (EIP-8141)
+    frame 6: Data: 0x5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a   (raw)
+    frame 7: Runs: DEFAULT, as the entry point, not your account, calling 0x2700000000000000000000000000000000000025   (EIP-8141)
+    frame 7: Data: 0x5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a... (1000 bytes)   (raw)
+    frame 8: Runs: SENDER, as your account, calling 0x2700000000000000000000000000000000000026   (EIP-8141)
+    frame 9: Runs: DEFAULT, as the entry point, not your account, calling 0x2700000000000000000000000000000000000027   (EIP-8141)
+    frame 9: Data: 0x5a   (raw)
+    frame 10: Runs: SENDER, as your account, calling 0x2700000000000000000000000000000000000028   (EIP-8141)
+    frame 10: Data: 0x5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a   (raw)
+    frame 11: Runs: DEFAULT, as the entry point, not your account, calling 0x2700000000000000000000000000000000000029   (EIP-8141)
+    frame 11: Data: 0x5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a   (raw)
+    Independent: frames 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 each stand alone: one can fail while the others succeed   (EIP-8141)
+  gap: BLIND NoDescriptor: frame 3: no ERC-7730 file binds 0x2700000000000000000000000000000000000021
+  gap: BLIND NoDescriptor: frame 4: no ERC-7730 file binds 0x2700000000000000000000000000000000000022
+  gap: BLIND NoDescriptor: frame 5: no ERC-7730 file binds 0x2700000000000000000000000000000000000023
+  gap: BLIND NoDescriptor: frame 6: no ERC-7730 file binds 0x2700000000000000000000000000000000000024
+  gap: BLIND NoDescriptor: frame 7: no ERC-7730 file binds 0x2700000000000000000000000000000000000025
+  gap: BLIND NoDescriptor: frame 9: no ERC-7730 file binds 0x2700000000000000000000000000000000000027
+  gap: BLIND NoDescriptor: frame 10: no ERC-7730 file binds 0x2700000000000000000000000000000000000028
+  gap: BLIND NoDescriptor: frame 11: no ERC-7730 file binds 0x2700000000000000000000000000000000000029
+  withoutAccountDescriptors: 9 blind; gaps [Account (blind), NoDescriptor (blind), NoDescriptor (blind), NoDescriptor (blind), NoDescriptor (blind), NoDescriptor (blind), NoDescriptor (blind), NoDescriptor (blind), NoDescriptor (blind)]
+  transactionAlone: 9 blind; gaps [Account (blind), NoDescriptor (blind), NoDescriptor (blind), NoDescriptor (blind), NoDescriptor (blind), NoDescriptor (blind), NoDescriptor (blind), NoDescriptor (blind), NoDescriptor (blind)]
+
+== exp27-f3079a0/many-frames (typed data alone)
+  intent: Call 0x2700000000000000000000000000000000000020 with no data and Unknown call in frame 3 and Unknown call in frame 4 and Unknown call in frame 5 and Unknown call in frame 6 and Unknown call in frame 7 and Call 0x2700000000000000000000000000000000000026 with no data and Unknown call in frame 9 and Unknown call in frame 10 and Unknown call in frame 11
+  [Signature]
+    Signs: the execution digest E: every frame but the payer's, and not the fees (0x8fd3d636...5233)   (FrameExecution, exp-frames experiment 27)
+  [Account]
+    Account: 0x2700000000000000000000000000000000000001: ExecutionScopeAccount, owner 0xCA17f5f5Ac896C0591899ab457eB57310682757c, in your wallet's accounts   (account: ExecutionScopeAccount)
+    Chain: 8141   (EIP-8141)
+  [Nonce]
+    Nonce: the account nonce, 0   (EIP-8250 at f3079a09e8)
+  [Validation]
+    frame 0: Approves: your account; it may approve execution   (EIP-8141)
+    frame 0: With: Your owner key approves the execution; any payer may complete it   (account: ExecutionScopeAccount)
+    frame 1: Pay frame: a payer approves payment; who, and its limits and data, are not signed   (FrameExecution, exp-frames experiment 27)
+  [Payment]
+    Payer and fees: not signed: whoever completes the transaction chooses and pays them   (FrameExecution, exp-frames experiment 27)
+  [Execution]
+    frame 2: Runs: SENDER, as your account, calling 0x2700000000000000000000000000000000000020   (EIP-8141)
+    frame 3: Runs: DEFAULT, as the entry point, not your account, calling 0x2700000000000000000000000000000000000021   (EIP-8141)
+    frame 3: Data: 0x5a   (raw)
+    frame 4: Runs: SENDER, as your account, calling 0x2700000000000000000000000000000000000022   (EIP-8141)
+    frame 4: Data: 0x5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a   (raw)
+    frame 5: Runs: DEFAULT, as the entry point, not your account, calling 0x2700000000000000000000000000000000000023   (EIP-8141)
+    frame 5: Data: 0x5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a   (raw)
+    frame 6: Runs: SENDER, as your account, calling 0x2700000000000000000000000000000000000024   (EIP-8141)
+    frame 6: Data: 0x5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a   (raw)
+    frame 7: Runs: DEFAULT, as the entry point, not your account, calling 0x2700000000000000000000000000000000000025   (EIP-8141)
+    frame 7: Data: 0x5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a... (1000 bytes)   (raw)
+    frame 8: Runs: SENDER, as your account, calling 0x2700000000000000000000000000000000000026   (EIP-8141)
+    frame 9: Runs: DEFAULT, as the entry point, not your account, calling 0x2700000000000000000000000000000000000027   (EIP-8141)
+    frame 9: Data: 0x5a   (raw)
+    frame 10: Runs: SENDER, as your account, calling 0x2700000000000000000000000000000000000028   (EIP-8141)
+    frame 10: Data: 0x5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a   (raw)
+    frame 11: Runs: DEFAULT, as the entry point, not your account, calling 0x2700000000000000000000000000000000000029   (EIP-8141)
+    frame 11: Data: 0x5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a   (raw)
+    Independent: frames 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 each stand alone: one can fail while the others succeed   (EIP-8141)
+  gap: BLIND NoDescriptor: frame 3: no ERC-7730 file binds 0x2700000000000000000000000000000000000021
+  gap: BLIND NoDescriptor: frame 4: no ERC-7730 file binds 0x2700000000000000000000000000000000000022
+  gap: BLIND NoDescriptor: frame 5: no ERC-7730 file binds 0x2700000000000000000000000000000000000023
+  gap: BLIND NoDescriptor: frame 6: no ERC-7730 file binds 0x2700000000000000000000000000000000000024
+  gap: BLIND NoDescriptor: frame 7: no ERC-7730 file binds 0x2700000000000000000000000000000000000025
+  gap: BLIND NoDescriptor: frame 9: no ERC-7730 file binds 0x2700000000000000000000000000000000000027
+  gap: BLIND NoDescriptor: frame 10: no ERC-7730 file binds 0x2700000000000000000000000000000000000028
+  gap: BLIND NoDescriptor: frame 11: no ERC-7730 file binds 0x2700000000000000000000000000000000000029
+  withoutAccountDescriptors: 9 blind; gaps [Account (blind), NoDescriptor (blind), NoDescriptor (blind), NoDescriptor (blind), NoDescriptor (blind), NoDescriptor (blind), NoDescriptor (blind), NoDescriptor (blind), NoDescriptor (blind)]
+  transactionAlone: 9 blind; gaps [Account (blind), NoDescriptor (blind), NoDescriptor (blind), NoDescriptor (blind), NoDescriptor (blind), NoDescriptor (blind), NoDescriptor (blind), NoDescriptor (blind), NoDescriptor (blind)]
+
+== exp27-f3079a0/self-paying: experiment 27, case self-paying, expected refused
+  intent: Send 0.000000000000000001 ETH to a friend
+  [Signature]
+    Signs: the execution digest E: every frame but the payer's, and not the fees (0x1f6cdc4d...0294)   (FrameExecution, exp-frames experiment 27)
+    Signer: the owner key 0xCA17f5f5Ac896C0591899ab457eB57310682757c, entry 0, secp256k1   (EIP-8141)
+  [Account]
+    Account: 0x2700000000000000000000000000000000000001: ExecutionScopeAccount, owner 0xCA17f5f5Ac896C0591899ab457eB57310682757c, in your wallet's accounts   (account: ExecutionScopeAccount)
+    Chain: 8141   (EIP-8141)
+  [Nonce]
+    Nonce: the account nonce, 0   (EIP-8250 at f3079a09e8)
+  [Validation]
+    frame 0: Approves: your account; it may approve execution and payment   (EIP-8141)
+    frame 0: With: Your owner key approves the execution; any payer may complete it   (account: ExecutionScopeAccount)
+  [Payment]
+    Value sent: 0.000000000000000001 ETH from your account   (EIP-8141)
+    Payer: not signed: any payer may complete it (here your account)   (FrameExecution, exp-frames experiment 27)
+    Fees: not signed (here at most 0.00016734 ETH (83670 gas at up to 2 gwei), paid by the payer)   (FrameExecution, exp-frames experiment 27)
+  [Execution]
+    frame 1: Runs: SENDER, as your account, calling a friend   (EIP-8141)
+    frame 1: Value: 0.000000000000000001 ETH   (EIP-8141)
+  gap: Refusal: frame 0: ExecutionScopeAccount approves no execution and payment on this signature: the transaction will be refused
+  withoutAccountDescriptors: 1 blind; gaps [Account (blind)]
+  transactionAlone: 1 blind; gaps [Account (blind)]
+
+== exp27-f3079a0/payer-replaced: experiment 27, case payer-replaced, expected valid
+  intent: Send 1 VEC to a friend
+  [Signature]
+    Signs: the execution digest E: every frame but the payer's, and not the fees (0xce1a8f87...b03e)   (FrameExecution, exp-frames experiment 27)
+    Signer: the owner key 0xCA17f5f5Ac896C0591899ab457eB57310682757c, entry 0, secp256k1   (EIP-8141)
+    Also signed by: sponsor 2, entry 1, over the signature hash   (EIP-8141)
+  [Account]
+    Account: 0x2700000000000000000000000000000000000001: ExecutionScopeAccount, owner 0xCA17f5f5Ac896C0591899ab457eB57310682757c, in your wallet's accounts   (account: ExecutionScopeAccount)
+    Chain: 8141   (EIP-8141)
+  [Nonce]
+    Nonce: the account nonce, 0   (EIP-8250 at f3079a09e8)
+  [Validation]
+    frame 0: Approves: your account; it may approve execution   (EIP-8141)
+    frame 0: With: Your owner key approves the execution; any payer may complete it   (account: ExecutionScopeAccount)
+    frame 1: Payer approves: sponsor 2   (EIP-8141)
+  [Payment]
+    Payer: not signed: any payer may complete it (here sponsor 2; you pay no gas)   (FrameExecution, exp-frames experiment 27)
+    Fees: not signed (here at most 0.00942596 ETH (235649 gas at up to 40 gwei), paid by the payer)   (FrameExecution, exp-frames experiment 27)
+  [Execution]
+    frame 2: Runs: SENDER, as your account, calling Vector token   (EIP-8141)
+    frame 2: Amount: 1 VEC   (ERC-7730: Vector token)
+    frame 2: To: a friend   (ERC-7730: Vector token)
+  withoutAccountDescriptors: 1 blind; gaps [Account (blind)]
+  transactionAlone: 2 blind; gaps [Account (blind), NoDescriptor (blind)]
+
+== exp27-f3079a0/payer-replaced (typed data alone)
+  intent: Send 1 VEC to a friend
+  [Signature]
+    Signs: the execution digest E: every frame but the payer's, and not the fees (0xce1a8f87...b03e)   (FrameExecution, exp-frames experiment 27)
+  [Account]
+    Account: 0x2700000000000000000000000000000000000001: ExecutionScopeAccount, owner 0xCA17f5f5Ac896C0591899ab457eB57310682757c, in your wallet's accounts   (account: ExecutionScopeAccount)
+    Chain: 8141   (EIP-8141)
+  [Nonce]
+    Nonce: the account nonce, 0   (EIP-8250 at f3079a09e8)
+  [Validation]
+    frame 0: Approves: your account; it may approve execution   (EIP-8141)
+    frame 0: With: Your owner key approves the execution; any payer may complete it   (account: ExecutionScopeAccount)
+    frame 1: Pay frame: a payer approves payment; who, and its limits and data, are not signed   (FrameExecution, exp-frames experiment 27)
+  [Payment]
+    Payer and fees: not signed: whoever completes the transaction chooses and pays them   (FrameExecution, exp-frames experiment 27)
+  [Execution]
+    frame 2: Runs: SENDER, as your account, calling Vector token   (EIP-8141)
+    frame 2: Amount: 1 VEC   (ERC-7730: Vector token)
+    frame 2: To: a friend   (ERC-7730: Vector token)
+  withoutAccountDescriptors: 1 blind; gaps [Account (blind)]
+  transactionAlone: 2 blind; gaps [Account (blind), NoDescriptor (blind)]
+
+== exp27-f3079a0/target-written-out: experiment 27, case target-written-out, expected valid
+  intent: Send 1 VEC to a friend
+  [Signature]
+    Signs: the execution digest E: every frame but the payer's, and not the fees (0xce1a8f87...b03e)   (FrameExecution, exp-frames experiment 27)
+    Signer: the owner key 0xCA17f5f5Ac896C0591899ab457eB57310682757c, entry 0, secp256k1   (EIP-8141)
+    Also signed by: sponsor 1, entry 1, over the signature hash   (EIP-8141)
+  [Account]
+    Account: 0x2700000000000000000000000000000000000001: ExecutionScopeAccount, owner 0xCA17f5f5Ac896C0591899ab457eB57310682757c, in your wallet's accounts   (account: ExecutionScopeAccount)
+    Chain: 8141   (EIP-8141)
+  [Nonce]
+    Nonce: the account nonce, 0   (EIP-8250 at f3079a09e8)
+  [Validation]
+    frame 0: Approves: your account; it may approve execution   (EIP-8141)
+    frame 0: With: Your owner key approves the execution; any payer may complete it   (account: ExecutionScopeAccount)
+    frame 1: Payer approves: sponsor 1   (EIP-8141)
+  [Payment]
+    Payer: not signed: any payer may complete it (here sponsor 1; you pay no gas)   (FrameExecution, exp-frames experiment 27)
+    Fees: not signed (here at most 0.000441234 ETH (220617 gas at up to 2 gwei), paid by the payer)   (FrameExecution, exp-frames experiment 27)
+  [Execution]
+    frame 2: Runs: SENDER, as your account, calling Vector token   (EIP-8141)
+    frame 2: Amount: 1 VEC   (ERC-7730: Vector token)
+    frame 2: To: a friend   (ERC-7730: Vector token)
+  withoutAccountDescriptors: 1 blind; gaps [Account (blind)]
+  transactionAlone: 2 blind; gaps [Account (blind), NoDescriptor (blind)]
+
+== exp27-f3079a0/target-written-out (typed data alone)
+  intent: Send 1 VEC to a friend
+  [Signature]
+    Signs: the execution digest E: every frame but the payer's, and not the fees (0xce1a8f87...b03e)   (FrameExecution, exp-frames experiment 27)
+  [Account]
+    Account: 0x2700000000000000000000000000000000000001: ExecutionScopeAccount, owner 0xCA17f5f5Ac896C0591899ab457eB57310682757c, in your wallet's accounts   (account: ExecutionScopeAccount)
+    Chain: 8141   (EIP-8141)
+  [Nonce]
+    Nonce: the account nonce, 0   (EIP-8250 at f3079a09e8)
+  [Validation]
+    frame 0: Approves: your account; it may approve execution   (EIP-8141)
+    frame 0: With: Your owner key approves the execution; any payer may complete it   (account: ExecutionScopeAccount)
+    frame 1: Pay frame: a payer approves payment; who, and its limits and data, are not signed   (FrameExecution, exp-frames experiment 27)
+  [Payment]
+    Payer and fees: not signed: whoever completes the transaction chooses and pays them   (FrameExecution, exp-frames experiment 27)
+  [Execution]
+    frame 2: Runs: SENDER, as your account, calling Vector token   (EIP-8141)
+    frame 2: Amount: 1 VEC   (ERC-7730: Vector token)
+    frame 2: To: a friend   (ERC-7730: Vector token)
+  withoutAccountDescriptors: 1 blind; gaps [Account (blind)]
+  transactionAlone: 2 blind; gaps [Account (blind), NoDescriptor (blind)]
+
+== exp27-f3079a0/inserted-default: experiment 27, case inserted-default, expected refused
+  intent: Unknown call in frame 2 and Send 1 VEC to a friend
+  [Signature]
+    Signs: an explicit digest 0xce1a8f87949d68098f5f7f678bdeaf9bd3cf1cd82fc9e2789d38671d1580b03e   (EIP-8141)
+    Signer: the owner key 0xCA17f5f5Ac896C0591899ab457eB57310682757c, entry 0, secp256k1   (EIP-8141)
+    Also signed by: sponsor 1, entry 1, over the signature hash   (EIP-8141)
+  [Account]
+    Account: 0x2700000000000000000000000000000000000001: ExecutionScopeAccount, owner 0xCA17f5f5Ac896C0591899ab457eB57310682757c, in your wallet's accounts   (account: ExecutionScopeAccount)
+    Chain: 8141   (EIP-8141)
+  [Nonce]
+    Nonce: the account nonce, 0   (EIP-8250 at f3079a09e8)
+  [Validation]
+    frame 0: Approves: your account; it may approve execution   (EIP-8141)
+    frame 1: Payer approves: sponsor 1   (EIP-8141)
+  [Payment]
+    Payer: sponsor 1; you pay no gas   (EIP-8141)
+    Max fee: at most 0.000622312 ETH (311156 gas at up to 2 gwei)   (EIP-8141)
+  [Execution]
+    frame 2: Runs: DEFAULT, as the entry point, not your account, calling 0x2700000000000000000000000000000000000011   (EIP-8141)
+    frame 2: Data: 0x0badf00d   (raw)
+    frame 3: Runs: SENDER, as your account, calling Vector token   (EIP-8141)
+    frame 3: Amount: 1 VEC   (ERC-7730: Vector token)
+    frame 3: To: a friend   (ERC-7730: Vector token)
+    Independent: frames 2, 3 each stand alone: one can fail while the others succeed   (EIP-8141)
+  gap: BLIND Opaque: the entry's msg is neither empty nor this transaction's E, so the device cannot tell what it commits to
+  gap: BLIND NoDescriptor: frame 2: no ERC-7730 file binds 0x2700000000000000000000000000000000000011
+  withoutAccountDescriptors: 3 blind; gaps [Opaque (blind), Account (blind), NoDescriptor (blind)]
+  transactionAlone: 4 blind; gaps [Opaque (blind), Account (blind), NoDescriptor (blind), NoDescriptor (blind)]
+
+== exp27-f3079a0/appended-default: experiment 27, case appended-default, expected refused
+  intent: Send 1 VEC to a friend and Unknown call in frame 3
+  [Signature]
+    Signs: an explicit digest 0xce1a8f87949d68098f5f7f678bdeaf9bd3cf1cd82fc9e2789d38671d1580b03e   (EIP-8141)
+    Signer: the owner key 0xCA17f5f5Ac896C0591899ab457eB57310682757c, entry 0, secp256k1   (EIP-8141)
+    Also signed by: sponsor 1, entry 1, over the signature hash   (EIP-8141)
+  [Account]
+    Account: 0x2700000000000000000000000000000000000001: ExecutionScopeAccount, owner 0xCA17f5f5Ac896C0591899ab457eB57310682757c, in your wallet's accounts   (account: ExecutionScopeAccount)
+    Chain: 8141   (EIP-8141)
+  [Nonce]
+    Nonce: the account nonce, 0   (EIP-8250 at f3079a09e8)
+  [Validation]
+    frame 0: Approves: your account; it may approve execution   (EIP-8141)
+    frame 1: Payer approves: sponsor 1   (EIP-8141)
+  [Payment]
+    Payer: sponsor 1; you pay no gas   (EIP-8141)
+    Max fee: at most 0.000622288 ETH (311144 gas at up to 2 gwei)   (EIP-8141)
+  [Execution]
+    frame 2: Runs: SENDER, as your account, calling Vector token   (EIP-8141)
+    frame 2: Amount: 1 VEC   (ERC-7730: Vector token)
+    frame 2: To: a friend   (ERC-7730: Vector token)
+    frame 3: Runs: DEFAULT, as the entry point, not your account, calling 0x2700000000000000000000000000000000000011   (EIP-8141)
+    frame 3: Data: 0x0badf00d   (raw)
+    Independent: frames 2, 3 each stand alone: one can fail while the others succeed   (EIP-8141)
+  gap: BLIND Opaque: the entry's msg is neither empty nor this transaction's E, so the device cannot tell what it commits to
+  gap: BLIND NoDescriptor: frame 3: no ERC-7730 file binds 0x2700000000000000000000000000000000000011
+  withoutAccountDescriptors: 3 blind; gaps [Opaque (blind), Account (blind), NoDescriptor (blind)]
+  transactionAlone: 4 blind; gaps [Opaque (blind), Account (blind), NoDescriptor (blind), NoDescriptor (blind)]
+
+== exp27-f3079a0/state-limit-lowered: experiment 27, case state-limit-lowered, expected refused
+  intent: Send 1 VEC to a friend
+  [Signature]
+    Signs: an explicit digest 0xce1a8f87949d68098f5f7f678bdeaf9bd3cf1cd82fc9e2789d38671d1580b03e   (EIP-8141)
+    Signer: the owner key 0xCA17f5f5Ac896C0591899ab457eB57310682757c, entry 0, secp256k1   (EIP-8141)
+    Also signed by: sponsor 1, entry 1, over the signature hash   (EIP-8141)
+  [Account]
+    Account: 0x2700000000000000000000000000000000000001: ExecutionScopeAccount, owner 0xCA17f5f5Ac896C0591899ab457eB57310682757c, in your wallet's accounts   (account: ExecutionScopeAccount)
+    Chain: 8141   (EIP-8141)
+  [Nonce]
+    Nonce: the account nonce, 0   (EIP-8250 at f3079a09e8)
+  [Validation]
+    frame 0: Approves: your account; it may approve execution   (EIP-8141)
+    frame 1: Payer approves: sponsor 1   (EIP-8141)
+  [Payment]
+    Payer: sponsor 1; you pay no gas   (EIP-8141)
+    Max fee: at most 0.000245394 ETH (122697 gas at up to 2 gwei)   (EIP-8141)
+  [Execution]
+    frame 2: Runs: SENDER, as your account, calling Vector token   (EIP-8141)
+    frame 2: Amount: 1 VEC   (ERC-7730: Vector token)
+    frame 2: To: a friend   (ERC-7730: Vector token)
+  gap: BLIND Opaque: the entry's msg is neither empty nor this transaction's E, so the device cannot tell what it commits to
+  withoutAccountDescriptors: 2 blind; gaps [Opaque (blind), Account (blind)]
+  transactionAlone: 3 blind; gaps [Opaque (blind), Account (blind), NoDescriptor (blind)]
+
+== exp27-f3079a0/transfer-retargeted: experiment 27, case transfer-retargeted, expected refused
+  intent: Unknown call in frame 2
+  [Signature]
+    Signs: an explicit digest 0xce1a8f87949d68098f5f7f678bdeaf9bd3cf1cd82fc9e2789d38671d1580b03e   (EIP-8141)
+    Signer: the owner key 0xCA17f5f5Ac896C0591899ab457eB57310682757c, entry 0, secp256k1   (EIP-8141)
+    Also signed by: sponsor 1, entry 1, over the signature hash   (EIP-8141)
+  [Account]
+    Account: 0x2700000000000000000000000000000000000001: ExecutionScopeAccount, owner 0xCA17f5f5Ac896C0591899ab457eB57310682757c, in your wallet's accounts   (account: ExecutionScopeAccount)
+    Chain: 8141   (EIP-8141)
+  [Nonce]
+    Nonce: the account nonce, 0   (EIP-8250 at f3079a09e8)
+  [Validation]
+    frame 0: Approves: your account; it may approve execution   (EIP-8141)
+    frame 1: Payer approves: sponsor 1   (EIP-8141)
+  [Payment]
+    Payer: sponsor 1; you pay no gas   (EIP-8141)
+    Max fee: at most 0.000441234 ETH (220617 gas at up to 2 gwei)   (EIP-8141)
+  [Execution]
+    frame 2: Runs: SENDER, as your account, calling 0x2700000000000000000000000000000000000011   (EIP-8141)
+    frame 2: Data: 0xa9059cbb0000000000000000000000002700000000000000000000000000000000000013... (68 bytes)   (raw)
+  gap: BLIND Opaque: the entry's msg is neither empty nor this transaction's E, so the device cannot tell what it commits to
+  gap: BLIND NoDescriptor: frame 2: no ERC-7730 file binds 0x2700000000000000000000000000000000000011
+  withoutAccountDescriptors: 3 blind; gaps [Opaque (blind), Account (blind), NoDescriptor (blind)]
+  transactionAlone: 3 blind; gaps [Opaque (blind), Account (blind), NoDescriptor (blind)]
+
+== exp27-f3079a0/payer-is-sender: experiment 27, case payer-is-sender, expected refused
+  intent: Send 1 VEC to a friend
+  [Signature]
+    Signs: the execution digest E: every frame but the payer's, and not the fees (0xce1a8f87...b03e)   (FrameExecution, exp-frames experiment 27)
+    Signer: the owner key 0xCA17f5f5Ac896C0591899ab457eB57310682757c, entry 0, secp256k1   (EIP-8141)
+  [Account]
+    Account: 0x2700000000000000000000000000000000000001: ExecutionScopeAccount, owner 0xCA17f5f5Ac896C0591899ab457eB57310682757c, in your wallet's accounts   (account: ExecutionScopeAccount)
+    Chain: 8141   (EIP-8141)
+  [Nonce]
+    Nonce: the account nonce, 0   (EIP-8250 at f3079a09e8)
+  [Validation]
+    frame 0: Approves: your account; it may approve execution   (EIP-8141)
+    frame 0: With: Your owner key approves the execution; any payer may complete it   (account: ExecutionScopeAccount)
+    frame 1: Approves: your account; it may approve payment   (EIP-8141)
+    frame 1: With: Your owner key approves the execution; any payer may complete it   (account: ExecutionScopeAccount)
+  [Payment]
+    Payer: not signed: any payer may complete it (here your account)   (FrameExecution, exp-frames experiment 27)
+    Fees: not signed (here at most 0.000432938 ETH (216469 gas at up to 2 gwei), paid by the payer)   (FrameExecution, exp-frames experiment 27)
+  [Execution]
+    frame 2: Runs: SENDER, as your account, calling Vector token   (EIP-8141)
+    frame 2: Amount: 1 VEC   (ERC-7730: Vector token)
+    frame 2: To: a friend   (ERC-7730: Vector token)
+  gap: Refusal: frame 1: ExecutionScopeAccount approves no payment on this signature: the transaction will be refused
+  withoutAccountDescriptors: 2 blind; gaps [Account (blind), Account (blind)]
+  transactionAlone: 3 blind; gaps [Account (blind), Account (blind), NoDescriptor (blind)]
+
+== exp27-f3079a0/other-account: experiment 27, case other-account, expected refused
+  intent: Send 1 VEC to a friend
+  [Signature]
+    Signs: an explicit digest 0xce1a8f87949d68098f5f7f678bdeaf9bd3cf1cd82fc9e2789d38671d1580b03e   (EIP-8141)
+    Signer: the owner key 0xCA17f5f5Ac896C0591899ab457eB57310682757c, entry 0, secp256k1   (EIP-8141)
+    Also signed by: sponsor 1, entry 1, over the signature hash   (EIP-8141)
+  [Account]
+    Account: 0x2700000000000000000000000000000000000002: ExecutionScopeAccount, owner 0xCA17f5f5Ac896C0591899ab457eB57310682757c, in your wallet's accounts   (account: ExecutionScopeAccount)
+    Chain: 8141   (EIP-8141)
+  [Nonce]
+    Nonce: the account nonce, 0   (EIP-8250 at f3079a09e8)
+  [Validation]
+    frame 0: Approves: your account; it may approve execution   (EIP-8141)
+    frame 1: Payer approves: sponsor 1   (EIP-8141)
+  [Payment]
+    Payer: sponsor 1; you pay no gas   (EIP-8141)
+    Max fee: at most 0.000441186 ETH (220593 gas at up to 2 gwei)   (EIP-8141)
+  [Execution]
+    frame 2: Runs: SENDER, as your account, calling Vector token   (EIP-8141)
+    frame 2: Amount: 1 VEC   (ERC-7730: Vector token)
+    frame 2: To: a friend   (ERC-7730: Vector token)
+  gap: BLIND Opaque: the entry's msg is neither empty nor this transaction's E, so the device cannot tell what it commits to
+  withoutAccountDescriptors: 2 blind; gaps [Opaque (blind), Account (blind)]
+  transactionAlone: 3 blind; gaps [Opaque (blind), Account (blind), NoDescriptor (blind)]
+
+== exp27-f3079a0/blob-swapped: experiment 27, case blob-swapped, expected refused
+  intent: Unknown call in frame 2
+  [Signature]
+    Signs: an explicit digest 0x4625ac5789e4476dc3ce111016beeb829b0278d21d9cc3747c56115100c885e4   (EIP-8141)
+    Signer: the owner key 0xCA17f5f5Ac896C0591899ab457eB57310682757c, entry 0, secp256k1   (EIP-8141)
+    Also signed by: sponsor 1, entry 1, over the signature hash   (EIP-8141)
+  [Account]
+    Account: 0x2700000000000000000000000000000000000001: ExecutionScopeAccount, owner 0xCA17f5f5Ac896C0591899ab457eB57310682757c, in your wallet's accounts   (account: ExecutionScopeAccount)
+    Chain: 8141   (EIP-8141)
+  [Nonce]
+    Nonce: the account nonce, 0   (EIP-8250 at f3079a09e8)
+  [Validation]
+    frame 0: Approves: your account; it may approve execution   (EIP-8141)
+    frame 1: Payer approves: sponsor 1   (EIP-8141)
+  [Payment]
+    Payer: sponsor 1; you pay no gas   (EIP-8141)
+    Max fee: at most 0.000284928144 ETH (142333 gas at up to 2 gwei)   (EIP-8141)
+  [Execution]
+    frame 2: Runs: SENDER, as your account, calling 0x2700000000000000000000000000000000000011   (EIP-8141)
+    frame 2: Data: 0xaabbccdd   (raw)
+  [Blobs]
+    Blobs: 2: 0x01111111...1111, 0x01333333...3333   (EIP-8141)
+  gap: BLIND Opaque: the entry's msg is neither empty nor this transaction's E, so the device cannot tell what it commits to
+  gap: BLIND NoDescriptor: frame 2: no ERC-7730 file binds 0x2700000000000000000000000000000000000011
+  gap: NotInTransaction: the blobs' contents travel beside the transaction; the frames see only their versioned hashes
+  withoutAccountDescriptors: 3 blind; gaps [Opaque (blind), Account (blind), NoDescriptor (blind), NotInTransaction]
+  transactionAlone: 3 blind; gaps [Opaque (blind), Account (blind), NoDescriptor (blind), NotInTransaction]
+
+== exp27-master/sponsored-transfer: experiment 27, case sponsored-transfer, expected valid
+  intent: Send 1 VEC to a friend
+  [Signature]
+    Signs: the execution digest E: every frame but the payer's, and not the fees (0x05f36eec...b351)   (FrameExecution, exp-frames experiment 27)
+    Signer: the owner key 0xCA17f5f5Ac896C0591899ab457eB57310682757c, entry 0, secp256k1   (EIP-8141)
+    Also signed by: sponsor 1, entry 1, over the signature hash   (EIP-8141)
+  [Account]
+    Account: 0x2700000000000000000000000000000000000001: ExecutionScopeAccount, owner 0xCA17f5f5Ac896C0591899ab457eB57310682757c, in your wallet's accounts   (account: ExecutionScopeAccount)
+    Chain: 8141   (EIP-8141)
+  [Nonce]
+    Nonce: the account nonce, 0   (EIP-8250 at 1a086d5c)
+  [Validation]
+    frame 0: Approves: your account; it may approve execution   (EIP-8141)
+    frame 0: With: Your owner key approves the execution; any payer may complete it   (account: ExecutionScopeAccount)
+    frame 1: Payer approves: sponsor 1   (EIP-8141)
+  [Payment]
+    Payer: not signed: any payer may complete it (here sponsor 1; you pay no gas)   (FrameExecution, exp-frames experiment 27)
+    Fees: not signed (here at most 0.000441226 ETH (220613 gas at up to 2 gwei), paid by the payer)   (FrameExecution, exp-frames experiment 27)
+  [Execution]
+    frame 2: Runs: SENDER, as your account, calling Vector token   (EIP-8141)
+    frame 2: Amount: 1 VEC   (ERC-7730: Vector token)
+    frame 2: To: a friend   (ERC-7730: Vector token)
+  withoutAccountDescriptors: 1 blind; gaps [Account (blind)]
+  transactionAlone: 2 blind; gaps [Account (blind), NoDescriptor (blind)]
+
+== exp27-master/sponsored-transfer (typed data alone)
+  intent: Send 1 VEC to a friend
+  [Signature]
+    Signs: the execution digest E: every frame but the payer's, and not the fees (0x05f36eec...b351)   (FrameExecution, exp-frames experiment 27)
+  [Account]
+    Account: 0x2700000000000000000000000000000000000001: ExecutionScopeAccount, owner 0xCA17f5f5Ac896C0591899ab457eB57310682757c, in your wallet's accounts   (account: ExecutionScopeAccount)
+    Chain: 8141   (EIP-8141)
+  [Nonce]
+    Nonce: the account nonce, 0   (EIP-8250 at 1a086d5c)
+  [Validation]
+    frame 0: Approves: your account; it may approve execution   (EIP-8141)
+    frame 0: With: Your owner key approves the execution; any payer may complete it   (account: ExecutionScopeAccount)
+    frame 1: Pay frame: a payer approves payment; who, and its limits and data, are not signed   (FrameExecution, exp-frames experiment 27)
+  [Payment]
+    Payer and fees: not signed: whoever completes the transaction chooses and pays them   (FrameExecution, exp-frames experiment 27)
+  [Execution]
+    frame 2: Runs: SENDER, as your account, calling Vector token   (EIP-8141)
+    frame 2: Amount: 1 VEC   (ERC-7730: Vector token)
+    frame 2: To: a friend   (ERC-7730: Vector token)
+  withoutAccountDescriptors: 1 blind; gaps [Account (blind)]
+  transactionAlone: 2 blind; gaps [Account (blind), NoDescriptor (blind)]
+
+== exp27-master/with-expiry: experiment 27, case with-expiry, expected valid
+  intent: Send 0.000000000000000001 VEC to a friend
+  [Signature]
+    Signs: the execution digest E: every frame but the payer's, and not the fees (0x520957f0...61f9)   (FrameExecution, exp-frames experiment 27)
+    Signer: the owner key 0xCA17f5f5Ac896C0591899ab457eB57310682757c, entry 0, secp256k1   (EIP-8141)
+    Also signed by: sponsor 1, entry 1, over the signature hash   (EIP-8141)
+  [Account]
+    Account: 0x2700000000000000000000000000000000000001: ExecutionScopeAccount, owner 0xCA17f5f5Ac896C0591899ab457eB57310682757c, in your wallet's accounts   (account: ExecutionScopeAccount)
+    Chain: 8141   (EIP-8141)
+  [Nonce]
+    Nonce: the account nonce, 0   (EIP-8250 at 1a086d5c)
+  [Validation]
+    frame 0: Valid until: 2030-03-17T17:46:40Z   (EIP-8141 expiry verifier)
+    frame 1: Approves: your account; it may approve execution   (EIP-8141)
+    frame 1: With: Your owner key approves the execution; any payer may complete it   (account: ExecutionScopeAccount)
+    frame 2: Payer approves: sponsor 1   (EIP-8141)
+  [Payment]
+    Payer: not signed: any payer may complete it (here sponsor 1; you pay no gas)   (FrameExecution, exp-frames experiment 27)
+    Fees: not signed (here at most 0.000256328 ETH (128164 gas at up to 2 gwei), paid by the payer)   (FrameExecution, exp-frames experiment 27)
+  [Execution]
+    frame 3: Runs: SENDER, as your account, calling Vector token   (EIP-8141)
+    frame 3: Amount: 0.000000000000000001 VEC   (ERC-7730: Vector token)
+    frame 3: To: a friend   (ERC-7730: Vector token)
+  withoutAccountDescriptors: 1 blind; gaps [Account (blind)]
+  transactionAlone: 2 blind; gaps [Account (blind), NoDescriptor (blind)]
+
+== exp27-master/with-expiry (typed data alone)
+  intent: Send 0.000000000000000001 VEC to a friend
+  [Signature]
+    Signs: the execution digest E: every frame but the payer's, and not the fees (0x520957f0...61f9)   (FrameExecution, exp-frames experiment 27)
+  [Account]
+    Account: 0x2700000000000000000000000000000000000001: ExecutionScopeAccount, owner 0xCA17f5f5Ac896C0591899ab457eB57310682757c, in your wallet's accounts   (account: ExecutionScopeAccount)
+    Chain: 8141   (EIP-8141)
+  [Nonce]
+    Nonce: the account nonce, 0   (EIP-8250 at 1a086d5c)
+  [Validation]
+    frame 0: Valid until: 2030-03-17T17:46:40Z   (EIP-8141 expiry verifier)
+    frame 1: Approves: your account; it may approve execution   (EIP-8141)
+    frame 1: With: Your owner key approves the execution; any payer may complete it   (account: ExecutionScopeAccount)
+    frame 2: Pay frame: a payer approves payment; who, and its limits and data, are not signed   (FrameExecution, exp-frames experiment 27)
+  [Payment]
+    Payer and fees: not signed: whoever completes the transaction chooses and pays them   (FrameExecution, exp-frames experiment 27)
+  [Execution]
+    frame 3: Runs: SENDER, as your account, calling Vector token   (EIP-8141)
+    frame 3: Amount: 0.000000000000000001 VEC   (ERC-7730: Vector token)
+    frame 3: To: a friend   (ERC-7730: Vector token)
+  withoutAccountDescriptors: 1 blind; gaps [Account (blind)]
+  transactionAlone: 2 blind; gaps [Account (blind), NoDescriptor (blind)]
+
+== exp27-master/atomic-approve-swap: experiment 27, case atomic-approve-swap, expected valid
+  intent: Approve 0x2700000000000000000000000000000000000011 to spend 10 VEC and Unknown call in frame 3
+  [Signature]
+    Signs: the execution digest E: every frame but the payer's, and not the fees (0x29face6b...9e4b)   (FrameExecution, exp-frames experiment 27)
+    Signer: the owner key 0xCA17f5f5Ac896C0591899ab457eB57310682757c, entry 0, secp256k1   (EIP-8141)
+    Also signed by: sponsor 1, entry 1, over the signature hash   (EIP-8141)
+  [Account]
+    Account: 0x2700000000000000000000000000000000000001: ExecutionScopeAccount, owner 0xCA17f5f5Ac896C0591899ab457eB57310682757c, in your wallet's accounts   (account: ExecutionScopeAccount)
+    Chain: 8141   (EIP-8141)
+  [Nonce]
+    Nonce: the account nonce, 0   (EIP-8250 at 1a086d5c)
+  [Validation]
+    frame 0: Approves: your account; it may approve execution   (EIP-8141)
+    frame 0: With: Your owner key approves the execution; any payer may complete it   (account: ExecutionScopeAccount)
+    frame 1: Payer approves: sponsor 1   (EIP-8141)
+  [Payment]
+    Payer: not signed: any payer may complete it (here sponsor 1; you pay no gas)   (FrameExecution, exp-frames experiment 27)
+    Fees: not signed (here at most 0.000662704 ETH (331352 gas at up to 2 gwei), paid by the payer)   (FrameExecution, exp-frames experiment 27)
+  [Execution]
+    frame 2: Runs: SENDER, as your account, calling Vector token   (EIP-8141)
+    frame 2: Spender: 0x2700000000000000000000000000000000000011   (ERC-7730: Vector token)
+    frame 2: Amount: 10 VEC   (ERC-7730: Vector token)
+    frame 3: Runs: SENDER, as your account, calling 0x2700000000000000000000000000000000000011   (EIP-8141)
+    frame 3: Data: 0x123456780000000000000000000000000000000000000000000000008ac7230489e80000   (raw)
+    Atomic: frames 2 to 3 all succeed or all revert   (EIP-8141)
+  gap: BLIND NoDescriptor: frame 3: no ERC-7730 file binds 0x2700000000000000000000000000000000000011
+  withoutAccountDescriptors: 2 blind; gaps [Account (blind), NoDescriptor (blind)]
+  transactionAlone: 3 blind; gaps [Account (blind), NoDescriptor (blind), NoDescriptor (blind)]
+
+== exp27-master/atomic-approve-swap (typed data alone)
+  intent: Approve 0x2700000000000000000000000000000000000011 to spend 10 VEC and Unknown call in frame 3
+  [Signature]
+    Signs: the execution digest E: every frame but the payer's, and not the fees (0x29face6b...9e4b)   (FrameExecution, exp-frames experiment 27)
+  [Account]
+    Account: 0x2700000000000000000000000000000000000001: ExecutionScopeAccount, owner 0xCA17f5f5Ac896C0591899ab457eB57310682757c, in your wallet's accounts   (account: ExecutionScopeAccount)
+    Chain: 8141   (EIP-8141)
+  [Nonce]
+    Nonce: the account nonce, 0   (EIP-8250 at 1a086d5c)
+  [Validation]
+    frame 0: Approves: your account; it may approve execution   (EIP-8141)
+    frame 0: With: Your owner key approves the execution; any payer may complete it   (account: ExecutionScopeAccount)
+    frame 1: Pay frame: a payer approves payment; who, and its limits and data, are not signed   (FrameExecution, exp-frames experiment 27)
+  [Payment]
+    Payer and fees: not signed: whoever completes the transaction chooses and pays them   (FrameExecution, exp-frames experiment 27)
+  [Execution]
+    frame 2: Runs: SENDER, as your account, calling Vector token   (EIP-8141)
+    frame 2: Spender: 0x2700000000000000000000000000000000000011   (ERC-7730: Vector token)
+    frame 2: Amount: 10 VEC   (ERC-7730: Vector token)
+    frame 3: Runs: SENDER, as your account, calling 0x2700000000000000000000000000000000000011   (EIP-8141)
+    frame 3: Data: 0x123456780000000000000000000000000000000000000000000000008ac7230489e80000   (raw)
+    Atomic: frames 2 to 3 all succeed or all revert   (EIP-8141)
+  gap: BLIND NoDescriptor: frame 3: no ERC-7730 file binds 0x2700000000000000000000000000000000000011
+  withoutAccountDescriptors: 2 blind; gaps [Account (blind), NoDescriptor (blind)]
+  transactionAlone: 3 blind; gaps [Account (blind), NoDescriptor (blind), NoDescriptor (blind)]
+
+== exp27-master/deploy-first: experiment 27, case deploy-first, expected valid
+  intent: Unknown call in frame 0 and Send 0.000000000000000001 ETH to a friend
+  [Signature]
+    Signs: the execution digest E: every frame but the payer's, and not the fees (0xebc02e3e...6405)   (FrameExecution, exp-frames experiment 27)
+    Signer: the owner key 0xCA17f5f5Ac896C0591899ab457eB57310682757c, entry 0, secp256k1   (EIP-8141)
+    Also signed by: sponsor 1, entry 1, over the signature hash   (EIP-8141)
+  [Account]
+    Account: 0x2700000000000000000000000000000000000001: ExecutionScopeAccount, owner 0xCA17f5f5Ac896C0591899ab457eB57310682757c, in your wallet's accounts   (account: ExecutionScopeAccount)
+    Chain: 8141   (EIP-8141)
+  [Nonce]
+    Nonce: the account nonce, 0   (EIP-8250 at 1a086d5c)
+  [Validation]
+    frame 1: Approves: your account; it may approve execution   (EIP-8141)
+    frame 1: With: Your owner key approves the execution; any payer may complete it   (account: ExecutionScopeAccount)
+    frame 2: Payer approves: sponsor 1   (EIP-8141)
+  [Payment]
+    Value sent: 0.000000000000000001 ETH from your account   (EIP-8141)
+    Payer: not signed: any payer may complete it (here sponsor 1; you pay no gas)   (FrameExecution, exp-frames experiment 27)
+    Fees: not signed (here at most 0.000737912 ETH (368956 gas at up to 2 gwei), paid by the payer)   (FrameExecution, exp-frames experiment 27)
+  [Execution]
+    frame 0: Runs: DEFAULT, as the entry point, not your account, calling 0x2700000000000000000000000000000000000012   (EIP-8141)
+    frame 0: Data: 0xdeadbeef0000000000000000000000000000000000000000000000000000000000000001   (raw)
+    frame 3: Runs: SENDER, as your account, calling a friend   (EIP-8141)
+    frame 3: Value: 0.000000000000000001 ETH   (EIP-8141)
+    Before payment: frame 0 runs in the validation prefix, before a payer is approved   (EIP-8141)
+  gap: BLIND NoDescriptor: frame 0: no ERC-7730 file binds 0x2700000000000000000000000000000000000012
+  withoutAccountDescriptors: 2 blind; gaps [Account (blind), NoDescriptor (blind)]
+  transactionAlone: 2 blind; gaps [Account (blind), NoDescriptor (blind)]
+
+== exp27-master/deploy-first (typed data alone)
+  intent: Unknown call in frame 0 and Send 0.000000000000000001 ETH to a friend
+  [Signature]
+    Signs: the execution digest E: every frame but the payer's, and not the fees (0xebc02e3e...6405)   (FrameExecution, exp-frames experiment 27)
+  [Account]
+    Account: 0x2700000000000000000000000000000000000001: ExecutionScopeAccount, owner 0xCA17f5f5Ac896C0591899ab457eB57310682757c, in your wallet's accounts   (account: ExecutionScopeAccount)
+    Chain: 8141   (EIP-8141)
+  [Nonce]
+    Nonce: the account nonce, 0   (EIP-8250 at 1a086d5c)
+  [Validation]
+    frame 1: Approves: your account; it may approve execution   (EIP-8141)
+    frame 1: With: Your owner key approves the execution; any payer may complete it   (account: ExecutionScopeAccount)
+    frame 2: Pay frame: a payer approves payment; who, and its limits and data, are not signed   (FrameExecution, exp-frames experiment 27)
+  [Payment]
+    Value sent: 0.000000000000000001 ETH from your account   (EIP-8141)
+    Payer and fees: not signed: whoever completes the transaction chooses and pays them   (FrameExecution, exp-frames experiment 27)
+  [Execution]
+    frame 0: Runs: DEFAULT, as the entry point, not your account, calling 0x2700000000000000000000000000000000000012   (EIP-8141)
+    frame 0: Data: 0xdeadbeef0000000000000000000000000000000000000000000000000000000000000001   (raw)
+    frame 3: Runs: SENDER, as your account, calling a friend   (EIP-8141)
+    frame 3: Value: 0.000000000000000001 ETH   (EIP-8141)
+    Before payment: frame 0 runs in the validation prefix, before a payer is approved   (EIP-8141)
+  gap: BLIND NoDescriptor: frame 0: no ERC-7730 file binds 0x2700000000000000000000000000000000000012
+  withoutAccountDescriptors: 2 blind; gaps [Account (blind), NoDescriptor (blind)]
+  transactionAlone: 2 blind; gaps [Account (blind), NoDescriptor (blind)]
+
+== exp27-master/keyed-nonces: experiment 27, case keyed-nonces, expected valid
+  intent: Send 0.000000000000000005 ETH to a friend
+  [Signature]
+    Signs: the execution digest E: every frame but the payer's, and not the fees (0x02dbd20e...6e9e)   (FrameExecution, exp-frames experiment 27)
+    Signer: the owner key 0xCA17f5f5Ac896C0591899ab457eB57310682757c, entry 0, secp256k1   (EIP-8141)
+    Also signed by: sponsor 1, entry 1, over the signature hash   (EIP-8141)
+  [Account]
+    Account: 0x2700000000000000000000000000000000000001: ExecutionScopeAccount, owner 0xCA17f5f5Ac896C0591899ab457eB57310682757c, in your wallet's accounts   (account: ExecutionScopeAccount)
+    Chain: 8141   (EIP-8141)
+  [Nonce]
+    Nonce: keys [3, 9] at sequence 0, in NONCE_MANAGER   (EIP-8250 at 1a086d5c)
+  [Validation]
+    frame 0: Approves: your account; it may approve execution   (EIP-8141)
+    frame 0: With: Your owner key approves the execution; any payer may complete it   (account: ExecutionScopeAccount)
+    frame 1: Payer approves: sponsor 1   (EIP-8141)
+  [Payment]
+    Value sent: 0.000000000000000005 ETH from your account   (EIP-8141)
+    Payer: not signed: any payer may complete it (here sponsor 1; you pay no gas)   (FrameExecution, exp-frames experiment 27)
+    Fees: not signed (here at most 0.000588298 ETH (294149 gas at up to 2 gwei), paid by the payer)   (FrameExecution, exp-frames experiment 27)
+  [Execution]
+    frame 2: Runs: SENDER, as your account, calling a friend   (EIP-8141)
+    frame 2: Value: 0.000000000000000005 ETH   (EIP-8141)
+  withoutAccountDescriptors: 1 blind; gaps [Account (blind)]
+  transactionAlone: 1 blind; gaps [Account (blind)]
+
+== exp27-master/keyed-nonces (typed data alone)
+  intent: Send 0.000000000000000005 ETH to a friend
+  [Signature]
+    Signs: the execution digest E: every frame but the payer's, and not the fees (0x02dbd20e...6e9e)   (FrameExecution, exp-frames experiment 27)
+  [Account]
+    Account: 0x2700000000000000000000000000000000000001: ExecutionScopeAccount, owner 0xCA17f5f5Ac896C0591899ab457eB57310682757c, in your wallet's accounts   (account: ExecutionScopeAccount)
+    Chain: 8141   (EIP-8141)
+  [Nonce]
+    Nonce: keys with hash 0x3b3f4db8...6da5 at sequence 0   (EIP-8250 at 1a086d5c)
+  [Validation]
+    frame 0: Approves: your account; it may approve execution   (EIP-8141)
+    frame 0: With: Your owner key approves the execution; any payer may complete it   (account: ExecutionScopeAccount)
+    frame 1: Pay frame: a payer approves payment; who, and its limits and data, are not signed   (FrameExecution, exp-frames experiment 27)
+  [Payment]
+    Value sent: 0.000000000000000005 ETH from your account   (EIP-8141)
+    Payer and fees: not signed: whoever completes the transaction chooses and pays them   (FrameExecution, exp-frames experiment 27)
+  [Execution]
+    frame 2: Runs: SENDER, as your account, calling a friend   (EIP-8141)
+    frame 2: Value: 0.000000000000000005 ETH   (EIP-8141)
+  gap: HashOnly: the typed data carries the nonce keys' hash, not the keys: the device can name the replay domain only if the wallet sends the keys beside it
+  withoutAccountDescriptors: 1 blind; gaps [HashOnly, Account (blind)]
+  transactionAlone: 1 blind; gaps [HashOnly, Account (blind)]
+
+== exp27-master/legacy-nonce-7: experiment 27, case legacy-nonce-7, expected valid
+  intent: Send 0.000000000000000005 ETH to a friend
+  [Signature]
+    Signs: the execution digest E: every frame but the payer's, and not the fees (0xf5bbf0b5...7774)   (FrameExecution, exp-frames experiment 27)
+    Signer: the owner key 0xCA17f5f5Ac896C0591899ab457eB57310682757c, entry 0, secp256k1   (EIP-8141)
+    Also signed by: sponsor 1, entry 1, over the signature hash   (EIP-8141)
+  [Account]
+    Account: 0x2700000000000000000000000000000000000003: ExecutionScopeAccount, owner 0xCA17f5f5Ac896C0591899ab457eB57310682757c, in your wallet's accounts   (account: ExecutionScopeAccount)
+    Chain: 8141   (EIP-8141)
+  [Nonce]
+    Nonce: the account nonce, 7   (EIP-8250 at 1a086d5c)
+  [Validation]
+    frame 0: Approves: your account; it may approve execution   (EIP-8141)
+    frame 0: With: Your owner key approves the execution; any payer may complete it   (account: ExecutionScopeAccount)
+    frame 1: Payer approves: sponsor 1   (EIP-8141)
+  [Payment]
+    Value sent: 0.000000000000000005 ETH from your account   (EIP-8141)
+    Payer: not signed: any payer may complete it (here sponsor 1; you pay no gas)   (FrameExecution, exp-frames experiment 27)
+    Fees: not signed (here at most 0.000196554 ETH (98277 gas at up to 2 gwei), paid by the payer)   (FrameExecution, exp-frames experiment 27)
+  [Execution]
+    frame 2: Runs: SENDER, as your account, calling a friend   (EIP-8141)
+    frame 2: Value: 0.000000000000000005 ETH   (EIP-8141)
+  withoutAccountDescriptors: 1 blind; gaps [Account (blind)]
+  transactionAlone: 1 blind; gaps [Account (blind)]
+
+== exp27-master/legacy-nonce-7 (typed data alone)
+  intent: Send 0.000000000000000005 ETH to a friend
+  [Signature]
+    Signs: the execution digest E: every frame but the payer's, and not the fees (0xf5bbf0b5...7774)   (FrameExecution, exp-frames experiment 27)
+  [Account]
+    Account: 0x2700000000000000000000000000000000000003: ExecutionScopeAccount, owner 0xCA17f5f5Ac896C0591899ab457eB57310682757c, in your wallet's accounts   (account: ExecutionScopeAccount)
+    Chain: 8141   (EIP-8141)
+  [Nonce]
+    Nonce: the account nonce, 7   (EIP-8250 at 1a086d5c)
+  [Validation]
+    frame 0: Approves: your account; it may approve execution   (EIP-8141)
+    frame 0: With: Your owner key approves the execution; any payer may complete it   (account: ExecutionScopeAccount)
+    frame 1: Pay frame: a payer approves payment; who, and its limits and data, are not signed   (FrameExecution, exp-frames experiment 27)
+  [Payment]
+    Value sent: 0.000000000000000005 ETH from your account   (EIP-8141)
+    Payer and fees: not signed: whoever completes the transaction chooses and pays them   (FrameExecution, exp-frames experiment 27)
+  [Execution]
+    frame 2: Runs: SENDER, as your account, calling a friend   (EIP-8141)
+    frame 2: Value: 0.000000000000000005 ETH   (EIP-8141)
+  withoutAccountDescriptors: 1 blind; gaps [Account (blind)]
+  transactionAlone: 1 blind; gaps [Account (blind)]
+
+== exp27-master/value-and-default: experiment 27, case value-and-default, expected valid
+  intent: Send 0.1 ETH to a friend and Unknown call in frame 3
+  [Signature]
+    Signs: the execution digest E: every frame but the payer's, and not the fees (0x03b23fcc...ab29)   (FrameExecution, exp-frames experiment 27)
+    Signer: the owner key 0xCA17f5f5Ac896C0591899ab457eB57310682757c, entry 0, secp256k1   (EIP-8141)
+    Also signed by: sponsor 1, entry 1, over the signature hash   (EIP-8141)
+  [Account]
+    Account: 0x2700000000000000000000000000000000000001: ExecutionScopeAccount, owner 0xCA17f5f5Ac896C0591899ab457eB57310682757c, in your wallet's accounts   (account: ExecutionScopeAccount)
+    Chain: 8141   (EIP-8141)
+  [Nonce]
+    Nonce: the account nonce, 0   (EIP-8250 at 1a086d5c)
+  [Validation]
+    frame 0: Approves: your account; it may approve execution   (EIP-8141)
+    frame 0: With: Your owner key approves the execution; any payer may complete it   (account: ExecutionScopeAccount)
+    frame 1: Payer approves: sponsor 1   (EIP-8141)
+  [Payment]
+    Value sent: 0.1 ETH from your account   (EIP-8141)
+    Payer: not signed: any payer may complete it (here sponsor 1; you pay no gas)   (FrameExecution, exp-frames experiment 27)
+    Fees: not signed (here at most 0.000277464 ETH (138732 gas at up to 2 gwei), paid by the payer)   (FrameExecution, exp-frames experiment 27)
+  [Execution]
+    frame 2: Runs: SENDER, as your account, calling a friend   (EIP-8141)
+    frame 2: Value: 0.1 ETH   (EIP-8141)
+    frame 3: Runs: DEFAULT, as the entry point, not your account, calling 0x2700000000000000000000000000000000000011   (EIP-8141)
+    frame 3: Data: 0x01   (raw)
+    Independent: frames 2, 3 each stand alone: one can fail while the others succeed   (EIP-8141)
+  gap: BLIND NoDescriptor: frame 3: no ERC-7730 file binds 0x2700000000000000000000000000000000000011
+  withoutAccountDescriptors: 2 blind; gaps [Account (blind), NoDescriptor (blind)]
+  transactionAlone: 2 blind; gaps [Account (blind), NoDescriptor (blind)]
+
+== exp27-master/value-and-default (typed data alone)
+  intent: Send 0.1 ETH to a friend and Unknown call in frame 3
+  [Signature]
+    Signs: the execution digest E: every frame but the payer's, and not the fees (0x03b23fcc...ab29)   (FrameExecution, exp-frames experiment 27)
+  [Account]
+    Account: 0x2700000000000000000000000000000000000001: ExecutionScopeAccount, owner 0xCA17f5f5Ac896C0591899ab457eB57310682757c, in your wallet's accounts   (account: ExecutionScopeAccount)
+    Chain: 8141   (EIP-8141)
+  [Nonce]
+    Nonce: the account nonce, 0   (EIP-8250 at 1a086d5c)
+  [Validation]
+    frame 0: Approves: your account; it may approve execution   (EIP-8141)
+    frame 0: With: Your owner key approves the execution; any payer may complete it   (account: ExecutionScopeAccount)
+    frame 1: Pay frame: a payer approves payment; who, and its limits and data, are not signed   (FrameExecution, exp-frames experiment 27)
+  [Payment]
+    Value sent: 0.1 ETH from your account   (EIP-8141)
+    Payer and fees: not signed: whoever completes the transaction chooses and pays them   (FrameExecution, exp-frames experiment 27)
+  [Execution]
+    frame 2: Runs: SENDER, as your account, calling a friend   (EIP-8141)
+    frame 2: Value: 0.1 ETH   (EIP-8141)
+    frame 3: Runs: DEFAULT, as the entry point, not your account, calling 0x2700000000000000000000000000000000000011   (EIP-8141)
+    frame 3: Data: 0x01   (raw)
+    Independent: frames 2, 3 each stand alone: one can fail while the others succeed   (EIP-8141)
+  gap: BLIND NoDescriptor: frame 3: no ERC-7730 file binds 0x2700000000000000000000000000000000000011
+  withoutAccountDescriptors: 2 blind; gaps [Account (blind), NoDescriptor (blind)]
+  transactionAlone: 2 blind; gaps [Account (blind), NoDescriptor (blind)]
+
+== exp27-master/blobs: experiment 27, case blobs, expected valid
+  intent: Unknown call in frame 2
+  [Signature]
+    Signs: the execution digest E: every frame but the payer's, and not the fees (0x5c3413c3...8d68)   (FrameExecution, exp-frames experiment 27)
+    Signer: the owner key 0xCA17f5f5Ac896C0591899ab457eB57310682757c, entry 0, secp256k1   (EIP-8141)
+    Also signed by: sponsor 1, entry 1, over the signature hash   (EIP-8141)
+  [Account]
+    Account: 0x2700000000000000000000000000000000000001: ExecutionScopeAccount, owner 0xCA17f5f5Ac896C0591899ab457eB57310682757c, in your wallet's accounts   (account: ExecutionScopeAccount)
+    Chain: 8141   (EIP-8141)
+  [Nonce]
+    Nonce: the account nonce, 0   (EIP-8250 at 1a086d5c)
+  [Validation]
+    frame 0: Approves: your account; it may approve execution   (EIP-8141)
+    frame 0: With: Your owner key approves the execution; any payer may complete it   (account: ExecutionScopeAccount)
+    frame 1: Payer approves: sponsor 1   (EIP-8141)
+  [Payment]
+    Payer: not signed: any payer may complete it (here sponsor 1; you pay no gas)   (FrameExecution, exp-frames experiment 27)
+    Fees: not signed (here at most 0.000284896144 ETH (142317 gas at up to 2 gwei), paid by the payer)   (FrameExecution, exp-frames experiment 27)
+  [Execution]
+    frame 2: Runs: SENDER, as your account, calling 0x2700000000000000000000000000000000000011   (EIP-8141)
+    frame 2: Data: 0xaabbccdd   (raw)
+  [Blobs]
+    Blobs: 2: 0x01111111...1111, 0x01222222...2222   (EIP-8141)
+  gap: BLIND NoDescriptor: frame 2: no ERC-7730 file binds 0x2700000000000000000000000000000000000011
+  gap: NotInTransaction: the blobs' contents travel beside the transaction; the frames see only their versioned hashes
+  withoutAccountDescriptors: 2 blind; gaps [Account (blind), NoDescriptor (blind), NotInTransaction]
+  transactionAlone: 2 blind; gaps [Account (blind), NoDescriptor (blind), NotInTransaction]
+
+== exp27-master/blobs (typed data alone)
+  intent: Unknown call in frame 2
+  [Signature]
+    Signs: the execution digest E: every frame but the payer's, and not the fees (0x5c3413c3...8d68)   (FrameExecution, exp-frames experiment 27)
+  [Account]
+    Account: 0x2700000000000000000000000000000000000001: ExecutionScopeAccount, owner 0xCA17f5f5Ac896C0591899ab457eB57310682757c, in your wallet's accounts   (account: ExecutionScopeAccount)
+    Chain: 8141   (EIP-8141)
+  [Nonce]
+    Nonce: the account nonce, 0   (EIP-8250 at 1a086d5c)
+  [Validation]
+    frame 0: Approves: your account; it may approve execution   (EIP-8141)
+    frame 0: With: Your owner key approves the execution; any payer may complete it   (account: ExecutionScopeAccount)
+    frame 1: Pay frame: a payer approves payment; who, and its limits and data, are not signed   (FrameExecution, exp-frames experiment 27)
+  [Payment]
+    Payer and fees: not signed: whoever completes the transaction chooses and pays them   (FrameExecution, exp-frames experiment 27)
+  [Execution]
+    frame 2: Runs: SENDER, as your account, calling 0x2700000000000000000000000000000000000011   (EIP-8141)
+    frame 2: Data: 0xaabbccdd   (raw)
+  [Blobs]
+    Blobs: 2: 0x01111111...1111, 0x01222222...2222   (EIP-8141)
+  gap: BLIND NoDescriptor: frame 2: no ERC-7730 file binds 0x2700000000000000000000000000000000000011
+  gap: NotInTransaction: the blobs' contents travel beside the transaction; the frames see only their versioned hashes
+  withoutAccountDescriptors: 2 blind; gaps [Account (blind), NoDescriptor (blind), NotInTransaction]
+  transactionAlone: 2 blind; gaps [Account (blind), NoDescriptor (blind), NotInTransaction]
+
+== exp27-master/many-frames: experiment 27, case many-frames, expected valid
+  intent: Call 0x2700000000000000000000000000000000000020 with no data and Unknown call in frame 3 and Unknown call in frame 4 and Unknown call in frame 5 and Unknown call in frame 6 and Unknown call in frame 7 and Call 0x2700000000000000000000000000000000000026 with no data and Unknown call in frame 9 and Unknown call in frame 10 and Unknown call in frame 11
+  [Signature]
+    Signs: the execution digest E: every frame but the payer's, and not the fees (0x26f3c558...7854)   (FrameExecution, exp-frames experiment 27)
+    Signer: the owner key 0xCA17f5f5Ac896C0591899ab457eB57310682757c, entry 0, secp256k1   (EIP-8141)
+    Also signed by: sponsor 1, entry 1, over the signature hash   (EIP-8141)
+  [Account]
+    Account: 0x2700000000000000000000000000000000000001: ExecutionScopeAccount, owner 0xCA17f5f5Ac896C0591899ab457eB57310682757c, in your wallet's accounts   (account: ExecutionScopeAccount)
+    Chain: 8141   (EIP-8141)
+  [Nonce]
+    Nonce: the account nonce, 0   (EIP-8250 at 1a086d5c)
+  [Validation]
+    frame 0: Approves: your account; it may approve execution   (EIP-8141)
+    frame 0: With: Your owner key approves the execution; any payer may complete it   (account: ExecutionScopeAccount)
+    frame 1: Payer approves: sponsor 1   (EIP-8141)
+  [Payment]
+    Payer: not signed: any payer may complete it (here sponsor 1; you pay no gas)   (FrameExecution, exp-frames experiment 27)
+    Fees: not signed (here at most 0.000570322 ETH (285161 gas at up to 2 gwei), paid by the payer)   (FrameExecution, exp-frames experiment 27)
+  [Execution]
+    frame 2: Runs: SENDER, as your account, calling 0x2700000000000000000000000000000000000020   (EIP-8141)
+    frame 3: Runs: DEFAULT, as the entry point, not your account, calling 0x2700000000000000000000000000000000000021   (EIP-8141)
+    frame 3: Data: 0x5a   (raw)
+    frame 4: Runs: SENDER, as your account, calling 0x2700000000000000000000000000000000000022   (EIP-8141)
+    frame 4: Data: 0x5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a   (raw)
+    frame 5: Runs: DEFAULT, as the entry point, not your account, calling 0x2700000000000000000000000000000000000023   (EIP-8141)
+    frame 5: Data: 0x5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a   (raw)
+    frame 6: Runs: SENDER, as your account, calling 0x2700000000000000000000000000000000000024   (EIP-8141)
+    frame 6: Data: 0x5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a   (raw)
+    frame 7: Runs: DEFAULT, as the entry point, not your account, calling 0x2700000000000000000000000000000000000025   (EIP-8141)
+    frame 7: Data: 0x5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a... (1000 bytes)   (raw)
+    frame 8: Runs: SENDER, as your account, calling 0x2700000000000000000000000000000000000026   (EIP-8141)
+    frame 9: Runs: DEFAULT, as the entry point, not your account, calling 0x2700000000000000000000000000000000000027   (EIP-8141)
+    frame 9: Data: 0x5a   (raw)
+    frame 10: Runs: SENDER, as your account, calling 0x2700000000000000000000000000000000000028   (EIP-8141)
+    frame 10: Data: 0x5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a   (raw)
+    frame 11: Runs: DEFAULT, as the entry point, not your account, calling 0x2700000000000000000000000000000000000029   (EIP-8141)
+    frame 11: Data: 0x5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a   (raw)
+    Independent: frames 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 each stand alone: one can fail while the others succeed   (EIP-8141)
+  gap: BLIND NoDescriptor: frame 3: no ERC-7730 file binds 0x2700000000000000000000000000000000000021
+  gap: BLIND NoDescriptor: frame 4: no ERC-7730 file binds 0x2700000000000000000000000000000000000022
+  gap: BLIND NoDescriptor: frame 5: no ERC-7730 file binds 0x2700000000000000000000000000000000000023
+  gap: BLIND NoDescriptor: frame 6: no ERC-7730 file binds 0x2700000000000000000000000000000000000024
+  gap: BLIND NoDescriptor: frame 7: no ERC-7730 file binds 0x2700000000000000000000000000000000000025
+  gap: BLIND NoDescriptor: frame 9: no ERC-7730 file binds 0x2700000000000000000000000000000000000027
+  gap: BLIND NoDescriptor: frame 10: no ERC-7730 file binds 0x2700000000000000000000000000000000000028
+  gap: BLIND NoDescriptor: frame 11: no ERC-7730 file binds 0x2700000000000000000000000000000000000029
+  withoutAccountDescriptors: 9 blind; gaps [Account (blind), NoDescriptor (blind), NoDescriptor (blind), NoDescriptor (blind), NoDescriptor (blind), NoDescriptor (blind), NoDescriptor (blind), NoDescriptor (blind), NoDescriptor (blind)]
+  transactionAlone: 9 blind; gaps [Account (blind), NoDescriptor (blind), NoDescriptor (blind), NoDescriptor (blind), NoDescriptor (blind), NoDescriptor (blind), NoDescriptor (blind), NoDescriptor (blind), NoDescriptor (blind)]
+
+== exp27-master/many-frames (typed data alone)
+  intent: Call 0x2700000000000000000000000000000000000020 with no data and Unknown call in frame 3 and Unknown call in frame 4 and Unknown call in frame 5 and Unknown call in frame 6 and Unknown call in frame 7 and Call 0x2700000000000000000000000000000000000026 with no data and Unknown call in frame 9 and Unknown call in frame 10 and Unknown call in frame 11
+  [Signature]
+    Signs: the execution digest E: every frame but the payer's, and not the fees (0x26f3c558...7854)   (FrameExecution, exp-frames experiment 27)
+  [Account]
+    Account: 0x2700000000000000000000000000000000000001: ExecutionScopeAccount, owner 0xCA17f5f5Ac896C0591899ab457eB57310682757c, in your wallet's accounts   (account: ExecutionScopeAccount)
+    Chain: 8141   (EIP-8141)
+  [Nonce]
+    Nonce: the account nonce, 0   (EIP-8250 at 1a086d5c)
+  [Validation]
+    frame 0: Approves: your account; it may approve execution   (EIP-8141)
+    frame 0: With: Your owner key approves the execution; any payer may complete it   (account: ExecutionScopeAccount)
+    frame 1: Pay frame: a payer approves payment; who, and its limits and data, are not signed   (FrameExecution, exp-frames experiment 27)
+  [Payment]
+    Payer and fees: not signed: whoever completes the transaction chooses and pays them   (FrameExecution, exp-frames experiment 27)
+  [Execution]
+    frame 2: Runs: SENDER, as your account, calling 0x2700000000000000000000000000000000000020   (EIP-8141)
+    frame 3: Runs: DEFAULT, as the entry point, not your account, calling 0x2700000000000000000000000000000000000021   (EIP-8141)
+    frame 3: Data: 0x5a   (raw)
+    frame 4: Runs: SENDER, as your account, calling 0x2700000000000000000000000000000000000022   (EIP-8141)
+    frame 4: Data: 0x5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a   (raw)
+    frame 5: Runs: DEFAULT, as the entry point, not your account, calling 0x2700000000000000000000000000000000000023   (EIP-8141)
+    frame 5: Data: 0x5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a   (raw)
+    frame 6: Runs: SENDER, as your account, calling 0x2700000000000000000000000000000000000024   (EIP-8141)
+    frame 6: Data: 0x5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a   (raw)
+    frame 7: Runs: DEFAULT, as the entry point, not your account, calling 0x2700000000000000000000000000000000000025   (EIP-8141)
+    frame 7: Data: 0x5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a... (1000 bytes)   (raw)
+    frame 8: Runs: SENDER, as your account, calling 0x2700000000000000000000000000000000000026   (EIP-8141)
+    frame 9: Runs: DEFAULT, as the entry point, not your account, calling 0x2700000000000000000000000000000000000027   (EIP-8141)
+    frame 9: Data: 0x5a   (raw)
+    frame 10: Runs: SENDER, as your account, calling 0x2700000000000000000000000000000000000028   (EIP-8141)
+    frame 10: Data: 0x5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a   (raw)
+    frame 11: Runs: DEFAULT, as the entry point, not your account, calling 0x2700000000000000000000000000000000000029   (EIP-8141)
+    frame 11: Data: 0x5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a   (raw)
+    Independent: frames 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 each stand alone: one can fail while the others succeed   (EIP-8141)
+  gap: BLIND NoDescriptor: frame 3: no ERC-7730 file binds 0x2700000000000000000000000000000000000021
+  gap: BLIND NoDescriptor: frame 4: no ERC-7730 file binds 0x2700000000000000000000000000000000000022
+  gap: BLIND NoDescriptor: frame 5: no ERC-7730 file binds 0x2700000000000000000000000000000000000023
+  gap: BLIND NoDescriptor: frame 6: no ERC-7730 file binds 0x2700000000000000000000000000000000000024
+  gap: BLIND NoDescriptor: frame 7: no ERC-7730 file binds 0x2700000000000000000000000000000000000025
+  gap: BLIND NoDescriptor: frame 9: no ERC-7730 file binds 0x2700000000000000000000000000000000000027
+  gap: BLIND NoDescriptor: frame 10: no ERC-7730 file binds 0x2700000000000000000000000000000000000028
+  gap: BLIND NoDescriptor: frame 11: no ERC-7730 file binds 0x2700000000000000000000000000000000000029
+  withoutAccountDescriptors: 9 blind; gaps [Account (blind), NoDescriptor (blind), NoDescriptor (blind), NoDescriptor (blind), NoDescriptor (blind), NoDescriptor (blind), NoDescriptor (blind), NoDescriptor (blind), NoDescriptor (blind)]
+  transactionAlone: 9 blind; gaps [Account (blind), NoDescriptor (blind), NoDescriptor (blind), NoDescriptor (blind), NoDescriptor (blind), NoDescriptor (blind), NoDescriptor (blind), NoDescriptor (blind), NoDescriptor (blind)]
+
+== exp27-master/self-paying: experiment 27, case self-paying, expected refused
+  intent: Send 0.000000000000000001 ETH to a friend
+  [Signature]
+    Signs: the execution digest E: every frame but the payer's, and not the fees (0xa707eca5...bc8c)   (FrameExecution, exp-frames experiment 27)
+    Signer: the owner key 0xCA17f5f5Ac896C0591899ab457eB57310682757c, entry 0, secp256k1   (EIP-8141)
+  [Account]
+    Account: 0x2700000000000000000000000000000000000001: ExecutionScopeAccount, owner 0xCA17f5f5Ac896C0591899ab457eB57310682757c, in your wallet's accounts   (account: ExecutionScopeAccount)
+    Chain: 8141   (EIP-8141)
+  [Nonce]
+    Nonce: the account nonce, 0   (EIP-8250 at 1a086d5c)
+  [Validation]
+    frame 0: Approves: your account; it may approve execution and payment   (EIP-8141)
+    frame 0: With: Your owner key approves the execution; any payer may complete it   (account: ExecutionScopeAccount)
+  [Payment]
+    Value sent: 0.000000000000000001 ETH from your account   (EIP-8141)
+    Payer: not signed: any payer may complete it (here your account)   (FrameExecution, exp-frames experiment 27)
+    Fees: not signed (here at most 0.000167308 ETH (83654 gas at up to 2 gwei), paid by the payer)   (FrameExecution, exp-frames experiment 27)
+  [Execution]
+    frame 1: Runs: SENDER, as your account, calling a friend   (EIP-8141)
+    frame 1: Value: 0.000000000000000001 ETH   (EIP-8141)
+  gap: Refusal: frame 0: ExecutionScopeAccount approves no execution and payment on this signature: the transaction will be refused
+  withoutAccountDescriptors: 1 blind; gaps [Account (blind)]
+  transactionAlone: 1 blind; gaps [Account (blind)]
+
+== exp27-master/key-zero: experiment 27, case key-zero, expected valid
+  intent: Send 0.000000000000000003 ETH to a friend
+  [Signature]
+    Signs: the execution digest E: every frame but the payer's, and not the fees (0x06ffc79e...dacb)   (FrameExecution, exp-frames experiment 27)
+    Signer: the owner key 0xCA17f5f5Ac896C0591899ab457eB57310682757c, entry 0, secp256k1   (EIP-8141)
+    Also signed by: sponsor 1, entry 1, over the signature hash   (EIP-8141)
+  [Account]
+    Account: 0x2700000000000000000000000000000000000001: ExecutionScopeAccount, owner 0xCA17f5f5Ac896C0591899ab457eB57310682757c, in your wallet's accounts   (account: ExecutionScopeAccount)
+    Chain: 8141   (EIP-8141)
+  [Nonce]
+    Nonce: keys [0] at sequence 0, in NONCE_MANAGER   (EIP-8250 at 1a086d5c)
+  [Validation]
+    frame 0: Approves: your account; it may approve execution   (EIP-8141)
+    frame 0: With: Your owner key approves the execution; any payer may complete it   (account: ExecutionScopeAccount)
+    frame 1: Payer approves: sponsor 1   (EIP-8141)
+  [Payment]
+    Value sent: 0.000000000000000003 ETH from your account   (EIP-8141)
+    Payer: not signed: any payer may complete it (here sponsor 1; you pay no gas)   (FrameExecution, exp-frames experiment 27)
+    Fees: not signed (here at most 0.000392426 ETH (196213 gas at up to 2 gwei), paid by the payer)   (FrameExecution, exp-frames experiment 27)
+  [Execution]
+    frame 2: Runs: SENDER, as your account, calling a friend   (EIP-8141)
+    frame 2: Value: 0.000000000000000003 ETH   (EIP-8141)
+  withoutAccountDescriptors: 1 blind; gaps [Account (blind)]
+  transactionAlone: 1 blind; gaps [Account (blind)]
+
+== exp27-master/key-zero (typed data alone)
+  intent: Send 0.000000000000000003 ETH to a friend
+  [Signature]
+    Signs: the execution digest E: every frame but the payer's, and not the fees (0x06ffc79e...dacb)   (FrameExecution, exp-frames experiment 27)
+  [Account]
+    Account: 0x2700000000000000000000000000000000000001: ExecutionScopeAccount, owner 0xCA17f5f5Ac896C0591899ab457eB57310682757c, in your wallet's accounts   (account: ExecutionScopeAccount)
+    Chain: 8141   (EIP-8141)
+  [Nonce]
+    Nonce: keys with hash 0xada50131...9e7d at sequence 0   (EIP-8250 at 1a086d5c)
+  [Validation]
+    frame 0: Approves: your account; it may approve execution   (EIP-8141)
+    frame 0: With: Your owner key approves the execution; any payer may complete it   (account: ExecutionScopeAccount)
+    frame 1: Pay frame: a payer approves payment; who, and its limits and data, are not signed   (FrameExecution, exp-frames experiment 27)
+  [Payment]
+    Value sent: 0.000000000000000003 ETH from your account   (EIP-8141)
+    Payer and fees: not signed: whoever completes the transaction chooses and pays them   (FrameExecution, exp-frames experiment 27)
+  [Execution]
+    frame 2: Runs: SENDER, as your account, calling a friend   (EIP-8141)
+    frame 2: Value: 0.000000000000000003 ETH   (EIP-8141)
+  gap: HashOnly: the typed data carries the nonce keys' hash, not the keys: the device can name the replay domain only if the wallet sends the keys beside it
+  withoutAccountDescriptors: 1 blind; gaps [HashOnly, Account (blind)]
+  transactionAlone: 1 blind; gaps [HashOnly, Account (blind)]
+
+== exp27-master/payer-replaced: experiment 27, case payer-replaced, expected valid
+  intent: Send 1 VEC to a friend
+  [Signature]
+    Signs: the execution digest E: every frame but the payer's, and not the fees (0x05f36eec...b351)   (FrameExecution, exp-frames experiment 27)
+    Signer: the owner key 0xCA17f5f5Ac896C0591899ab457eB57310682757c, entry 0, secp256k1   (EIP-8141)
+    Also signed by: sponsor 2, entry 1, over the signature hash   (EIP-8141)
+  [Account]
+    Account: 0x2700000000000000000000000000000000000001: ExecutionScopeAccount, owner 0xCA17f5f5Ac896C0591899ab457eB57310682757c, in your wallet's accounts   (account: ExecutionScopeAccount)
+    Chain: 8141   (EIP-8141)
+  [Nonce]
+    Nonce: the account nonce, 0   (EIP-8250 at 1a086d5c)
+  [Validation]
+    frame 0: Approves: your account; it may approve execution   (EIP-8141)
+    frame 0: With: Your owner key approves the execution; any payer may complete it   (account: ExecutionScopeAccount)
+    frame 1: Payer approves: sponsor 2   (EIP-8141)
+  [Payment]
+    Payer: not signed: any payer may complete it (here sponsor 2; you pay no gas)   (FrameExecution, exp-frames experiment 27)
+    Fees: not signed (here at most 0.00942532 ETH (235633 gas at up to 40 gwei), paid by the payer)   (FrameExecution, exp-frames experiment 27)
+  [Execution]
+    frame 2: Runs: SENDER, as your account, calling Vector token   (EIP-8141)
+    frame 2: Amount: 1 VEC   (ERC-7730: Vector token)
+    frame 2: To: a friend   (ERC-7730: Vector token)
+  withoutAccountDescriptors: 1 blind; gaps [Account (blind)]
+  transactionAlone: 2 blind; gaps [Account (blind), NoDescriptor (blind)]
+
+== exp27-master/payer-replaced (typed data alone)
+  intent: Send 1 VEC to a friend
+  [Signature]
+    Signs: the execution digest E: every frame but the payer's, and not the fees (0x05f36eec...b351)   (FrameExecution, exp-frames experiment 27)
+  [Account]
+    Account: 0x2700000000000000000000000000000000000001: ExecutionScopeAccount, owner 0xCA17f5f5Ac896C0591899ab457eB57310682757c, in your wallet's accounts   (account: ExecutionScopeAccount)
+    Chain: 8141   (EIP-8141)
+  [Nonce]
+    Nonce: the account nonce, 0   (EIP-8250 at 1a086d5c)
+  [Validation]
+    frame 0: Approves: your account; it may approve execution   (EIP-8141)
+    frame 0: With: Your owner key approves the execution; any payer may complete it   (account: ExecutionScopeAccount)
+    frame 1: Pay frame: a payer approves payment; who, and its limits and data, are not signed   (FrameExecution, exp-frames experiment 27)
+  [Payment]
+    Payer and fees: not signed: whoever completes the transaction chooses and pays them   (FrameExecution, exp-frames experiment 27)
+  [Execution]
+    frame 2: Runs: SENDER, as your account, calling Vector token   (EIP-8141)
+    frame 2: Amount: 1 VEC   (ERC-7730: Vector token)
+    frame 2: To: a friend   (ERC-7730: Vector token)
+  withoutAccountDescriptors: 1 blind; gaps [Account (blind)]
+  transactionAlone: 2 blind; gaps [Account (blind), NoDescriptor (blind)]
+
+== exp27-master/target-written-out: experiment 27, case target-written-out, expected valid
+  intent: Send 1 VEC to a friend
+  [Signature]
+    Signs: the execution digest E: every frame but the payer's, and not the fees (0x05f36eec...b351)   (FrameExecution, exp-frames experiment 27)
+    Signer: the owner key 0xCA17f5f5Ac896C0591899ab457eB57310682757c, entry 0, secp256k1   (EIP-8141)
+    Also signed by: sponsor 1, entry 1, over the signature hash   (EIP-8141)
+  [Account]
+    Account: 0x2700000000000000000000000000000000000001: ExecutionScopeAccount, owner 0xCA17f5f5Ac896C0591899ab457eB57310682757c, in your wallet's accounts   (account: ExecutionScopeAccount)
+    Chain: 8141   (EIP-8141)
+  [Nonce]
+    Nonce: the account nonce, 0   (EIP-8250 at 1a086d5c)
+  [Validation]
+    frame 0: Approves: your account; it may approve execution   (EIP-8141)
+    frame 0: With: Your owner key approves the execution; any payer may complete it   (account: ExecutionScopeAccount)
+    frame 1: Payer approves: sponsor 1   (EIP-8141)
+  [Payment]
+    Payer: not signed: any payer may complete it (here sponsor 1; you pay no gas)   (FrameExecution, exp-frames experiment 27)
+    Fees: not signed (here at most 0.000441202 ETH (220601 gas at up to 2 gwei), paid by the payer)   (FrameExecution, exp-frames experiment 27)
+  [Execution]
+    frame 2: Runs: SENDER, as your account, calling Vector token   (EIP-8141)
+    frame 2: Amount: 1 VEC   (ERC-7730: Vector token)
+    frame 2: To: a friend   (ERC-7730: Vector token)
+  withoutAccountDescriptors: 1 blind; gaps [Account (blind)]
+  transactionAlone: 2 blind; gaps [Account (blind), NoDescriptor (blind)]
+
+== exp27-master/target-written-out (typed data alone)
+  intent: Send 1 VEC to a friend
+  [Signature]
+    Signs: the execution digest E: every frame but the payer's, and not the fees (0x05f36eec...b351)   (FrameExecution, exp-frames experiment 27)
+  [Account]
+    Account: 0x2700000000000000000000000000000000000001: ExecutionScopeAccount, owner 0xCA17f5f5Ac896C0591899ab457eB57310682757c, in your wallet's accounts   (account: ExecutionScopeAccount)
+    Chain: 8141   (EIP-8141)
+  [Nonce]
+    Nonce: the account nonce, 0   (EIP-8250 at 1a086d5c)
+  [Validation]
+    frame 0: Approves: your account; it may approve execution   (EIP-8141)
+    frame 0: With: Your owner key approves the execution; any payer may complete it   (account: ExecutionScopeAccount)
+    frame 1: Pay frame: a payer approves payment; who, and its limits and data, are not signed   (FrameExecution, exp-frames experiment 27)
+  [Payment]
+    Payer and fees: not signed: whoever completes the transaction chooses and pays them   (FrameExecution, exp-frames experiment 27)
+  [Execution]
+    frame 2: Runs: SENDER, as your account, calling Vector token   (EIP-8141)
+    frame 2: Amount: 1 VEC   (ERC-7730: Vector token)
+    frame 2: To: a friend   (ERC-7730: Vector token)
+  withoutAccountDescriptors: 1 blind; gaps [Account (blind)]
+  transactionAlone: 2 blind; gaps [Account (blind), NoDescriptor (blind)]
+
+== exp27-master/inserted-default: experiment 27, case inserted-default, expected refused
+  intent: Unknown call in frame 2 and Send 1 VEC to a friend
+  [Signature]
+    Signs: an explicit digest 0x05f36eec8116106c36bf1f416841354cc4a3d56dd8553eb13a0bb5ae05f2b351   (EIP-8141)
+    Signer: the owner key 0xCA17f5f5Ac896C0591899ab457eB57310682757c, entry 0, secp256k1   (EIP-8141)
+    Also signed by: sponsor 1, entry 1, over the signature hash   (EIP-8141)
+  [Account]
+    Account: 0x2700000000000000000000000000000000000001: ExecutionScopeAccount, owner 0xCA17f5f5Ac896C0591899ab457eB57310682757c, in your wallet's accounts   (account: ExecutionScopeAccount)
+    Chain: 8141   (EIP-8141)
+  [Nonce]
+    Nonce: the account nonce, 0   (EIP-8250 at 1a086d5c)
+  [Validation]
+    frame 0: Approves: your account; it may approve execution   (EIP-8141)
+    frame 1: Payer approves: sponsor 1   (EIP-8141)
+  [Payment]
+    Payer: sponsor 1; you pay no gas   (EIP-8141)
+    Max fee: at most 0.00062228 ETH (311140 gas at up to 2 gwei)   (EIP-8141)
+  [Execution]
+    frame 2: Runs: DEFAULT, as the entry point, not your account, calling 0x2700000000000000000000000000000000000011   (EIP-8141)
+    frame 2: Data: 0x0badf00d   (raw)
+    frame 3: Runs: SENDER, as your account, calling Vector token   (EIP-8141)
+    frame 3: Amount: 1 VEC   (ERC-7730: Vector token)
+    frame 3: To: a friend   (ERC-7730: Vector token)
+    Independent: frames 2, 3 each stand alone: one can fail while the others succeed   (EIP-8141)
+  gap: BLIND Opaque: the entry's msg is neither empty nor this transaction's E, so the device cannot tell what it commits to
+  gap: BLIND NoDescriptor: frame 2: no ERC-7730 file binds 0x2700000000000000000000000000000000000011
+  withoutAccountDescriptors: 3 blind; gaps [Opaque (blind), Account (blind), NoDescriptor (blind)]
+  transactionAlone: 4 blind; gaps [Opaque (blind), Account (blind), NoDescriptor (blind), NoDescriptor (blind)]
+
+== exp27-master/appended-default: experiment 27, case appended-default, expected refused
+  intent: Send 1 VEC to a friend and Unknown call in frame 3
+  [Signature]
+    Signs: an explicit digest 0x05f36eec8116106c36bf1f416841354cc4a3d56dd8553eb13a0bb5ae05f2b351   (EIP-8141)
+    Signer: the owner key 0xCA17f5f5Ac896C0591899ab457eB57310682757c, entry 0, secp256k1   (EIP-8141)
+    Also signed by: sponsor 1, entry 1, over the signature hash   (EIP-8141)
+  [Account]
+    Account: 0x2700000000000000000000000000000000000001: ExecutionScopeAccount, owner 0xCA17f5f5Ac896C0591899ab457eB57310682757c, in your wallet's accounts   (account: ExecutionScopeAccount)
+    Chain: 8141   (EIP-8141)
+  [Nonce]
+    Nonce: the account nonce, 0   (EIP-8250 at 1a086d5c)
+  [Validation]
+    frame 0: Approves: your account; it may approve execution   (EIP-8141)
+    frame 1: Payer approves: sponsor 1   (EIP-8141)
+  [Payment]
+    Payer: sponsor 1; you pay no gas   (EIP-8141)
+    Max fee: at most 0.000622304 ETH (311152 gas at up to 2 gwei)   (EIP-8141)
+  [Execution]
+    frame 2: Runs: SENDER, as your account, calling Vector token   (EIP-8141)
+    frame 2: Amount: 1 VEC   (ERC-7730: Vector token)
+    frame 2: To: a friend   (ERC-7730: Vector token)
+    frame 3: Runs: DEFAULT, as the entry point, not your account, calling 0x2700000000000000000000000000000000000011   (EIP-8141)
+    frame 3: Data: 0x0badf00d   (raw)
+    Independent: frames 2, 3 each stand alone: one can fail while the others succeed   (EIP-8141)
+  gap: BLIND Opaque: the entry's msg is neither empty nor this transaction's E, so the device cannot tell what it commits to
+  gap: BLIND NoDescriptor: frame 3: no ERC-7730 file binds 0x2700000000000000000000000000000000000011
+  withoutAccountDescriptors: 3 blind; gaps [Opaque (blind), Account (blind), NoDescriptor (blind)]
+  transactionAlone: 4 blind; gaps [Opaque (blind), Account (blind), NoDescriptor (blind), NoDescriptor (blind)]
+
+== exp27-master/state-limit-lowered: experiment 27, case state-limit-lowered, expected refused
+  intent: Send 1 VEC to a friend
+  [Signature]
+    Signs: an explicit digest 0x05f36eec8116106c36bf1f416841354cc4a3d56dd8553eb13a0bb5ae05f2b351   (EIP-8141)
+    Signer: the owner key 0xCA17f5f5Ac896C0591899ab457eB57310682757c, entry 0, secp256k1   (EIP-8141)
+    Also signed by: sponsor 1, entry 1, over the signature hash   (EIP-8141)
+  [Account]
+    Account: 0x2700000000000000000000000000000000000001: ExecutionScopeAccount, owner 0xCA17f5f5Ac896C0591899ab457eB57310682757c, in your wallet's accounts   (account: ExecutionScopeAccount)
+    Chain: 8141   (EIP-8141)
+  [Nonce]
+    Nonce: the account nonce, 0   (EIP-8250 at 1a086d5c)
+  [Validation]
+    frame 0: Approves: your account; it may approve execution   (EIP-8141)
+    frame 1: Payer approves: sponsor 1   (EIP-8141)
+  [Payment]
+    Payer: sponsor 1; you pay no gas   (EIP-8141)
+    Max fee: at most 0.000245362 ETH (122681 gas at up to 2 gwei)   (EIP-8141)
+  [Execution]
+    frame 2: Runs: SENDER, as your account, calling Vector token   (EIP-8141)
+    frame 2: Amount: 1 VEC   (ERC-7730: Vector token)
+    frame 2: To: a friend   (ERC-7730: Vector token)
+  gap: BLIND Opaque: the entry's msg is neither empty nor this transaction's E, so the device cannot tell what it commits to
+  withoutAccountDescriptors: 2 blind; gaps [Opaque (blind), Account (blind)]
+  transactionAlone: 3 blind; gaps [Opaque (blind), Account (blind), NoDescriptor (blind)]
+
+== exp27-master/transfer-retargeted: experiment 27, case transfer-retargeted, expected refused
+  intent: Unknown call in frame 2
+  [Signature]
+    Signs: an explicit digest 0x05f36eec8116106c36bf1f416841354cc4a3d56dd8553eb13a0bb5ae05f2b351   (EIP-8141)
+    Signer: the owner key 0xCA17f5f5Ac896C0591899ab457eB57310682757c, entry 0, secp256k1   (EIP-8141)
+    Also signed by: sponsor 1, entry 1, over the signature hash   (EIP-8141)
+  [Account]
+    Account: 0x2700000000000000000000000000000000000001: ExecutionScopeAccount, owner 0xCA17f5f5Ac896C0591899ab457eB57310682757c, in your wallet's accounts   (account: ExecutionScopeAccount)
+    Chain: 8141   (EIP-8141)
+  [Nonce]
+    Nonce: the account nonce, 0   (EIP-8250 at 1a086d5c)
+  [Validation]
+    frame 0: Approves: your account; it may approve execution   (EIP-8141)
+    frame 1: Payer approves: sponsor 1   (EIP-8141)
+  [Payment]
+    Payer: sponsor 1; you pay no gas   (EIP-8141)
+    Max fee: at most 0.000441178 ETH (220589 gas at up to 2 gwei)   (EIP-8141)
+  [Execution]
+    frame 2: Runs: SENDER, as your account, calling 0x2700000000000000000000000000000000000011   (EIP-8141)
+    frame 2: Data: 0xa9059cbb0000000000000000000000002700000000000000000000000000000000000013... (68 bytes)   (raw)
+  gap: BLIND Opaque: the entry's msg is neither empty nor this transaction's E, so the device cannot tell what it commits to
+  gap: BLIND NoDescriptor: frame 2: no ERC-7730 file binds 0x2700000000000000000000000000000000000011
+  withoutAccountDescriptors: 3 blind; gaps [Opaque (blind), Account (blind), NoDescriptor (blind)]
+  transactionAlone: 3 blind; gaps [Opaque (blind), Account (blind), NoDescriptor (blind)]
+
+== exp27-master/payer-is-sender: experiment 27, case payer-is-sender, expected refused
+  intent: Send 1 VEC to a friend
+  [Signature]
+    Signs: the execution digest E: every frame but the payer's, and not the fees (0x05f36eec...b351)   (FrameExecution, exp-frames experiment 27)
+    Signer: the owner key 0xCA17f5f5Ac896C0591899ab457eB57310682757c, entry 0, secp256k1   (EIP-8141)
+  [Account]
+    Account: 0x2700000000000000000000000000000000000001: ExecutionScopeAccount, owner 0xCA17f5f5Ac896C0591899ab457eB57310682757c, in your wallet's accounts   (account: ExecutionScopeAccount)
+    Chain: 8141   (EIP-8141)
+  [Nonce]
+    Nonce: the account nonce, 0   (EIP-8250 at 1a086d5c)
+  [Validation]
+    frame 0: Approves: your account; it may approve execution   (EIP-8141)
+    frame 0: With: Your owner key approves the execution; any payer may complete it   (account: ExecutionScopeAccount)
+    frame 1: Approves: your account; it may approve payment   (EIP-8141)
+    frame 1: With: Your owner key approves the execution; any payer may complete it   (account: ExecutionScopeAccount)
+  [Payment]
+    Payer: not signed: any payer may complete it (here your account)   (FrameExecution, exp-frames experiment 27)
+    Fees: not signed (here at most 0.000432906 ETH (216453 gas at up to 2 gwei), paid by the payer)   (FrameExecution, exp-frames experiment 27)
+  [Execution]
+    frame 2: Runs: SENDER, as your account, calling Vector token   (EIP-8141)
+    frame 2: Amount: 1 VEC   (ERC-7730: Vector token)
+    frame 2: To: a friend   (ERC-7730: Vector token)
+  gap: Refusal: frame 1: ExecutionScopeAccount approves no payment on this signature: the transaction will be refused
+  withoutAccountDescriptors: 2 blind; gaps [Account (blind), Account (blind)]
+  transactionAlone: 3 blind; gaps [Account (blind), Account (blind), NoDescriptor (blind)]
+
+== exp27-master/other-account: experiment 27, case other-account, expected refused
+  intent: Send 1 VEC to a friend
+  [Signature]
+    Signs: an explicit digest 0x05f36eec8116106c36bf1f416841354cc4a3d56dd8553eb13a0bb5ae05f2b351   (EIP-8141)
+    Signer: the owner key 0xCA17f5f5Ac896C0591899ab457eB57310682757c, entry 0, secp256k1   (EIP-8141)
+    Also signed by: sponsor 1, entry 1, over the signature hash   (EIP-8141)
+  [Account]
+    Account: 0x2700000000000000000000000000000000000002: ExecutionScopeAccount, owner 0xCA17f5f5Ac896C0591899ab457eB57310682757c, in your wallet's accounts   (account: ExecutionScopeAccount)
+    Chain: 8141   (EIP-8141)
+  [Nonce]
+    Nonce: the account nonce, 0   (EIP-8250 at 1a086d5c)
+  [Validation]
+    frame 0: Approves: your account; it may approve execution   (EIP-8141)
+    frame 1: Payer approves: sponsor 1   (EIP-8141)
+  [Payment]
+    Payer: sponsor 1; you pay no gas   (EIP-8141)
+    Max fee: at most 0.000441226 ETH (220613 gas at up to 2 gwei)   (EIP-8141)
+  [Execution]
+    frame 2: Runs: SENDER, as your account, calling Vector token   (EIP-8141)
+    frame 2: Amount: 1 VEC   (ERC-7730: Vector token)
+    frame 2: To: a friend   (ERC-7730: Vector token)
+  gap: BLIND Opaque: the entry's msg is neither empty nor this transaction's E, so the device cannot tell what it commits to
+  withoutAccountDescriptors: 2 blind; gaps [Opaque (blind), Account (blind)]
+  transactionAlone: 3 blind; gaps [Opaque (blind), Account (blind), NoDescriptor (blind)]
+
+== exp27-master/blob-swapped: experiment 27, case blob-swapped, expected refused
+  intent: Unknown call in frame 2
+  [Signature]
+    Signs: an explicit digest 0x5c3413c3b73b49a911e31ced2f8cd1664a7e0143eec226a1eedd1aa8b0c08d68   (EIP-8141)
+    Signer: the owner key 0xCA17f5f5Ac896C0591899ab457eB57310682757c, entry 0, secp256k1   (EIP-8141)
+    Also signed by: sponsor 1, entry 1, over the signature hash   (EIP-8141)
+  [Account]
+    Account: 0x2700000000000000000000000000000000000001: ExecutionScopeAccount, owner 0xCA17f5f5Ac896C0591899ab457eB57310682757c, in your wallet's accounts   (account: ExecutionScopeAccount)
+    Chain: 8141   (EIP-8141)
+  [Nonce]
+    Nonce: the account nonce, 0   (EIP-8250 at 1a086d5c)
+  [Validation]
+    frame 0: Approves: your account; it may approve execution   (EIP-8141)
+    frame 1: Payer approves: sponsor 1   (EIP-8141)
+  [Payment]
+    Payer: sponsor 1; you pay no gas   (EIP-8141)
+    Max fee: at most 0.000284944144 ETH (142341 gas at up to 2 gwei)   (EIP-8141)
+  [Execution]
+    frame 2: Runs: SENDER, as your account, calling 0x2700000000000000000000000000000000000011   (EIP-8141)
+    frame 2: Data: 0xaabbccdd   (raw)
+  [Blobs]
+    Blobs: 2: 0x01111111...1111, 0x01333333...3333   (EIP-8141)
+  gap: BLIND Opaque: the entry's msg is neither empty nor this transaction's E, so the device cannot tell what it commits to
+  gap: BLIND NoDescriptor: frame 2: no ERC-7730 file binds 0x2700000000000000000000000000000000000011
+  gap: NotInTransaction: the blobs' contents travel beside the transaction; the frames see only their versioned hashes
+  withoutAccountDescriptors: 3 blind; gaps [Opaque (blind), Account (blind), NoDescriptor (blind), NotInTransaction]
+  transactionAlone: 3 blind; gaps [Opaque (blind), Account (blind), NoDescriptor (blind), NotInTransaction]
+
+== exp27-master/key-zero, read under f3079a0: experiment 27's master key-zero case, its bytes read under EIP-8250 at f3079a09e8
+  intent: Send 0.000000000000000003 ETH to a friend
+  [Signature]
+    Signs: the execution digest E: every frame but the payer's, and not the fees (0x06ffc79e...dacb)   (FrameExecution, exp-frames experiment 27)
+    Signer: the owner key 0xCA17f5f5Ac896C0591899ab457eB57310682757c, entry 0, secp256k1   (EIP-8141)
+    Also signed by: sponsor 1, entry 1, over the signature hash   (EIP-8141)
+  [Account]
+    Account: 0x2700000000000000000000000000000000000001: ExecutionScopeAccount, owner 0xCA17f5f5Ac896C0591899ab457eB57310682757c, in your wallet's accounts   (account: ExecutionScopeAccount)
+    Chain: 8141   (EIP-8141)
+  [Nonce]
+    Nonce: the account nonce, 0   (EIP-8250 at f3079a09e8)
+  [Validation]
+    frame 0: Approves: your account; it may approve execution   (EIP-8141)
+    frame 0: With: Your owner key approves the execution; any payer may complete it   (account: ExecutionScopeAccount)
+    frame 1: Payer approves: sponsor 1   (EIP-8141)
+  [Payment]
+    Value sent: 0.000000000000000003 ETH from your account   (EIP-8141)
+    Payer: not signed: any payer may complete it (here sponsor 1; you pay no gas)   (FrameExecution, exp-frames experiment 27)
+    Fees: not signed (here at most 0.000392426 ETH (196213 gas at up to 2 gwei), paid by the payer)   (FrameExecution, exp-frames experiment 27)
+  [Execution]
+    frame 2: Runs: SENDER, as your account, calling a friend   (EIP-8141)
+    frame 2: Value: 0.000000000000000003 ETH   (EIP-8141)
+  withoutAccountDescriptors: 1 blind; gaps [Account (blind)]
+  transactionAlone: 1 blind; gaps [Account (blind)]
+
+== exp27-master/key-zero, read under f3079a0 (typed data alone)
+  intent: Send 0.000000000000000003 ETH to a friend
+  [Signature]
+    Signs: the execution digest E: every frame but the payer's, and not the fees (0x06ffc79e...dacb)   (FrameExecution, exp-frames experiment 27)
+  [Account]
+    Account: 0x2700000000000000000000000000000000000001: ExecutionScopeAccount, owner 0xCA17f5f5Ac896C0591899ab457eB57310682757c, in your wallet's accounts   (account: ExecutionScopeAccount)
+    Chain: 8141   (EIP-8141)
+  [Nonce]
+    Nonce: the account nonce, 0   (EIP-8250 at f3079a09e8)
+  [Validation]
+    frame 0: Approves: your account; it may approve execution   (EIP-8141)
+    frame 0: With: Your owner key approves the execution; any payer may complete it   (account: ExecutionScopeAccount)
+    frame 1: Pay frame: a payer approves payment; who, and its limits and data, are not signed   (FrameExecution, exp-frames experiment 27)
+  [Payment]
+    Value sent: 0.000000000000000003 ETH from your account   (EIP-8141)
+    Payer and fees: not signed: whoever completes the transaction chooses and pays them   (FrameExecution, exp-frames experiment 27)
+  [Execution]
+    frame 2: Runs: SENDER, as your account, calling a friend   (EIP-8141)
+    frame 2: Value: 0.000000000000000003 ETH   (EIP-8141)
+  withoutAccountDescriptors: 1 blind; gaps [Account (blind)]
+  transactionAlone: 1 blind; gaps [Account (blind)]
+
+== chain/0x32eb0bc5: experiment 28, B: approve and swap, atomic, self-paid (wallet.ts)
+  intent: Approve ToyDex to spend 1 TKA and Swap 1 TKA for at least 1 TKB
+  [Signature]
+    Signs: the whole transaction: every frame, the fees and who else signs (signature hash 0x7c789d1f...63e4)   (EIP-8141)
+    Signer: the account's own key, entry 0, secp256k1   (EIP-8141)
+  [Account]
+    Account: 0x88Bf7273077F8c4f07d727f0Ef79Ec80dFF50A2d: no code, so EIP-8141's default code, assuming the key signed no EIP-7702 delegation   (EIP-8141)
+    Chain: 8141   (EIP-8141)
+  [Nonce]
+    Nonce: the account nonce, 3   (EIP-8250 at f3079a09e8)
+  [Validation]
+    frame 0: Approves: your account; it may approve execution and payment   (EIP-8141)
+    frame 0: With: your secp256k1 signature over the signature hash (default code)   (EIP-8141)
+  [Payment]
+    Payer: your account   (EIP-8141)
+    Max fee: at most 0.000909556012733784 ETH (909556 gas at up to 1.000000014 gwei)   (EIP-8141)
+  [Execution]
+    frame 1: Runs: SENDER, as your account, calling Token A   (EIP-8141)
+    frame 1: Spender: ToyDex   (ERC-7730: Token A)
+    frame 1: Amount: 1 TKA   (ERC-7730: Token A)
+    frame 2: Runs: SENDER, as your account, calling ToyDex   (EIP-8141)
+    frame 2: Send: 1 TKA   (ERC-7730: ToyDex)
+    frame 2: Receive at least: 1 TKB   (ERC-7730: ToyDex)
+    Atomic: frames 1 to 2 all succeed or all revert   (EIP-8141)
+  withoutAccountDescriptors: 0 blind; gaps []
+  transactionAlone: 2 blind; gaps [NoDescriptor (blind), NoDescriptor (blind)]
+
+== chain/0x9688c1f8: experiment 28, C: approve and swap, atomic, sponsored (wallet.ts)
+  intent: Approve ToyDex to spend 1 TKA and Swap 1 TKA for at least 1 TKB
+  [Signature]
+    Signs: the whole transaction: every frame, the fees and who else signs (signature hash 0x818c50e0...4830)   (EIP-8141)
+    Signer: the account's own key, entry 0, secp256k1   (EIP-8141)
+    Also signed by: the paymaster service's signer, entry 1, over the signature hash   (EIP-8141)
+  [Account]
+    Account: 0x83D00Dd052eb3a8181E4C08C7E8062645A7Bc098: no code, so EIP-8141's default code, assuming the key signed no EIP-7702 delegation   (EIP-8141)
+    Chain: 8141   (EIP-8141)
+  [Nonce]
+    Nonce: the account nonce, 1   (EIP-8250 at f3079a09e8)
+  [Validation]
+    frame 0: Approves: your account; it may approve execution   (EIP-8141)
+    frame 0: With: your secp256k1 signature over the signature hash (default code)   (EIP-8141)
+    frame 1: Payer approves: the paymaster service   (EIP-8141)
+  [Payment]
+    Payer: the paymaster service; you pay no gas   (EIP-8141)
+    Max fee: at most 0.000929167013008338 ETH (929167 gas at up to 1.000000014 gwei)   (EIP-8141)
+  [Execution]
+    frame 2: Runs: SENDER, as your account, calling Token A   (EIP-8141)
+    frame 2: Spender: ToyDex   (ERC-7730: Token A)
+    frame 2: Amount: 1 TKA   (ERC-7730: Token A)
+    frame 3: Runs: SENDER, as your account, calling ToyDex   (EIP-8141)
+    frame 3: Send: 1 TKA   (ERC-7730: ToyDex)
+    frame 3: Receive at least: 1 TKB   (ERC-7730: ToyDex)
+    Atomic: frames 2 to 3 all succeed or all revert   (EIP-8141)
+  withoutAccountDescriptors: 0 blind; gaps []
+  transactionAlone: 2 blind; gaps [NoDescriptor (blind), NoDescriptor (blind)]
+
+== chain/0x78564f0a: experiment 28, D: three independent calls (wallet.ts)
+  intent: Approve ToyDex to spend 1 TKA and Swap 2 TKA for at least 2 TKB and Approve ToyDex to spend 0 TKA
+  [Signature]
+    Signs: the whole transaction: every frame, the fees and who else signs (signature hash 0x7d7f6731...6a40)   (EIP-8141)
+    Signer: the account's own key, entry 0, secp256k1   (EIP-8141)
+  [Account]
+    Account: 0x88Bf7273077F8c4f07d727f0Ef79Ec80dFF50A2d: no code, so EIP-8141's default code, assuming the key signed no EIP-7702 delegation   (EIP-8141)
+    Chain: 8141   (EIP-8141)
+  [Nonce]
+    Nonce: the account nonce, 4   (EIP-8250 at f3079a09e8)
+  [Validation]
+    frame 0: Approves: your account; it may approve execution and payment   (EIP-8141)
+    frame 0: With: your secp256k1 signature over the signature hash (default code)   (EIP-8141)
+  [Payment]
+    Payer: your account   (EIP-8141)
+    Max fee: at most 0.001223503017129042 ETH (1223503 gas at up to 1.000000014 gwei)   (EIP-8141)
+  [Execution]
+    frame 1: Runs: SENDER, as your account, calling Token A   (EIP-8141)
+    frame 1: Spender: ToyDex   (ERC-7730: Token A)
+    frame 1: Amount: 1 TKA   (ERC-7730: Token A)
+    frame 2: Runs: SENDER, as your account, calling ToyDex   (EIP-8141)
+    frame 2: Send: 2 TKA   (ERC-7730: ToyDex)
+    frame 2: Receive at least: 2 TKB   (ERC-7730: ToyDex)
+    frame 3: Runs: SENDER, as your account, calling Token A   (EIP-8141)
+    frame 3: Spender: ToyDex   (ERC-7730: Token A)
+    frame 3: Amount: 0 TKA   (ERC-7730: Token A)
+    Independent: frames 1, 2, 3 each stand alone: one can fail while the others succeed   (EIP-8141)
+  withoutAccountDescriptors: 0 blind; gaps []
+  transactionAlone: 3 blind; gaps [NoDescriptor (blind), NoDescriptor (blind), NoDescriptor (blind)]
+
+== chain/0x3fc65c1d: experiment 28, E: approve and swap, atomic, the swap fails (wallet.ts)
+  intent: Approve ToyDex to spend 1 TKA and Swap 1 TKA for at least 1.000000000000000001 TKB
+  [Signature]
+    Signs: the whole transaction: every frame, the fees and who else signs (signature hash 0x19e73037...6e41)   (EIP-8141)
+    Signer: the account's own key, entry 0, secp256k1   (EIP-8141)
+  [Account]
+    Account: 0x88Bf7273077F8c4f07d727f0Ef79Ec80dFF50A2d: no code, so EIP-8141's default code, assuming the key signed no EIP-7702 delegation   (EIP-8141)
+    Chain: 8141   (EIP-8141)
+  [Nonce]
+    Nonce: the account nonce, 5   (EIP-8250 at f3079a09e8)
+  [Validation]
+    frame 0: Approves: your account; it may approve execution and payment   (EIP-8141)
+    frame 0: With: your secp256k1 signature over the signature hash (default code)   (EIP-8141)
+  [Payment]
+    Payer: your account   (EIP-8141)
+    Max fee: at most 0.000833441011668174 ETH (833441 gas at up to 1.000000014 gwei)   (EIP-8141)
+  [Execution]
+    frame 1: Runs: SENDER, as your account, calling Token A   (EIP-8141)
+    frame 1: Spender: ToyDex   (ERC-7730: Token A)
+    frame 1: Amount: 1 TKA   (ERC-7730: Token A)
+    frame 2: Runs: SENDER, as your account, calling ToyDex   (EIP-8141)
+    frame 2: Send: 1 TKA   (ERC-7730: ToyDex)
+    frame 2: Receive at least: 1.000000000000000001 TKB   (ERC-7730: ToyDex)
+    Atomic: frames 1 to 2 all succeed or all revert   (EIP-8141)
+  withoutAccountDescriptors: 0 blind; gaps []
+  transactionAlone: 2 blind; gaps [NoDescriptor (blind), NoDescriptor (blind)]
+
+== chain/0x9489899e: experiment 28, rails r1 self-paid (wallet.ts)
+  intent: Approve ToyDex to spend 1 TKA and Swap 1 TKA for at least 1 TKB
+  [Signature]
+    Signs: the whole transaction: every frame, the fees and who else signs (signature hash 0x06e0bfa4...f307)   (EIP-8141)
+    Signer: the account's own key, entry 0, secp256k1   (EIP-8141)
+  [Account]
+    Account: 0xBcDf21037c8CF278BB6dB015E4d7195C0126a133: no code, so EIP-8141's default code, assuming the key signed no EIP-7702 delegation   (EIP-8141)
+    Chain: 8141   (EIP-8141)
+  [Nonce]
+    Nonce: the account nonce, 0   (EIP-8250 at f3079a09e8)
+  [Validation]
+    frame 0: Approves: your account; it may approve execution and payment   (EIP-8141)
+    frame 0: With: your secp256k1 signature over the signature hash (default code)   (EIP-8141)
+  [Payment]
+    Payer: your account   (EIP-8141)
+    Max fee: at most 0.000909544012733616 ETH (909544 gas at up to 1.000000014 gwei)   (EIP-8141)
+  [Execution]
+    frame 1: Runs: SENDER, as your account, calling Token A   (EIP-8141)
+    frame 1: Spender: ToyDex   (ERC-7730: Token A)
+    frame 1: Amount: 1 TKA   (ERC-7730: Token A)
+    frame 2: Runs: SENDER, as your account, calling ToyDex   (EIP-8141)
+    frame 2: Send: 1 TKA   (ERC-7730: ToyDex)
+    frame 2: Receive at least: 1 TKB   (ERC-7730: ToyDex)
+    Atomic: frames 1 to 2 all succeed or all revert   (EIP-8141)
+  withoutAccountDescriptors: 0 blind; gaps []
+  transactionAlone: 2 blind; gaps [NoDescriptor (blind), NoDescriptor (blind)]
+
+== chain/0x57135ff7: experiment 28, rails r1 sponsored (wallet.ts)
+  intent: Approve ToyDex to spend 1 TKA and Swap 1 TKA for at least 1 TKB
+  [Signature]
+    Signs: the whole transaction: every frame, the fees and who else signs (signature hash 0x07c5a6e5...1c23)   (EIP-8141)
+    Signer: the account's own key, entry 0, secp256k1   (EIP-8141)
+    Also signed by: the paymaster service's signer, entry 1, over the signature hash   (EIP-8141)
+  [Account]
+    Account: 0x1272aD9296D37fe133d58511758565EaCb6D31d1: no code, so EIP-8141's default code, assuming the key signed no EIP-7702 delegation   (EIP-8141)
+    Chain: 8141   (EIP-8141)
+  [Nonce]
+    Nonce: the account nonce, 0   (EIP-8250 at f3079a09e8)
+  [Validation]
+    frame 0: Approves: your account; it may approve execution   (EIP-8141)
+    frame 0: With: your secp256k1 signature over the signature hash (default code)   (EIP-8141)
+    frame 1: Payer approves: the paymaster service   (EIP-8141)
+  [Payment]
+    Payer: the paymaster service; you pay no gas   (EIP-8141)
+    Max fee: at most 0.001112791015579074 ETH (1112791 gas at up to 1.000000014 gwei)   (EIP-8141)
+  [Execution]
+    frame 2: Runs: SENDER, as your account, calling Token A   (EIP-8141)
+    frame 2: Spender: ToyDex   (ERC-7730: Token A)
+    frame 2: Amount: 1 TKA   (ERC-7730: Token A)
+    frame 3: Runs: SENDER, as your account, calling ToyDex   (EIP-8141)
+    frame 3: Send: 1 TKA   (ERC-7730: ToyDex)
+    frame 3: Receive at least: 1 TKB   (ERC-7730: ToyDex)
+    Atomic: frames 2 to 3 all succeed or all revert   (EIP-8141)
+  withoutAccountDescriptors: 0 blind; gaps []
+  transactionAlone: 2 blind; gaps [NoDescriptor (blind), NoDescriptor (blind)]
+
+== chain/0x644424fe: experiment 28, rails r2 self-paid (wallet.ts)
+  intent: Approve ToyDex to spend 1 TKA and Swap 1 TKA for at least 1 TKB
+  [Signature]
+    Signs: the whole transaction: every frame, the fees and who else signs (signature hash 0x286b5876...8000)   (EIP-8141)
+    Signer: the account's own key, entry 0, secp256k1   (EIP-8141)
+  [Account]
+    Account: 0xBcDf21037c8CF278BB6dB015E4d7195C0126a133: no code, so EIP-8141's default code, assuming the key signed no EIP-7702 delegation   (EIP-8141)
+    Chain: 8141   (EIP-8141)
+  [Nonce]
+    Nonce: the account nonce, 1   (EIP-8250 at f3079a09e8)
+  [Validation]
+    frame 0: Approves: your account; it may approve execution and payment   (EIP-8141)
+    frame 0: With: your secp256k1 signature over the signature hash (default code)   (EIP-8141)
+  [Payment]
+    Payer: your account   (EIP-8141)
+    Max fee: at most 0.000909556012733784 ETH (909556 gas at up to 1.000000014 gwei)   (EIP-8141)
+  [Execution]
+    frame 1: Runs: SENDER, as your account, calling Token A   (EIP-8141)
+    frame 1: Spender: ToyDex   (ERC-7730: Token A)
+    frame 1: Amount: 1 TKA   (ERC-7730: Token A)
+    frame 2: Runs: SENDER, as your account, calling ToyDex   (EIP-8141)
+    frame 2: Send: 1 TKA   (ERC-7730: ToyDex)
+    frame 2: Receive at least: 1 TKB   (ERC-7730: ToyDex)
+    Atomic: frames 1 to 2 all succeed or all revert   (EIP-8141)
+  withoutAccountDescriptors: 0 blind; gaps []
+  transactionAlone: 2 blind; gaps [NoDescriptor (blind), NoDescriptor (blind)]
+
+== chain/0xd3c04b29: experiment 28, rails r2 sponsored (wallet.ts)
+  intent: Approve ToyDex to spend 1 TKA and Swap 1 TKA for at least 1 TKB
+  [Signature]
+    Signs: the whole transaction: every frame, the fees and who else signs (signature hash 0x00f45177...665e)   (EIP-8141)
+    Signer: the account's own key, entry 0, secp256k1   (EIP-8141)
+    Also signed by: the paymaster service's signer, entry 1, over the signature hash   (EIP-8141)
+  [Account]
+    Account: 0x1272aD9296D37fe133d58511758565EaCb6D31d1: no code, so EIP-8141's default code, assuming the key signed no EIP-7702 delegation   (EIP-8141)
+    Chain: 8141   (EIP-8141)
+  [Nonce]
+    Nonce: the account nonce, 1   (EIP-8250 at f3079a09e8)
+  [Validation]
+    frame 0: Approves: your account; it may approve execution   (EIP-8141)
+    frame 0: With: your secp256k1 signature over the signature hash (default code)   (EIP-8141)
+    frame 1: Payer approves: the paymaster service   (EIP-8141)
+  [Payment]
+    Payer: the paymaster service; you pay no gas   (EIP-8141)
+    Max fee: at most 0.000929167013008338 ETH (929167 gas at up to 1.000000014 gwei)   (EIP-8141)
+  [Execution]
+    frame 2: Runs: SENDER, as your account, calling Token A   (EIP-8141)
+    frame 2: Spender: ToyDex   (ERC-7730: Token A)
+    frame 2: Amount: 1 TKA   (ERC-7730: Token A)
+    frame 3: Runs: SENDER, as your account, calling ToyDex   (EIP-8141)
+    frame 3: Send: 1 TKA   (ERC-7730: ToyDex)
+    frame 3: Receive at least: 1 TKB   (ERC-7730: ToyDex)
+    Atomic: frames 2 to 3 all succeed or all revert   (EIP-8141)
+  withoutAccountDescriptors: 0 blind; gaps []
+  transactionAlone: 2 blind; gaps [NoDescriptor (blind), NoDescriptor (blind)]
+
+== chain/0x28885722: experiment 28, B (kohaku-rs)
+  intent: Approve ToyDex to spend 1 TKA and Swap 1 TKA for at least 1 TKB
+  [Signature]
+    Signs: the whole transaction: every frame, the fees and who else signs (signature hash 0x78e9e7da...76db)   (EIP-8141)
+    Signer: the account's own key, entry 0, secp256k1   (EIP-8141)
+  [Account]
+    Account: 0x2Ad9f8932194a49d2E764725ABD9baF4ccB68a7E: no code, so EIP-8141's default code, assuming the key signed no EIP-7702 delegation   (EIP-8141)
+    Chain: 8141   (EIP-8141)
+  [Nonce]
+    Nonce: the account nonce, 3   (EIP-8250 at f3079a09e8)
+  [Validation]
+    frame 0: Approves: your account; it may approve execution and payment   (EIP-8141)
+    frame 0: With: your secp256k1 signature over the signature hash (default code)   (EIP-8141)
+  [Payment]
+    Payer: your account   (EIP-8141)
+    Max fee: at most 0.000909568012733952 ETH (909568 gas at up to 1.000000014 gwei)   (EIP-8141)
+  [Execution]
+    frame 1: Runs: SENDER, as your account, calling Token A   (EIP-8141)
+    frame 1: Spender: ToyDex   (ERC-7730: Token A)
+    frame 1: Amount: 1 TKA   (ERC-7730: Token A)
+    frame 2: Runs: SENDER, as your account, calling ToyDex   (EIP-8141)
+    frame 2: Send: 1 TKA   (ERC-7730: ToyDex)
+    frame 2: Receive at least: 1 TKB   (ERC-7730: ToyDex)
+    Atomic: frames 1 to 2 all succeed or all revert   (EIP-8141)
+  withoutAccountDescriptors: 0 blind; gaps []
+  transactionAlone: 2 blind; gaps [NoDescriptor (blind), NoDescriptor (blind)]
+
+== chain/0x0cd8150d: experiment 28, C (kohaku-rs)
+  intent: Approve ToyDex to spend 1 TKA and Swap 1 TKA for at least 1 TKB
+  [Signature]
+    Signs: the whole transaction: every frame, the fees and who else signs (signature hash 0xaa1ef68e...f7f8)   (EIP-8141)
+    Signer: the account's own key, entry 0, secp256k1   (EIP-8141)
+    Also signed by: the paymaster service's signer, entry 1, over the signature hash   (EIP-8141)
+  [Account]
+    Account: 0x9696F340bFEeCe885966A5A00036C43C94571b38: no code, so EIP-8141's default code, assuming the key signed no EIP-7702 delegation   (EIP-8141)
+    Chain: 8141   (EIP-8141)
+  [Nonce]
+    Nonce: the account nonce, 1   (EIP-8250 at f3079a09e8)
+  [Validation]
+    frame 0: Approves: your account; it may approve execution   (EIP-8141)
+    frame 0: With: your secp256k1 signature over the signature hash (default code)   (EIP-8141)
+    frame 1: Payer approves: the paymaster service   (EIP-8141)
+  [Payment]
+    Payer: the paymaster service; you pay no gas   (EIP-8141)
+    Max fee: at most 0.000929191013008674 ETH (929191 gas at up to 1.000000014 gwei)   (EIP-8141)
+  [Execution]
+    frame 2: Runs: SENDER, as your account, calling Token A   (EIP-8141)
+    frame 2: Spender: ToyDex   (ERC-7730: Token A)
+    frame 2: Amount: 1 TKA   (ERC-7730: Token A)
+    frame 3: Runs: SENDER, as your account, calling ToyDex   (EIP-8141)
+    frame 3: Send: 1 TKA   (ERC-7730: ToyDex)
+    frame 3: Receive at least: 1 TKB   (ERC-7730: ToyDex)
+    Atomic: frames 2 to 3 all succeed or all revert   (EIP-8141)
+  withoutAccountDescriptors: 0 blind; gaps []
+  transactionAlone: 2 blind; gaps [NoDescriptor (blind), NoDescriptor (blind)]
+
+== chain/0x6c5d0038: experiment 28, D (kohaku-rs)
+  intent: Approve ToyDex to spend 1 TKA and Swap 2 TKA for at least 2 TKB and Approve ToyDex to spend 0 TKA
+  [Signature]
+    Signs: the whole transaction: every frame, the fees and who else signs (signature hash 0x17e28fda...f733)   (EIP-8141)
+    Signer: the account's own key, entry 0, secp256k1   (EIP-8141)
+  [Account]
+    Account: 0x2Ad9f8932194a49d2E764725ABD9baF4ccB68a7E: no code, so EIP-8141's default code, assuming the key signed no EIP-7702 delegation   (EIP-8141)
+    Chain: 8141   (EIP-8141)
+  [Nonce]
+    Nonce: the account nonce, 4   (EIP-8250 at f3079a09e8)
+  [Validation]
+    frame 0: Approves: your account; it may approve execution and payment   (EIP-8141)
+    frame 0: With: your secp256k1 signature over the signature hash (default code)   (EIP-8141)
+  [Payment]
+    Payer: your account   (EIP-8141)
+    Max fee: at most 0.001223491017128874 ETH (1223491 gas at up to 1.000000014 gwei)   (EIP-8141)
+  [Execution]
+    frame 1: Runs: SENDER, as your account, calling Token A   (EIP-8141)
+    frame 1: Spender: ToyDex   (ERC-7730: Token A)
+    frame 1: Amount: 1 TKA   (ERC-7730: Token A)
+    frame 2: Runs: SENDER, as your account, calling ToyDex   (EIP-8141)
+    frame 2: Send: 2 TKA   (ERC-7730: ToyDex)
+    frame 2: Receive at least: 2 TKB   (ERC-7730: ToyDex)
+    frame 3: Runs: SENDER, as your account, calling Token A   (EIP-8141)
+    frame 3: Spender: ToyDex   (ERC-7730: Token A)
+    frame 3: Amount: 0 TKA   (ERC-7730: Token A)
+    Independent: frames 1, 2, 3 each stand alone: one can fail while the others succeed   (EIP-8141)
+  withoutAccountDescriptors: 0 blind; gaps []
+  transactionAlone: 3 blind; gaps [NoDescriptor (blind), NoDescriptor (blind), NoDescriptor (blind)]
+
+== chain/0xf00c9f2c: experiment 28, E (kohaku-rs)
+  intent: Approve ToyDex to spend 1 TKA and Swap 1 TKA for at least 1.000000000000000001 TKB
+  [Signature]
+    Signs: the whole transaction: every frame, the fees and who else signs (signature hash 0x4bb3e38c...cfcb)   (EIP-8141)
+    Signer: the account's own key, entry 0, secp256k1   (EIP-8141)
+  [Account]
+    Account: 0x2Ad9f8932194a49d2E764725ABD9baF4ccB68a7E: no code, so EIP-8141's default code, assuming the key signed no EIP-7702 delegation   (EIP-8141)
+    Chain: 8141   (EIP-8141)
+  [Nonce]
+    Nonce: the account nonce, 5   (EIP-8250 at f3079a09e8)
+  [Validation]
+    frame 0: Approves: your account; it may approve execution and payment   (EIP-8141)
+    frame 0: With: your secp256k1 signature over the signature hash (default code)   (EIP-8141)
+  [Payment]
+    Payer: your account   (EIP-8141)
+    Max fee: at most 0.000833429011668006 ETH (833429 gas at up to 1.000000014 gwei)   (EIP-8141)
+  [Execution]
+    frame 1: Runs: SENDER, as your account, calling Token A   (EIP-8141)
+    frame 1: Spender: ToyDex   (ERC-7730: Token A)
+    frame 1: Amount: 1 TKA   (ERC-7730: Token A)
+    frame 2: Runs: SENDER, as your account, calling ToyDex   (EIP-8141)
+    frame 2: Send: 1 TKA   (ERC-7730: ToyDex)
+    frame 2: Receive at least: 1.000000000000000001 TKB   (ERC-7730: ToyDex)
+    Atomic: frames 1 to 2 all succeed or all revert   (EIP-8141)
+  withoutAccountDescriptors: 0 blind; gaps []
+  transactionAlone: 2 blind; gaps [NoDescriptor (blind), NoDescriptor (blind)]
+
+== chain/0x3650463d: experiment 12, 1: the owner grants a session
+  intent: Let the session key spend up to 0.002 ETH on the merchant until 2026-10-07T11:01:55Z
+  [Signature]
+    Signs: the whole transaction: every frame, the fees and who else signs (signature hash 0xa9db7147...960f)   (EIP-8141)
+    Signer: the owner key 0xB66e53F7394A5069933103cAD898194181f8574E, entry 0, secp256k1   (EIP-8141)
+  [Account]
+    Account: 0x49f30D74edd539CdB026Bd05f05B9359C719276A: SessionAccount, owner 0xB66e53F7394A5069933103cAD898194181f8574E, in your wallet's accounts   (account: SessionAccount)
+    Chain: 8141   (EIP-8141)
+  [Nonce]
+    Nonce: the account nonce, 7   (EIP-8250 at f3079a09e8)
+  [Validation]
+    frame 0: Approves: your account; it may approve execution and payment   (EIP-8141)
+    frame 0: With: Your owner key approves the whole transaction   (account: SessionAccount)
+  [Payment]
+    Payer: your account   (EIP-8141)
+    Max fee: at most 0.000411782005764948 ETH (411782 gas at up to 1.000000014 gwei)   (EIP-8141)
+  [Execution]
+    frame 1: Runs: SENDER, as your account, calling your account   (EIP-8141)
+    frame 1: Session key: the session key   (account: SessionAccount)
+    frame 1: May call: the merchant   (account: SessionAccount)
+    frame 1: Function: none: plain transfers only   (account: SessionAccount)
+    frame 1: Until: 2026-10-07T11:01:55Z   (account: SessionAccount)
+    frame 1: Budget, value and fees: 0.002 ETH   (account: SessionAccount)
+  withoutAccountDescriptors: 1 blind; gaps [NoDescriptor (blind)]
+  transactionAlone: 1 blind; gaps [NoDescriptor (blind)]
+
+== chain/0x1d381c94: experiment 12, A: the session key pays the merchant
+  intent: Count 0.000270036002380504 ETH against the session of the session key and Send 0.0001 ETH to the merchant
+  [Signature]
+    Signs: the whole transaction: every frame, the fees and who else signs (signature hash 0xe6ccb003...ead9)   (EIP-8141)
+    Signer: the session key, entry 0, secp256k1   (EIP-8141)
+  [Account]
+    Account: 0x49f30D74edd539CdB026Bd05f05B9359C719276A: SessionAccount, owner 0xB66e53F7394A5069933103cAD898194181f8574E, in your wallet's accounts   (account: SessionAccount)
+    Chain: 8141   (EIP-8141)
+  [Nonce]
+    Nonce: the account nonce, 8   (EIP-8250 at f3079a09e8)
+  [Validation]
+    frame 0: Valid until: 2026-10-07T10:07:01Z   (EIP-8141 expiry verifier)
+    frame 1: Approves: your account; it may approve execution and payment   (EIP-8141)
+    frame 1: With: A session key spends within its session   (account: SessionAccount)
+    frame 1: Also checks: an expiry frame first, this frame second, a spend record third, then calls to the session's one target with its one function   (account: SessionAccount)
+  [Payment]
+    Value sent: 0.0001 ETH from your account   (EIP-8141)
+    Payer: your account   (EIP-8141)
+    Max fee: at most 0.000169712002375968 ETH (169712 gas at up to 1.000000014 gwei)   (EIP-8141)
+  [Execution]
+    frame 2: Runs: SENDER, as your account, calling your account   (EIP-8141)
+    frame 2: Session key: the session key   (account: SessionAccount)
+    frame 2: Counted: 0.000270036002380504 ETH   (account: SessionAccount)
+    frame 3: Runs: SENDER, as your account, calling the merchant   (EIP-8141)
+    frame 3: Value: 0.0001 ETH   (EIP-8141)
+    Independent: frames 2, 3 each stand alone: one can fail while the others succeed   (EIP-8141)
+  gap: State: frame 1: the account checks the key's session: its target, function, deadline, budget and what it has spent, in the account's storage; the device has none of it, and the account enforces it
+  withoutAccountDescriptors: 1 blind; gaps [NoDescriptor (blind)]
+  transactionAlone: 1 blind; gaps [NoDescriptor (blind)]
+
+== chain/0x84d4a91f: experiment 12, B: two payments in one session transaction
+  intent: Count 0.000526511003171154 ETH against the session of the session key and Send 0.0001 ETH to the merchant and Send 0.0002 ETH to the merchant
+  [Signature]
+    Signs: the whole transaction: every frame, the fees and who else signs (signature hash 0xd1baa264...789a)   (EIP-8141)
+    Signer: the session key, entry 0, secp256k1   (EIP-8141)
+  [Account]
+    Account: 0x49f30D74edd539CdB026Bd05f05B9359C719276A: SessionAccount, owner 0xB66e53F7394A5069933103cAD898194181f8574E, in your wallet's accounts   (account: SessionAccount)
+    Chain: 8141   (EIP-8141)
+  [Nonce]
+    Nonce: the account nonce, 9   (EIP-8250 at f3079a09e8)
+  [Validation]
+    frame 0: Valid until: 2026-10-07T10:07:07Z   (EIP-8141 expiry verifier)
+    frame 1: Approves: your account; it may approve execution and payment   (EIP-8141)
+    frame 1: With: A session key spends within its session   (account: SessionAccount)
+    frame 1: Also checks: an expiry frame first, this frame second, a spend record third, then calls to the session's one target with its one function   (account: SessionAccount)
+  [Payment]
+    Value sent: 0.0003 ETH from your account   (EIP-8141)
+    Payer: your account   (EIP-8141)
+    Max fee: at most 0.000226211003166954 ETH (226211 gas at up to 1.000000014 gwei)   (EIP-8141)
+  [Execution]
+    frame 2: Runs: SENDER, as your account, calling your account   (EIP-8141)
+    frame 2: Session key: the session key   (account: SessionAccount)
+    frame 2: Counted: 0.000526511003171154 ETH   (account: SessionAccount)
+    frame 3: Runs: SENDER, as your account, calling the merchant   (EIP-8141)
+    frame 3: Value: 0.0001 ETH   (EIP-8141)
+    frame 4: Runs: SENDER, as your account, calling the merchant   (EIP-8141)
+    frame 4: Value: 0.0002 ETH   (EIP-8141)
+    Independent: frames 2, 3, 4 each stand alone: one can fail while the others succeed   (EIP-8141)
+  gap: State: frame 1: the account checks the key's session: its target, function, deadline, budget and what it has spent, in the account's storage; the device has none of it, and the account enforces it
+  withoutAccountDescriptors: 1 blind; gaps [NoDescriptor (blind)]
+  transactionAlone: 1 blind; gaps [NoDescriptor (blind)]
+
+== chain/0x822694c8: experiment 12, D: the owner revokes the session
+  intent: Revoke the session of the session key
+  [Signature]
+    Signs: the whole transaction: every frame, the fees and who else signs (signature hash 0xdeaa085a...506f)   (EIP-8141)
+    Signer: the owner key 0xB66e53F7394A5069933103cAD898194181f8574E, entry 0, secp256k1   (EIP-8141)
+  [Account]
+    Account: 0x49f30D74edd539CdB026Bd05f05B9359C719276A: SessionAccount, owner 0xB66e53F7394A5069933103cAD898194181f8574E, in your wallet's accounts   (account: SessionAccount)
+    Chain: 8141   (EIP-8141)
+  [Nonce]
+    Nonce: the account nonce, 10   (EIP-8250 at f3079a09e8)
+  [Validation]
+    frame 0: Approves: your account; it may approve execution and payment   (EIP-8141)
+    frame 0: With: Your owner key approves the whole transaction   (account: SessionAccount)
+  [Payment]
+    Payer: your account   (EIP-8141)
+    Max fee: at most 0.000077494001084916 ETH (77494 gas at up to 1.000000014 gwei)   (EIP-8141)
+  [Execution]
+    frame 1: Runs: SENDER, as your account, calling your account   (EIP-8141)
+    frame 1: Session key: the session key   (account: SessionAccount)
+  withoutAccountDescriptors: 1 blind; gaps [NoDescriptor (blind)]
+  transactionAlone: 1 blind; gaps [NoDescriptor (blind)]
+
+== chain/0x9882637a: experiment 02, 1b: deploy the account at the sender, verify, send
+  intent: Deploy your account as SimpleAccount and Send 0.001 ETH to 0xb470FfA0F6706c720D824Fb0fCde3BbB8CeeAD35
+  [Signature]
+    Signs: the whole transaction: every frame, the fees and who else signs (signature hash 0xad4e1173...e5ad)   (EIP-8141)
+    Signer: the owner key 0xa93CEe06b1e4fFACdf920BD500cb301a39DdEB74, entry 0, secp256k1   (EIP-8141)
+  [Account]
+    Account: 0x998bB2F3B526e56D12415D02b36580E295fc2B78: SimpleAccount, owner 0xa93CEe06b1e4fFACdf920BD500cb301a39DdEB74, deployed by frame 0   (account: SimpleAccount)
+    Chain: 8141   (EIP-8141)
+  [Nonce]
+    Nonce: the account nonce, 0   (EIP-8250 at f3079a09e8)
+  [Validation]
+    frame 1: Approves: your account; it may approve execution and payment   (EIP-8141)
+    frame 1: With: Your owner key approves the whole transaction   (account: SimpleAccount)
+  [Payment]
+    Value sent: 0.001 ETH from your account   (EIP-8141)
+    Payer: your account   (EIP-8141)
+    Max fee: at most 0.000712109009969526 ETH (712109 gas at up to 1.000000014 gwei)   (EIP-8141)
+  [Execution]
+    frame 0: Runs: DEFAULT, as the entry point, not your account, calling Deterministic deployment proxy   (EIP-8141)
+    frame 0: Deploys: your account: SimpleAccount with owner 0xa93CEe06b1e4fFACdf920BD500cb301a39DdEB74   (deployer: CREATE2 deployer)
+    frame 2: Runs: SENDER, as your account, calling 0xb470FfA0F6706c720D824Fb0fCde3BbB8CeeAD35   (EIP-8141)
+    frame 2: Value: 0.001 ETH   (EIP-8141)
+    Before payment: frame 0 runs in the validation prefix, before a payer is approved   (EIP-8141)
+  withoutAccountDescriptors: 1 blind; gaps [NoDescriptor (blind)]
+  transactionAlone: 1 blind; gaps [NoDescriptor (blind)]
+
+== chain/0x68fc041a: experiment 02: the follow-up, no deploy frame
+  intent: Send 0.001 ETH to 0x65dD0298a5e8AB9e3614dd8Ddac90533EB86060e
+  [Signature]
+    Signs: the whole transaction: every frame, the fees and who else signs (signature hash 0x187931f7...f2e8)   (EIP-8141)
+    Signer: the owner key 0xa93CEe06b1e4fFACdf920BD500cb301a39DdEB74, entry 0, secp256k1   (EIP-8141)
+  [Account]
+    Account: 0x998bB2F3B526e56D12415D02b36580E295fc2B78: SimpleAccount, owner 0xa93CEe06b1e4fFACdf920BD500cb301a39DdEB74, in your wallet's accounts   (account: SimpleAccount)
+    Chain: 8141   (EIP-8141)
+  [Nonce]
+    Nonce: the account nonce, 2   (EIP-8250 at f3079a09e8)
+  [Validation]
+    frame 0: Approves: your account; it may approve execution and payment   (EIP-8141)
+    frame 0: With: Your owner key approves the whole transaction   (account: SimpleAccount)
+  [Payment]
+    Value sent: 0.001 ETH from your account   (EIP-8141)
+    Payer: your account   (EIP-8141)
+    Max fee: at most 0.000246734003454276 ETH (246734 gas at up to 1.000000014 gwei)   (EIP-8141)
+  [Execution]
+    frame 1: Runs: SENDER, as your account, calling 0x65dD0298a5e8AB9e3614dd8Ddac90533EB86060e   (EIP-8141)
+    frame 1: Value: 0.001 ETH   (EIP-8141)
+  withoutAccountDescriptors: 0 blind; gaps []
+  transactionAlone: 0 blind; gaps []
+
+== chain/0x922d2f82: experiment 12, setup: the funder deploys the session account
+  intent: Deploy 0x49f30D74edd539CdB026Bd05f05B9359C719276A as SessionAccount and Send 0.01 ETH to 0x49f30D74edd539CdB026Bd05f05B9359C719276A
+  [Signature]
+    Signs: the whole transaction: every frame, the fees and who else signs (signature hash 0x421a6adb...3868)   (EIP-8141)
+    Signer: the account's own key, entry 0, secp256k1   (EIP-8141)
+  [Account]
+    Account: 0xa93CEe06b1e4fFACdf920BD500cb301a39DdEB74: no code, so EIP-8141's default code, assuming the key signed no EIP-7702 delegation   (EIP-8141)
+    Chain: 8141   (EIP-8141)
+  [Nonce]
+    Nonce: the account nonce, 54   (EIP-8250 at f3079a09e8)
+  [Validation]
+    frame 0: Approves: your account; it may approve execution and payment   (EIP-8141)
+    frame 0: With: your secp256k1 signature over the signature hash (default code)   (EIP-8141)
+  [Payment]
+    Value sent: 0.01 ETH from your account   (EIP-8141)
+    Payer: your account   (EIP-8141)
+    Max fee: at most 0.001648627023080778 ETH (1648627 gas at up to 1.000000014 gwei)   (EIP-8141)
+  [Execution]
+    frame 1: Runs: SENDER, as your account, calling Deterministic deployment proxy   (EIP-8141)
+    frame 1: Deploys: 0x49f30D74edd539CdB026Bd05f05B9359C719276A: SessionAccount with owner 0xB66e53F7394A5069933103cAD898194181f8574E   (deployer: CREATE2 deployer)
+    frame 2: Runs: SENDER, as your account, calling 0x49f30D74edd539CdB026Bd05f05B9359C719276A   (EIP-8141)
+    frame 2: Value: 0.01 ETH   (EIP-8141)
+    Independent: frames 1, 2 each stand alone: one can fail while the others succeed   (EIP-8141)
+  withoutAccountDescriptors: 0 blind; gaps [NoDescriptor]
+  transactionAlone: 1 blind; gaps [NoDescriptor (blind)]
+
+wrote record.json

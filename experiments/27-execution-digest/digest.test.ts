@@ -14,7 +14,8 @@ import {
   executionTypedData,
   isPayFrame,
 } from './digest.js'
-import { CASES, OWNER_KEY, SENDER, signCase } from './vectors.js'
+import * as exported from './erc-assets/digest.js'
+import { CASES, EIP8250, LICENSE, OWNER_KEY, SENDER, cases, signCase, txFields } from './vectors.js'
 
 const E = executionDigest
 const PAY = CASES.find((c) => c.name === 'sponsored-transfer')!.tx
@@ -27,8 +28,9 @@ const withFrame = (tx: FrameTx, i: number, patch: Partial<Frame>): FrameTx => ({
 })
 
 describe('the two implementations', () => {
-  it('agree on every vector', () => {
-    for (const c of CASES) expect(executionDigestByHand(c.tx), c.name).toBe(E(c.tx))
+  it('agree on every vector of both sets', () => {
+    for (const rules of ['master', 'f3079a0'] as const)
+      for (const c of cases(rules)) expect(executionDigestByHand(c.tx, rules), c.name).toBe(E(c.tx, rules))
   })
 
   it('the account embeds the same constants', () => {
@@ -110,9 +112,67 @@ describe('what E pins', () => {
 })
 
 describe('one layout for both envelopes', () => {
-  it('a plain EIP-8141 envelope with nonce 7 digests as nonce_keys [0] at sequence 7', () => {
-    const keyed = CASES.find((c) => c.name === 'legacy-nonce-7')!.tx
-    expect(E({ ...keyed, envelope: 'plain' })).toBe(E(keyed))
+  // This repository's model of a plain envelope carries nonce_keys [0n]; E maps it to the
+  // revision's legacy selection.
+  it('a plain EIP-8141 envelope with nonce 7 digests as nonce_keys [] at sequence 7, at master', () => {
+    const keyed = cases('master').find((c) => c.name === 'legacy-nonce-7')!.tx
+    expect(keyed.nonceKeys).toEqual([])
+    expect(E({ ...keyed, nonceKeys: [0n], envelope: 'plain' }, 'master')).toBe(E(keyed, 'master'))
+  })
+
+  it('and as nonce_keys [0] at f3079a09e8', () => {
+    const keyed = cases('f3079a0').find((c) => c.name === 'legacy-nonce-7')!.tx
+    expect(keyed.nonceKeys).toEqual([0n])
+    expect(E({ ...keyed, envelope: 'plain' }, 'f3079a0')).toBe(E(keyed, 'f3079a0'))
+  })
+
+  it("so master's key 0 and the earlier legacy nonce digest alike: the bytes are the same, the domain is not", () => {
+    const zero = cases('master').find((c) => c.name === 'key-zero')!.tx
+    expect(zero.nonceKeys).toEqual([0n])
+    expect(E(zero, 'master')).toBe(E(zero, 'f3079a0'))
+  })
+})
+
+describe('the assets', () => {
+  const read = (f: string) => JSON.parse(readFileSync(new URL(`./erc-assets/${f}`, import.meta.url), 'utf8'))
+  const sets = [
+    ['vectors.json', 'master', 11],
+    ['vectors-eip8250-f3079a0.json', 'f3079a0', 10],
+  ] as const
+
+  it('are what vectors.ts computes, set by set', () => {
+    for (const [file, rules, n] of sets) {
+      const v = read(file)
+      expect(v.license).toBe(LICENSE)
+      expect(v.eip8250).toBe(EIP8250[rules])
+      const mine = cases(rules)
+      expect(v.cases.length).toBe(n)
+      for (const [i, c] of v.cases.entries()) {
+        expect(c.name).toBe(mine[i].name)
+        expect(c.tx).toEqual(txFields(mine[i].tx))
+        expect(c.executionDigest).toBe(E(mine[i].tx, rules))
+      }
+    }
+  })
+
+  it('digest.ts, which imports nothing of this repository, agrees on every vector of both', () => {
+    const src = readFileSync(new URL('./erc-assets/digest.ts', import.meta.url), 'utf8')
+    expect([...src.matchAll(/from '([^']+)'/g)].map((m) => m[1])).toEqual(['viem'])
+    for (const [file] of sets)
+      for (const c of read(file).cases) {
+        const tx = exported.fromVector(c.tx)
+        expect(exported.executionDigest(tx), c.name).toBe(c.executionDigest)
+        expect(exported.executionDigestByHand(tx), c.name).toBe(c.executionDigest)
+        expect(exported.structHash(tx), c.name).toBe(c.structHash)
+        expect(exported.domainSeparator(tx.chainId, tx.sender), c.name).toBe(c.domainSeparator)
+      }
+  })
+
+  it('carry the account as it is here, under a license line', () => {
+    const here = readFileSync(new URL('./ExecutionScopeAccount.yul', import.meta.url), 'utf8')
+    const there = readFileSync(new URL('./erc-assets/ExecutionScopeAccount.yul', import.meta.url), 'utf8')
+    expect(there).toBe(`// SPDX-License-Identifier: ${LICENSE}\n${here}`)
+    for (const f of ['digest.ts', 'digest.rs']) expect(readFileSync(new URL(`./erc-assets/${f}`, import.meta.url), 'utf8')).toContain(`SPDX-License-Identifier: ${LICENSE}`)
   })
 })
 

@@ -3,7 +3,7 @@
 Experiment 06 sent two withdrawals from the keyed pool straight to ethrex, 220 ms apart, and both
 were mined in one block. Here the same pair is built by a wallet, kohaku-rs's
 `chain::keyed_batch`, and sent through skandha, a mempool node that checks frame transactions
-itself. Its pool runs emem's `hegota-testnet` profile, whose `disjoint-keys` rule lets one sender
+itself. Its pool runs the mempool specification's `hegota-testnet` profile, whose `disjoint-keys` rule lets one sender
 have several pending transactions when their nonce keys do not overlap.
 
 The question is whether owned state inside a shared contract forces a wallet to serialize its
@@ -101,7 +101,9 @@ notes.
    in part: different nodes or relays, different times, roots at different depths. Concurrency
    and unlinkability trade against each other, and only the first comes free.
 
-3. **The node's check and the client's differ on the second spend, as emem's FP-12 says.** The
+3. **The node's check and the client's differ on the second spend, as the mempool specification
+   says they may.** The
    client, asked to simulate the prefix, called A again `valid`, since the nonce key was not yet
-   used. The pool refused it on its identity: one sender, one key, already pending. emem's M4
-   vectors used a stand-in for this case, and `record.json` now holds its real bytes.
+   used. The pool refused it on its identity: one sender, one key, already pending. The
+   specification's conformance vectors used a stand-in for this case, and `record.json` now holds
+   its real bytes.

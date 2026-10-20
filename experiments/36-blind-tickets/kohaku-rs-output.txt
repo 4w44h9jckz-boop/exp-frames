@@ -1,0 +1,24 @@
+committee: 4 issuers, quorum 3
+paymaster: 0x273795F6EB2730D50C3544CbEF1E0C1ADbA4f541
+0x91ba62b3ff3ba58592cad92eb466eea63be10ae80d5a5646e9de7b7fe6c5aaba: block 481062, gasUsed 2624342
+0xe42bfcc17c6b8c3e49e076892f3190d9222e4da76567a275bad8d178199071c8: block 481063, gasUsed 27437
+bought on chain: {0x67b37cb301dcdc3708ab8ed20aa62c6e8f9fa175: 3, 0xeb8e3354c1e33a8e671abb927dcf6a523ad45ff3: 3}
+ticket issued to buyer 0, issuer 0 left out
+ticket issued to buyer 0, issuer 1 left out
+ticket issued to buyer 0, issuer 2 left out
+ticket issued to buyer 1, issuer 3 left out
+ticket issued to buyer 1, issuer 0 left out
+ticket issued to buyer 1, issuer 1 left out
+a request beyond what the second buyer bought: refused, 0x67B37Cb301DcDC3708AB8eD20Aa62C6e8f9fa175 has no ticket left to be issued
+spend 0x0bba93cad87f2438a5481f333e2f42323db2da8626cf2a76b14f998bf52b6d5b: block 481065, gasUsed 330592, pay VERIFY 122006 execution, 183600 state, payer 0x273795F6EB2730D50C3544CbEF1E0C1ADbA4f541
+spend 0x7114ff70cede3997f1a986cb537f554317d9980a890a69f8d42e4b39bfb5bba9: block 481066, gasUsed 330580, pay VERIFY 122006 execution, 183600 state, payer 0x273795F6EB2730D50C3544CbEF1E0C1ADbA4f541
+spend 0xa91b63cec5befc6ef021b473887bbeea30b53076360f67bd09e4aa8d0452a86c: block 481068, gasUsed 330592, pay VERIFY 122006 execution, 183600 state, payer 0x273795F6EB2730D50C3544CbEF1E0C1ADbA4f541
+spend 0xfff0d62405c5f4e98d572381037ee53840b5a887cd4c92441e916be15c6024d5: block 481070, gasUsed 330604, pay VERIFY 122006 execution, 183600 state, payer 0x273795F6EB2730D50C3544CbEF1E0C1ADbA4f541
+at once: 0xfbb18a8e6d6860f0c3bcfb419a138e499b56aa25fb55c871c919e9fb67f320c6 -> {"result":"0xfbb18a8e6d6860f0c3bcfb419a138e499b56aa25fb55c871c919e9fb67f320c6"}
+at once: 0x9341c2ada20e5d88b853d2ec6cefbd20cf6737a5e5df36a51bc432cf87b1b1d7 -> {"error":"server returned an error response: error code -32000: Invalid params: Non-canonical paymaster already sponsors the maximum number of pending frame transactions"}
+pair: 0xfbb18a8e6d6860f0c3bcfb419a138e499b56aa25fb55c871c919e9fb67f320c6 block 481072, payer 0x273795F6EB2730D50C3544CbEF1E0C1ADbA4f541, resent false
+pair: 0x9341c2ada20e5d88b853d2ec6cefbd20cf6737a5e5df36a51bc432cf87b1b1d7 block 481074, payer 0x273795F6EB2730D50C3544CbEF1E0C1ADbA4f541, resent true
+a signature that is no ticket: simulation valid false, Some("validation prefix frame reverted"); sent: {"error":"server returned an error response: error code -32000: Invalid params: Frame transaction validation-prefix simulation failed: validation prefix frame reverted"}
+a spent ticket, carried by another fresh sender: simulation valid false, Some("validation prefix frame reverted"); sent: {"error":"server returned an error response: error code -32000: Invalid params: Frame transaction validation-prefix simulation failed: validation prefix frame reverted"}
+a spent ticket, at its sender's next nonce: simulation valid false, Some("validation prefix frame reverted"); sent: {"error":"server returned an error response: error code -32000: Invalid params: Frame transaction validation-prefix simulation failed: validation prefix frame reverted"}
+recorded in /tmp/claude-0/-home-user/d664dc85-3211-5eee-9347-028a2ecc300f/scratchpad/record36b.json

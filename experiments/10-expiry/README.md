@@ -114,8 +114,8 @@ A transaction can wait past its deadline only between admission and the next blo
 2. **Admission checks the head; inclusion happens a slot later.** A deadline in
    `[head, head + slot)` is accepted and given a hash, then dropped at the next block with no receipt
    and no error. This conforms to the EIP, which drops a transaction when its deadline is behind
-   "the node's view of the current block timestamp". It is still a silent drop of the kind the `aa`
-   repository found for pay frames at an exact gas limit. A wallet should set
+   "the node's view of the current block timestamp". It is still a silent drop of the kind an earlier
+   account-abstraction study found for pay frames at an exact gas limit. A wallet should set
    `deadline >= head + slot` plus a margin, and treat "accepted" as provisional until a receipt
    arrives.
 3. **What the frame costs.** 3,051 execution gas, nearly all of it the cold access to `0x…8141`.

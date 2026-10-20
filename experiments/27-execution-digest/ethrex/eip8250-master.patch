@@ -1,0 +1,110 @@
+diff --git a/crates/common/types/transaction.rs b/crates/common/types/transaction.rs
+index defc5c999..b0ea372b9 100644
+--- a/crates/common/types/transaction.rs
++++ b/crates/common/types/transaction.rs
+@@ -2468,7 +2468,8 @@ impl FrameTransaction {
+     /// is either the linear `[0]` domain (returns `false`) or an all-non-zero
+     /// key set tracked against the NONCE_MANAGER predeploy (returns `true`).
+     pub fn is_keyed(&self) -> bool {
+-        !(self.nonce_keys.len() == 1 && self.nonce_keys[0].is_zero())
++        // EIP-8250 at master (1a086d5c): `[]` is the legacy nonce, every key is a keyed nonce.
++        !self.nonce_keys.is_empty()
+     }
+ 
+     /// Per EIP-8141: 100 gas per ARBITRARY signature, 2800 per SECP256K1, 6700
+@@ -2684,9 +2685,10 @@ impl FrameTransaction {
+             return Err("tx.sender must not be zero address".to_string());
+         }
+         // EIP-8250 keyed nonces: 1..=16 strictly-increasing keys; nonce_seq < 2**64-1.
+-        if self.nonce_keys.is_empty() || self.nonce_keys.len() > FRAME_TX_MAX_NONCE_KEYS {
++        // EIP-8250 at master (1a086d5c): `[]` selects the legacy nonce.
++        if self.nonce_keys.len() > FRAME_TX_MAX_NONCE_KEYS {
+             return Err(format!(
+-                "nonce_keys count must be between 1 and {FRAME_TX_MAX_NONCE_KEYS}"
++                "nonce_keys count must be at most {FRAME_TX_MAX_NONCE_KEYS}"
+             ));
+         }
+         if self.nonce_keys.windows(2).any(|w| w[0] >= w[1]) {
+@@ -2697,9 +2699,6 @@ impl FrameTransaction {
+         // single tx both increment the account nonce AND write NONCE_MANAGER slots,
+         // which `consume_nonce_set` never produces. (Keys are strictly increasing,
+         // so a present 0 is always first.)
+-        if self.nonce_keys.len() > 1 && self.nonce_keys[0].is_zero() {
+-            return Err("nonce key 0 is only valid as the sole nonce key".to_string());
+-        }
+         if self.nonce_seq == u64::MAX {
+             return Err("nonce_seq must be < 2**64 - 1".to_string());
+         }
+diff --git a/crates/vm/levm/src/vm.rs b/crates/vm/levm/src/vm.rs
+index 74df75154..cc9e6020a 100644
+--- a/crates/vm/levm/src/vm.rs
++++ b/crates/vm/levm/src/vm.rs
+@@ -1705,9 +1705,6 @@ impl<'a> VM<'a> {
+     /// the account's linear account nonce; non-zero keys live in the
+     /// NONCE_MANAGER predeploy at [`VM::keyed_nonce_slot`] (absent = 0).
+     fn current_nonce_seq(&mut self, sender: Address, key: U256) -> Result<u64, VMError> {
+-        if key.is_zero() {
+-            return Ok(self.db.get_account(sender)?.info.nonce);
+-        }
+         let slot = Self::keyed_nonce_slot(sender, key);
+         let nonce_manager = ethrex_common::types::frame_tx_nonce_manager();
+         // Ensure the NONCE_MANAGER account is cached before reading its storage.
+@@ -1750,11 +1747,11 @@ impl<'a> VM<'a> {
+             _ => return Ok(()),
+         };
+         let nonce_manager = ethrex_common::types::frame_tx_nonce_manager();
++        // EIP-8250 at master (1a086d5c): `[]` consumes the legacy nonce.
++        if nonce_keys.is_empty() {
++            self.increment_account_nonce(sender)?;
++        }
+         for key in &nonce_keys {
+-            if key.is_zero() {
+-                self.increment_account_nonce(sender)?;
+-                continue;
+-            }
+             let slot = Self::keyed_nonce_slot(sender, *key);
+             let _ = self.db.get_account(nonce_manager)?;
+             let current = self.get_storage_value(nonce_manager, slot)?;
+@@ -1785,8 +1782,8 @@ impl<'a> VM<'a> {
+             Transaction::FrameTransaction(ft) => ft.nonce_keys.clone(),
+             _ => return Ok(0),
+         };
+-        // Static validation admits key 0 only as the sole key.
+-        if nonce_keys.first().is_some_and(|key| key.is_zero()) {
++        // EIP-8250 at master (1a086d5c): `[]` is the legacy nonce.
++        if nonce_keys.is_empty() {
+             return Ok(if self.db.get_account(sender)?.is_empty() {
+                 self.state_gas_new_account
+             } else {
+@@ -1908,6 +1905,15 @@ impl<'a> VM<'a> {
+         let sender_info = self.db.get_account(sender)?.info.clone();
+         // EIP-8250 keyed-nonce validation: every selected key's current sequence
+         // must equal nonce_seq. Key 0 uses the sender's linear account nonce.
++        // EIP-8250 at master (1a086d5c): `[]` checks the legacy account nonce.
++        if frame_tx.nonce_keys.is_empty() && sender_info.nonce != frame_tx.nonce_seq {
++            return Err(VMError::TxValidation(
++                crate::errors::TxValidationError::NonceMismatch {
++                    expected: sender_info.nonce,
++                    actual: frame_tx.nonce_seq,
++                },
++            ));
++        }
+         for key in &frame_tx.nonce_keys {
+             let current = self.current_nonce_seq(sender, *key)?;
+             if current != frame_tx.nonce_seq {
+@@ -3192,6 +3198,15 @@ impl<'a> VM<'a> {
+         let sender_info = self.db.get_account(sender)?.info.clone();
+         // EIP-8250 keyed-nonce validation: every selected key's current sequence
+         // must equal nonce_seq. Key 0 uses the sender's linear account nonce.
++        // EIP-8250 at master (1a086d5c): `[]` checks the legacy account nonce.
++        if frame_tx.nonce_keys.is_empty() && sender_info.nonce != frame_tx.nonce_seq {
++            return Err(VMError::TxValidation(
++                crate::errors::TxValidationError::NonceMismatch {
++                    expected: sender_info.nonce,
++                    actual: frame_tx.nonce_seq,
++                },
++            ));
++        }
+         for key in &frame_tx.nonce_keys {
+             let current = self.current_nonce_seq(sender, *key)?;
+             if current != frame_tx.nonce_seq {

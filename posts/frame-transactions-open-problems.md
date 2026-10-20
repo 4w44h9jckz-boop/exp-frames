@@ -232,7 +232,7 @@ We read every EIP named here at master on 2026-10-09, with the open pull request
 
 **Damage.**
 - In experiment 06 the storage-based pool serialized every user, and a second withdrawal evicted the first.
-- crops-frame's [P0005](https://github.com/4w44h9jckz-boop/crops-frame/blob/main/problems/records/P0005-a-shared-sender-has-a-one-transaction-mempool-ceiling.md) puts the ceiling at about 300 spends an hour.
+- A companion study, not published, puts the ceiling at about 300 spends an hour.
 - Users can keep replacing each other's withdrawals.
 
 **What is at stake (experiment 30).** A withdrawal goes to a fresh address, which has no ETH for gas, so today somebody else sends it and the note pays them. Over 30 days of mainnet, blocks 25,972,879 to 26,188,878:

@@ -42,8 +42,22 @@ export const isPayFrame = (f: Pick<Frame, 'mode' | 'flags'>) => f.mode === Mode.
 
 const word = (n: bigint | number) => numberToHex(BigInt(n), { size: 32 })
 
-/** EIP-8250's `nonce_keys_hash`. A plain EIP-8141 envelope is `nonce_keys = [0]`. */
+/** EIP-8250's `nonce_keys_hash`. */
 export const nonceKeysHash = (keys: bigint[]): Hex => keccak256(concatHex([word(keys.length), ...keys.map(word)]))
+
+/**
+ * The EIP-8250 revision a digest follows. At master (`1a086d5`), `nonce_keys == []` selects the
+ * legacy account nonce and key 0 is an ordinary key. At `f3079a09e8`, which the Hegota testnet
+ * pins, `[0]` selected the legacy nonce and `[]` was invalid.
+ */
+export type Eip8250 = 'master' | 'f3079a0'
+
+/**
+ * The nonce keys E digests: the transaction's own, or for a plain EIP-8141 envelope, whose nonce
+ * is the legacy nonce, the revision's legacy selection.
+ */
+export const digestNonceKeys = (tx: FrameTx, rules: Eip8250 = 'master'): bigint[] =>
+  tx.envelope === 'plain' ? (rules === 'master' ? [] : [0n]) : tx.nonceKeys
 
 /** A frame as the digest sees it: the resolved target, and a pay frame's open fields zeroed. */
 export function digestFrame(tx: FrameTx, f: Frame) {
@@ -60,13 +74,13 @@ export function digestFrame(tx: FrameTx, f: Frame) {
 }
 
 /** The typed data a wallet is asked to sign (`eth_signTypedData_v4`). */
-export function executionTypedData(tx: FrameTx) {
+export function executionTypedData(tx: FrameTx, rules: Eip8250 = 'master') {
   return {
     domain: { name: DOMAIN_NAME, version: DOMAIN_VERSION, chainId: tx.chainId, verifyingContract: tx.sender },
     types,
     primaryType: 'FrameExecution',
     message: {
-      nonceKeysHash: nonceKeysHash(tx.nonceKeys),
+      nonceKeysHash: nonceKeysHash(digestNonceKeys(tx, rules)),
       nonceSeq: tx.nonceSeq,
       frames: tx.frames.map((f) => digestFrame(tx, f)),
       blobVersionedHashes: tx.blobVersionedHashes,
@@ -75,7 +89,7 @@ export function executionTypedData(tx: FrameTx) {
 }
 
 /** $E$, through viem's EIP-712 encoder. */
-export const executionDigest = (tx: FrameTx): Hex => hashTypedData(executionTypedData(tx))
+export const executionDigest = (tx: FrameTx, rules: Eip8250 = 'master'): Hex => hashTypedData(executionTypedData(tx, rules))
 
 // ---- by hand, from the layout in erc-draft.md ----
 
@@ -106,11 +120,11 @@ export function frameHash(tx: FrameTx, f: Frame): Hex {
   )
 }
 
-export function structHash(tx: FrameTx): Hex {
+export function structHash(tx: FrameTx, rules: Eip8250 = 'master'): Hex {
   return keccak256(
     concatHex([
       FRAME_EXECUTION_TYPEHASH,
-      nonceKeysHash(tx.nonceKeys),
+      nonceKeysHash(digestNonceKeys(tx, rules)),
       word(tx.nonceSeq),
       keccak256(concatHex(tx.frames.map((f) => frameHash(tx, f)))),
       keccak256(concatHex(tx.blobVersionedHashes)),
@@ -119,4 +133,5 @@ export function structHash(tx: FrameTx): Hex {
 }
 
 /** $E$, by hand: keccak256(0x1901 ‖ domain separator ‖ struct hash). */
-export const executionDigestByHand = (tx: FrameTx): Hex => keccak256(concatHex(['0x1901', domainSeparator(tx.chainId, tx.sender), structHash(tx)]))
+export const executionDigestByHand = (tx: FrameTx, rules: Eip8250 = 'master'): Hex =>
+  keccak256(concatHex(['0x1901', domainSeparator(tx.chainId, tx.sender), structHash(tx, rules)]))

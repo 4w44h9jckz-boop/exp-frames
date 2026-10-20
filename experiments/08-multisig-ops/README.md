@@ -113,7 +113,8 @@ covers expiry in detail.
    signatures are an invalid transaction, refused before simulation. Every one of the k owners has
    to sign again before a stuck proposal can be repriced. A practical workaround is to sign a fee
    ladder up front: the same proposal at several fee levels at least 10% apart, each a valid
-   replacement for the one below. That is the `aa` repository's Q13, now measured.
+   replacement for the one below. That is a question an earlier account-abstraction study put to the EIP's
+   authors, now measured.
 4. **Cancelling costs a transaction.** A signed proposal stays valid until its nonce is spent. The
    owners do that on chain, and on a fresh key the first use alone costs 97,920 state gas. Reusing
    one key for proposals that are meant to run in order avoids the charge.
