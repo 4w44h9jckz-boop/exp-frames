@@ -16,16 +16,21 @@ block header it fetched itself from the testnet's RPC, never from the server.
 The claim: the answer is correct, visible to the reader, visible to anyone if signed, and
 enforceable if signed.
 
-It would be shown wrong if any of these holds:
-- the branch cannot reach the reader through the private read at a cost the read can carry;
-- a wrong answer passes the reader's check;
-- a signed wrong answer cannot be shown wrong by a third party from public data alone.
+It would be shown wrong if any of these is observed:
+- the private read cannot bring the branch to the reader without costing more than the read
+  can bear;
+- the reader's check accepts an answer that is wrong;
+- a wrong answer the server signed cannot be proved wrong by someone else using nothing but
+  public data.
 
-It is done when one read is checked against a testnet header, one deliberately wrong answer is
-refused by the reader, and its signed form is shown wrong by a third party holding only public
-data.
+It is done when a read has been checked against a block header from the testnet, an answer made
+wrong on purpose has been refused by the reader, and someone holding nothing but public data has
+proved its signed form wrong.
 
-How this experiment reads "a cost the read can carry", fixed here before the run: on the
+*These three conditions were pushed before any run, in `b463cbb`, and restated here in this
+repository's own words on 2026-10-20, with the same meaning.*
+
+How this experiment reads "a cost the read can bear", fixed here before the run: on the
 testnet's table, the time the branch and the signature add to the server's work per read stays
 below the ticket check, which the read already pays for (about 1 ms in experiment 37), so a
 price that covers the check covers the branch. The bytes the branch adds are recorded as they
