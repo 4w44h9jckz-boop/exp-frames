@@ -27,10 +27,11 @@ notes others sealed to it, and its unspent tickets.
 - deriving a ticket's blinding factor from the seed lets the committee that issued the ticket
   match it to its spend.
 
-**It is done when,** on the testnet, a device given only the seed rebuilds the wallets of
-experiments 31 (an account and its privacy-pool notes), 36 (tickets) and 40 (notes in a vault)
-from the chain, spends a privacy-pool note and a ticket, and every derivation path is listed
-with its domain.
+**It is done when** a process that starts with nothing but the 24 words finds again, by reading
+the testnet, what experiments 31, 36 and 40 each kept: an account with its privacy-pool notes,
+tickets, and notes in a vault. It must then pay out one of those pool notes and pay for a
+transaction with one of those tickets. The README must publish each derivation label beside
+the purpose it serves.
 
 **The plan, fixed before the run:**
 - The seed is BIP-39's: 24 English words, the 64-byte seed with an empty passphrase. The
