@@ -244,3 +244,82 @@ show the entry's whole cost to the transaction: C's 2,132 gas beyond its `VERIFY
 E is the scheme's 100 plus the 128 bytes' calldata. Whether the client counts the 100 alone, or
 the 100 and the bytes, against the `VERIFY` budget is not separated by these runs: the `VERIFY`
 frame's own gas (243,355) includes neither.
+
+## Addendum, 2026-10-21: a passkey arm, written before its run
+
+The owner adopted six amendments to this experiment before it ran; they reached this session
+after the run above. They are carried out here, beside the original claim and results, which are
+unchanged. Everything below was written before the addendum's first transaction.
+
+**Simulated, as above.** The key is a software P-256 key, and the "authenticator" is software that
+produces what a browser's `navigator.credentials.get()` returns.
+
+**The path the original run took.** Both: the precompile at `0x100` called from `VERIFY` (an
+ARBITRARY entry) and the protocol's own P256 signature scheme. Their costs are in "Gas" above.
+
+**The addendum's claim.** A note can be owned by a WebAuthn passkey that stays on the user's
+device. A WebAuthn authenticator never signs a bare digest. It signs `authenticatorData ||
+SHA-256(clientDataJSON)`, and `clientDataJSON` carries a challenge. Here the challenge is the
+frame transaction's signature hash. The registry's `VERIFY` rebuilds that message and checks it:
+the relying party, the user-presence flag, the type, and the challenge. It then calls the
+precompile at `0x100` on the message's SHA-256. The update is authorized by the passkey alone.
+
+**The addendum would be shown wrong if any of these is observed:**
+- the passkey arm's check does not fit EIP-8141's 100,000 of `VERIFY` gas;
+- one signature authorizes a second update, or an update on another chain;
+- the arm accepts an assertion whose challenge is not the signature hash, whose user-presence
+  flag is clear, whose relying party is another, or that carries bytes beyond what it declares;
+- another party must be online.
+
+**Its stated limits, not tested:**
+- **Device-bound keys only.** The claim covers keys that cannot leave the device. A passkey
+  synced through a cloud account puts its provider in custody, and is a different step of the
+  gradient.
+- **The chain cannot tell where the key lives.** Nothing the chain sees distinguishes a key in
+  an enclave from a software key, or from a key on a server. This experiment measures the chain's
+  side of "a key you hold", not an enclave.
+- **Recovery.** A device-bound key is not derived from experiment 45's seed. The paths that bring
+  a note back after the device is lost are experiment 31's second device, or experiment 46's
+  guardians with the phrase the user keeps. Neither is built for these notes here.
+- **Malleability.** `(r, s)` and `(r, n - s)` both verify unless a low-`s` rule applies. That
+  matters only where a signature is used as an identifier. The registry applies the rule anyway.
+
+**Figures to cite, quoted:** `P256VERIFY` costs 6,900 gas for its 160 bytes (EIP-7951). RIP-7212
+on rollups costs 3,450.
+
+**It is done when** a note owned by a passkey is updated on the testnet through the registry's
+WebAuthn check. Each negative case below is run and its refusal attributed to the node or to the
+registry. The record gives the exact bytes signed, the hash passed to the precompile, and the arm's
+`VERIFY` gas.
+
+**The plan, fixed before the run:**
+- **Registry version 4.** It is version 3 with the owner check replaced by the WebAuthn arm. The
+  kernel, verifier, hasher and Balance application are the ones above.
+- **The entry.** One ARBITRARY entry: `authLen (2) || clientLen (2) || challengeIndex (2) ||
+  typeIndex (2) || authenticatorData || clientDataJSON || r || s || qx || qy`. Its length must be
+  exactly `8 + authLen + clientLen + 128`.
+- **What `VERIFY` checks:**
+  - `authenticatorData` starts with `SHA-256("exp-frames.test")` and has the user-presence bit;
+  - `"type":"webauthn.get"` and `"challenge":"<base64url(signature hash)>"` sit at their
+    indices;
+  - `s <= n/2`;
+  - `keccak256(qx || qy)[12:]` is the note's `owner`;
+  - `P256VERIFY(SHA-256(authenticatorData || SHA-256(clientDataJSON)), r, s, qx, qy)` returns 1.
+- **Mined:** a note's update through the arm (P1). A second note's update (P2), whose
+  `clientDataJSON` carries one extra field, as browsers may add, so the two arms differ only in
+  the entry's length.
+- **Refused, by simulation and `eth_sendRawTransaction`, each attributed:**
+  - a challenge that is not the signature hash;
+  - the user-presence flag clear;
+  - another relying party's hash;
+  - eight trailing bytes after the declared parts;
+  - high `s`;
+  - P1's assertion reused on P2's update;
+  - an assertion made over the signature hash the same update would have on another chain;
+  - the same update sent with another chain ID;
+  - a protocol P256 entry with high `s`, on registry version 3.
+- **The budget question.** What the node counts against `MAX_VERIFY_GAS` for the ARBITRARY entry,
+  100 or 100 plus its bytes. The node's refusal message names the prefix budget it computed. The
+  plan offers each of P1's and P2's updates once with a `VERIFY` limit above the budget, reads
+  that number, and subtracts the frames' limits. The difference between the two arms isolates
+  whether the bytes count.
