@@ -189,3 +189,31 @@ from that session's records and the wallet session's experiment 41:
 6. **The FHE half does not fit, on two counts.** No proof that a TFHE export matches a note
    exists in the libraries read, and the knowledge proof that does exist costs 7.9 times the
    testnet's `VERIFY` budget at least.
+
+## Addendum: a second arm, written before its run
+
+Added at the owner's word, relayed by the coordinator after the run above (the claim and "would
+show it wrong" above are unchanged; they were written and run first). The owner's revised wording
+of the claim reads: the protocol does not need the shares after the evaluation. Any quorum that
+keeps its shares reconstructs the note for good; erasure is the only defence, and nothing checks
+it. The run above already measured that.
+
+**The second arm's question.** After delegating, can the owner put its state beyond what the
+retained shares open, by committing it again under fresh randomness on its own?
+
+**The arm would show that re-committing does not help if** the shares retained from the delegated
+evaluation, two members' worth, open anything that is still live after the re-commit: a note that
+can still be spent, or the new note's opening.
+
+**And it records, whatever the outcome,** what those shares still open: the old note's contents,
+and through the chain, anything the old note's spend can be followed to.
+
+**The plan, fixed before the run:**
+- A second note, N2, deposited by this experiment's account in the keyed pool. Its opening is
+  shared to the same committee, which proves a withdrawal paying a fresh address R of the owner's.
+- The owner then re-commits: R, topped up from this experiment's account for gas, deposits a new
+  note N3 with fresh randomness. The keyed pool has no change note, and the committee's circuit
+  is the pool's, so in this pool a re-commit is a withdrawal followed by a deposit.
+- Afterwards, members 0 and 1's retained files are rebuilt, as in the first run: N2's nullifier
+  and secret. Recorded: whether N2's nullifier hash is a spent nonce key; whether anything in the
+  retained files is N3's opening; and what the chain links N2's withdrawal to.
