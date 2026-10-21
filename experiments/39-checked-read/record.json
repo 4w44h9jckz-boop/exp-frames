@@ -1,0 +1,525 @@
+{
+  "bought": {
+    "block": "0x76308",
+    "count": 8,
+    "hash": "0xecaec1be193903e56bd61c9fab0bf38eff81255ff0cc6354e978dde89563e7a4"
+  },
+  "checks": [
+    {
+      "address": "0x35be31b0de16d67106f5cf0fa113db6617b51faf",
+      "detail": "0x00000000000000000000000000000000000000000000000000037484e19d1f1d0000000000000001",
+      "outcome": "proven",
+      "readMicros": 19471,
+      "server": "honest, whole branch"
+    },
+    {
+      "address": "0x35be31b0de16d67106f5cf0fa113db6617b51faf",
+      "detail": "the branch proves another account",
+      "outcome": "refused",
+      "readMicros": 25542,
+      "server": "liar, balance changed, true branch"
+    },
+    {
+      "address": "0x35be31b0de16d67106f5cf0fa113db6617b51faf",
+      "detail": "the branch does not reach the header's state root: no node 0xbb553082084cd53b42fa34bff790090a8c56020d002bc4025276184fdd2becdd among those given",
+      "outcome": "refused",
+      "readMicros": 25278,
+      "server": "liar, balance changed, leaf forged"
+    }
+  ],
+  "committee": {
+    "issuers": 4,
+    "key": "0xac297d29c0466ccc04109092c9d2c5751da8ab5a212496ff5b9878dfe2412139eadf37a8f43a17d954e7d8db7adfd3e30a9ad21523fc33ecc51fbe8fa0292f7d11618b4eaf68280ea9623e9b9b84facf7e02faa6c690e002e1da9934b8c4395d",
+    "quorum": 3
+  },
+  "cost": {
+    "answers": [
+      {
+        "answerBytes": 1920,
+        "answerNanos": 646,
+        "layout": "no branch (experiment 37)",
+        "tableBytes": 1920
+      },
+      {
+        "answerBytes": 5344,
+        "answerNanos": 1654,
+        "layout": "split",
+        "split": 5,
+        "tableBytes": 5344
+      },
+      {
+        "answerBytes": 66848,
+        "answerNanos": 20202,
+        "layout": "whole branch",
+        "split": 0,
+        "tableBytes": 66848
+      }
+    ],
+    "readerWalkNanos": 1759,
+    "signNanos": 91835,
+    "ticketCheckNanos": 1059321
+  },
+  "denomination": "0x38d7ea4c68000",
+  "depths": [
+    5,
+    6,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5
+  ],
+  "entries": 9,
+  "header": {
+    "hash": "0xd39934f8830c3b9e103ce72a5c6e35afd84a3987ac2e7fbe59662399e2153bc3",
+    "number": 484165,
+    "rlp": "0xf90290a0f541a14ec85084122041aa3a4014358b56d87bcbc7147ce6a860d51e8d001f52a01dcc4de8dec75d7aab85b567b6ccd41ad312451b948a7413f0a142fd40d49347948943545177806ed17b9f23f0a21ee5948ecaa776a0ff5a9584943ad3ba7c36173010af7e66301293e8cb3419921ea517ca9e2be183a056e81f171bcc55a6ff8345e692c0f86e5b48e01b996cadc001622fb5e363b421a056e81f171bcc55a6ff8345e692c0f86e5b48e01b996cadc001622fb5e363b421b90100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000008083076345840bebc20080846ad770f98d6574687265782032332e302e30a0f0535ee068f85a597934d9e8de0a28c1d56d8036f86ce8fd169e9142b1256e3f88000000000000000007a056e81f171bcc55a6ff8345e692c0f86e5b48e01b996cadc001622fb5e363b4218080a0cfc2733fac654cbfa93ecaa14cc8097250730de6fee2cbccf416bff3bbe5f762a0e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855a0e406ee2b894dfa1f7a722201a94b90db4a3991210616071994283ab425b8cf9f8307d641",
+    "stateRoot": "0xff5a9584943ad3ba7c36173010af7e66301293e8cb3419921ea517ca9e2be183"
+  },
+  "issuance": [
+    {
+      "blinded": "0xa6fa7f53bb7b16bfcc82ccddff5fbc4bad939aaf10d064e732785af331837361f1b0882f05990cee3c0552ee69458cc2",
+      "issuer": 2
+    },
+    {
+      "blinded": "0xa6fa7f53bb7b16bfcc82ccddff5fbc4bad939aaf10d064e732785af331837361f1b0882f05990cee3c0552ee69458cc2",
+      "issuer": 0
+    },
+    {
+      "blinded": "0xa6fa7f53bb7b16bfcc82ccddff5fbc4bad939aaf10d064e732785af331837361f1b0882f05990cee3c0552ee69458cc2",
+      "issuer": 3
+    },
+    {
+      "blinded": "0x8c99279e28bc782cc2f842b00b7d8b5126de236367b0f810dd0c05c665ffd41eb0a52264e68cc81760680ece5ea63c4f",
+      "issuer": 1
+    },
+    {
+      "blinded": "0x8c99279e28bc782cc2f842b00b7d8b5126de236367b0f810dd0c05c665ffd41eb0a52264e68cc81760680ece5ea63c4f",
+      "issuer": 0
+    },
+    {
+      "blinded": "0x8c99279e28bc782cc2f842b00b7d8b5126de236367b0f810dd0c05c665ffd41eb0a52264e68cc81760680ece5ea63c4f",
+      "issuer": 3
+    },
+    {
+      "blinded": "0x861317c2796a930763dfb00e9615d55e9ce3ff3eebba22561d8a59acbd88b664fc6c46be07b58692e3e3cd3aed284ed2",
+      "issuer": 1
+    },
+    {
+      "blinded": "0x861317c2796a930763dfb00e9615d55e9ce3ff3eebba22561d8a59acbd88b664fc6c46be07b58692e3e3cd3aed284ed2",
+      "issuer": 2
+    },
+    {
+      "blinded": "0x861317c2796a930763dfb00e9615d55e9ce3ff3eebba22561d8a59acbd88b664fc6c46be07b58692e3e3cd3aed284ed2",
+      "issuer": 3
+    },
+    {
+      "blinded": "0xa1f04e8d8942159e3bef2b04962004b00d533619689e74144a6736ae5f9caa3c1def13550dde6c7042a54b722d290059",
+      "issuer": 1
+    },
+    {
+      "blinded": "0xa1f04e8d8942159e3bef2b04962004b00d533619689e74144a6736ae5f9caa3c1def13550dde6c7042a54b722d290059",
+      "issuer": 2
+    },
+    {
+      "blinded": "0xa1f04e8d8942159e3bef2b04962004b00d533619689e74144a6736ae5f9caa3c1def13550dde6c7042a54b722d290059",
+      "issuer": 0
+    },
+    {
+      "blinded": "0x997dfa22b0381387c093d42bf9f3f3b5e31cb316855d9c51d9706feae3c93619c8d19daebcbc06892ca03b9f8b4d2e9a",
+      "issuer": 2
+    },
+    {
+      "blinded": "0x997dfa22b0381387c093d42bf9f3f3b5e31cb316855d9c51d9706feae3c93619c8d19daebcbc06892ca03b9f8b4d2e9a",
+      "issuer": 0
+    },
+    {
+      "blinded": "0x997dfa22b0381387c093d42bf9f3f3b5e31cb316855d9c51d9706feae3c93619c8d19daebcbc06892ca03b9f8b4d2e9a",
+      "issuer": 3
+    },
+    {
+      "blinded": "0xa45245e13a745705d1f7c7ae6a42d6435ecd305cf64751dc51225a3b08b2d46e6afd47f587bbfb224e0dd6c89abf9e14",
+      "issuer": 1
+    },
+    {
+      "blinded": "0xa45245e13a745705d1f7c7ae6a42d6435ecd305cf64751dc51225a3b08b2d46e6afd47f587bbfb224e0dd6c89abf9e14",
+      "issuer": 0
+    },
+    {
+      "blinded": "0xa45245e13a745705d1f7c7ae6a42d6435ecd305cf64751dc51225a3b08b2d46e6afd47f587bbfb224e0dd6c89abf9e14",
+      "issuer": 3
+    },
+    {
+      "blinded": "0xb1cb642883484d48af2ac759e4a7bd7d345fd9b4b07a6a21744ddcc2d150bb16b69f91576adcce0d6f659672c5ad588a",
+      "issuer": 1
+    },
+    {
+      "blinded": "0xb1cb642883484d48af2ac759e4a7bd7d345fd9b4b07a6a21744ddcc2d150bb16b69f91576adcce0d6f659672c5ad588a",
+      "issuer": 2
+    },
+    {
+      "blinded": "0xb1cb642883484d48af2ac759e4a7bd7d345fd9b4b07a6a21744ddcc2d150bb16b69f91576adcce0d6f659672c5ad588a",
+      "issuer": 3
+    },
+    {
+      "blinded": "0xa0c05dc72082855972815f287b45b774f9df7cfd011ff4574c01b0714ecf2d6afb87892cb85a8d2c9276b0eac5be3540",
+      "issuer": 1
+    },
+    {
+      "blinded": "0xa0c05dc72082855972815f287b45b774f9df7cfd011ff4574c01b0714ecf2d6afb87892cb85a8d2c9276b0eac5be3540",
+      "issuer": 2
+    },
+    {
+      "blinded": "0xa0c05dc72082855972815f287b45b774f9df7cfd011ff4574c01b0714ecf2d6afb87892cb85a8d2c9276b0eac5be3540",
+      "issuer": 0
+    }
+  ],
+  "layouts": [
+    {
+      "answerBytes": 66848,
+      "cols": 4,
+      "hintBytes": 68452352,
+      "record": 2089,
+      "rows": 16712,
+      "split": 0,
+      "tableBytes": 66848,
+      "topBytes": 0,
+      "topNodes": 0
+    },
+    {
+      "answerBytes": 49824,
+      "cols": 4,
+      "hintBytes": 51019776,
+      "record": 1557,
+      "rows": 12456,
+      "split": 1,
+      "tableBytes": 49824,
+      "topBytes": 532,
+      "topNodes": 1
+    },
+    {
+      "answerBytes": 32800,
+      "cols": 4,
+      "hintBytes": 33587200,
+      "record": 1025,
+      "rows": 8200,
+      "split": 2,
+      "tableBytes": 32800,
+      "topBytes": 4256,
+      "topNodes": 8
+    },
+    {
+      "answerBytes": 15776,
+      "cols": 4,
+      "hintBytes": 16154624,
+      "record": 493,
+      "rows": 3944,
+      "split": 3,
+      "tableBytes": 15776,
+      "topBytes": 8916,
+      "topNodes": 17
+    },
+    {
+      "answerBytes": 8000,
+      "cols": 4,
+      "hintBytes": 8192000,
+      "record": 250,
+      "rows": 2000,
+      "split": 4,
+      "tableBytes": 8000,
+      "topBytes": 10271,
+      "topNodes": 26
+    },
+    {
+      "answerBytes": 5344,
+      "cols": 4,
+      "hintBytes": 5472256,
+      "record": 167,
+      "rows": 1336,
+      "split": 5,
+      "tableBytes": 5344,
+      "topBytes": 11246,
+      "topNodes": 35
+    }
+  ],
+  "once": {
+    "split": {
+      "hintBytes": 5472256,
+      "topBytes": 11246
+    },
+    "whole": {
+      "hintBytes": 68452352,
+      "topBytes": 0
+    }
+  },
+  "readerConnectMillis": 1525,
+  "reads": [
+    {
+      "address": "0x35be31b0de16d67106f5cf0fa113db6617b51faf",
+      "method": "eth_getBalance",
+      "node": "0x37484e19d1f1d",
+      "path": "Pir",
+      "server": "honest, split",
+      "value": "0x37484e19d1f1d"
+    },
+    {
+      "address": "0x35be31b0de16d67106f5cf0fa113db6617b51faf",
+      "method": "eth_getTransactionCount",
+      "node": "0x1",
+      "path": "Pir",
+      "server": "honest, split",
+      "value": "0x1"
+    },
+    {
+      "address": "0x0cdbbde8265f6a737cdeaa5d643eb173d1edd046",
+      "outcome": "no record for the key in its bucket, so no branch: unanswered",
+      "server": "honest, split"
+    }
+  ],
+  "refusals": [
+    {
+      "answer": "refused: a spent ticket",
+      "what": "a spent ticket"
+    },
+    {
+      "answer": "refused: no ticket for this server",
+      "what": "a ticket for another server"
+    },
+    {
+      "answer": "refused: no ticket for this server",
+      "what": "a signature that is no ticket"
+    }
+  ],
+  "scanned": {
+    "from": 481105,
+    "to": 484105
+  },
+  "serverLogs": [
+    [
+      {
+        "answerBytes": 5344,
+        "answerMicros": 4,
+        "bytesScanned": 5344,
+        "queryBytes": 16,
+        "serial": "0xd774972a5272a4fd8ef052d6d20b64b26fd910ce51c3520bb76165ea33b84c12",
+        "signMicros": 119,
+        "ticketCheckMicros": 1239
+      },
+      {
+        "answerBytes": 5344,
+        "answerMicros": 18,
+        "bytesScanned": 5344,
+        "queryBytes": 16,
+        "serial": "0xca3b4ac73847585bd9a074c8971bfe358a737f922dd1b35ec7a1f5c336ec05c2",
+        "signMicros": 120,
+        "ticketCheckMicros": 1059
+      },
+      {
+        "answerBytes": 5344,
+        "answerMicros": 6,
+        "bytesScanned": 5344,
+        "queryBytes": 16,
+        "serial": "0x07e36d3dbfbee9e2ab38ba696a1957081c90675a5198b1132357c688b2ca1053",
+        "signMicros": 122,
+        "ticketCheckMicros": 1094
+      },
+      {
+        "queryBytes": 16,
+        "refused": "a spent ticket",
+        "serial": "0xd774972a5272a4fd8ef052d6d20b64b26fd910ce51c3520bb76165ea33b84c12",
+        "ticketCheckMicros": 1153
+      },
+      {
+        "queryBytes": 16,
+        "refused": "no ticket for this server",
+        "serial": "0x0a7f2f7f61ef2d725cc4005fdbf4df652dc3116d0d4aaf9de27f3c7fb0de33fe",
+        "ticketCheckMicros": 1069
+      },
+      {
+        "queryBytes": 16,
+        "refused": "no ticket for this server",
+        "serial": "0xaa5f1f1ce28fd3536f125bc74337a7e1a7ca57fec70502f88da9c69bbaca4121",
+        "ticketCheckMicros": 1476
+      }
+    ],
+    [
+      {
+        "answerBytes": 66848,
+        "answerMicros": 33,
+        "bytesScanned": 66848,
+        "queryBytes": 16,
+        "serial": "0x52c8c54eb2b28ae5fa521bd672f635fec8728914e42a6bb5eaf8350f739ec75e",
+        "signMicros": 2457,
+        "ticketCheckMicros": 1133
+      }
+    ],
+    [
+      {
+        "answerBytes": 5344,
+        "answerMicros": 3,
+        "bytesScanned": 5344,
+        "queryBytes": 16,
+        "serial": "0x3ac9680fc3fe97041ec91d8bfb9fccc940413891de175fd1f281599643905bab",
+        "signMicros": 102,
+        "ticketCheckMicros": 1286
+      }
+    ],
+    [
+      {
+        "answerBytes": 5344,
+        "answerMicros": 3,
+        "bytesScanned": 5344,
+        "queryBytes": 16,
+        "serial": "0xc2c65a0e6ed9ead0cb90ac90085b2c052ce6cb3f1fb439c8345705a76cec4d36",
+        "signMicros": 103,
+        "ticketCheckMicros": 1380
+      }
+    ]
+  ],
+  "servers": [
+    {
+      "manifest": {
+        "block": 484165,
+        "capacity": 8,
+        "cols": 4,
+        "entries": 9,
+        "hintRoot": "0xbc2bae3ee7efa8f3c7766519a445c104a517cddd7aa43f7196f643bdb4de5c61",
+        "key": "0xac297d29c0466ccc04109092c9d2c5751da8ab5a212496ff5b9878dfe2412139eadf37a8f43a17d954e7d8db7adfd3e30a9ad21523fc33ecc51fbe8fa0292f7d11618b4eaf68280ea9623e9b9b84facf7e02faa6c690e002e1da9934b8c4395d",
+        "namespace": "kohaku-read-ticket-v1",
+        "record": 167,
+        "rows": 1336,
+        "salt": "0xefbbc00ee802ea485fe4fc0ac44fb71795544bf1db0097cedacbc3f0035a2728",
+        "seed": "0xf3f16dc3f2ca3493bbbb8c4f831a00c2b41846d4c63f933b8f367bd8528664f5",
+        "server": "0x000000000000000000000000046a4fa7ce005545c23c82cea3d8192db73e1019",
+        "signer": "0x046a4fa7ce005545c23c82cea3d8192db73e1019",
+        "split": 5,
+        "stateRoot": "0xff5a9584943ad3ba7c36173010af7e66301293e8cb3419921ea517ca9e2be183"
+      },
+      "name": "honest, split"
+    },
+    {
+      "manifest": {
+        "block": 484165,
+        "capacity": 8,
+        "cols": 4,
+        "entries": 9,
+        "hintRoot": "0x9141b94f0077fa6e8ebc14e389b0d1932ab49a7593330848a1b066d32219a713",
+        "key": "0xac297d29c0466ccc04109092c9d2c5751da8ab5a212496ff5b9878dfe2412139eadf37a8f43a17d954e7d8db7adfd3e30a9ad21523fc33ecc51fbe8fa0292f7d11618b4eaf68280ea9623e9b9b84facf7e02faa6c690e002e1da9934b8c4395d",
+        "namespace": "kohaku-read-ticket-v1",
+        "record": 2089,
+        "rows": 16712,
+        "salt": "0xefbbc00ee802ea485fe4fc0ac44fb71795544bf1db0097cedacbc3f0035a2728",
+        "seed": "0x98cc64d84c18716c4a110dd17740f70e3439a9e4544dab4e517a58e7c8f07f93",
+        "server": "0x00000000000000000000000032ca12a8efc6903298e4852c8e2bac5a69adbc54",
+        "signer": "0x32ca12a8efc6903298e4852c8e2bac5a69adbc54",
+        "split": 0,
+        "stateRoot": "0xff5a9584943ad3ba7c36173010af7e66301293e8cb3419921ea517ca9e2be183"
+      },
+      "name": "honest, whole branch"
+    },
+    {
+      "manifest": {
+        "block": 484165,
+        "capacity": 8,
+        "cols": 4,
+        "entries": 9,
+        "hintRoot": "0x7363abfd3e455d1064f4d87337b3611430c762de62aa2c6874866b08ff9f3b61",
+        "key": "0xac297d29c0466ccc04109092c9d2c5751da8ab5a212496ff5b9878dfe2412139eadf37a8f43a17d954e7d8db7adfd3e30a9ad21523fc33ecc51fbe8fa0292f7d11618b4eaf68280ea9623e9b9b84facf7e02faa6c690e002e1da9934b8c4395d",
+        "namespace": "kohaku-read-ticket-v1",
+        "record": 167,
+        "rows": 1336,
+        "salt": "0xefbbc00ee802ea485fe4fc0ac44fb71795544bf1db0097cedacbc3f0035a2728",
+        "seed": "0x04e7777db9316de3be3c4cdc0ec95d3ad53f8a9aef6ecbc027db3f66820d1afe",
+        "server": "0x00000000000000000000000098c9993761908d1db9e7d502568a5f51fa8e0862",
+        "signer": "0x98c9993761908d1db9e7d502568a5f51fa8e0862",
+        "split": 5,
+        "stateRoot": "0xff5a9584943ad3ba7c36173010af7e66301293e8cb3419921ea517ca9e2be183"
+      },
+      "name": "liar, balance changed, true branch"
+    },
+    {
+      "manifest": {
+        "block": 484165,
+        "capacity": 8,
+        "cols": 4,
+        "entries": 9,
+        "hintRoot": "0xb90002dc460a7b4a36f1c279c73393ce4ff302f8987415b6db650771ae91317c",
+        "key": "0xac297d29c0466ccc04109092c9d2c5751da8ab5a212496ff5b9878dfe2412139eadf37a8f43a17d954e7d8db7adfd3e30a9ad21523fc33ecc51fbe8fa0292f7d11618b4eaf68280ea9623e9b9b84facf7e02faa6c690e002e1da9934b8c4395d",
+        "namespace": "kohaku-read-ticket-v1",
+        "record": 167,
+        "rows": 1336,
+        "salt": "0xefbbc00ee802ea485fe4fc0ac44fb71795544bf1db0097cedacbc3f0035a2728",
+        "seed": "0x5bdbe7c2fc87cfa992f3e8283f9a8fe16295a56dc0f915f4e54e2b38cd532664",
+        "server": "0x00000000000000000000000079661d1c47e52bcf4c90feba6b94579a8c580924",
+        "signer": "0x79661d1c47e52bcf4c90feba6b94579a8c580924",
+        "split": 5,
+        "stateRoot": "0xff5a9584943ad3ba7c36173010af7e66301293e8cb3419921ea517ca9e2be183"
+      },
+      "name": "liar, balance changed, leaf forged"
+    }
+  ],
+  "shop": "0x81747040327eca208bcdcc2794c42da70659ba30",
+  "snapshot": 484165,
+  "split": 5,
+  "thirdParty": {
+    "chainProof": {
+      "accountProof": [
+        "0xf90211a0fe747c87376438f2b53063aba018e24baa1a616b54bde0fb5867c244dfe11e03a0ed58a2540e6396a5d1b25f9eff3873d0f03608a66f7f686ad2f8bf9aa2382158a0cee0690ba5bdac4f3eac932be12e82e2d85546c850e59e7cea12ff5d4a6eaf1ca01aeca7a9f61bafc3ae08b139059f82cdedf585a7bd71c53e35cc868b206e7a2ea09e68d663de6bb8253a051a22dd5806f71b4e6a80a8c8170d4aab0cf24f2f2069a015e80cbdc39f9cdce792a827f5cd49a1313409f014bb2eb782a4e7530b1beff0a072a704a43539157cdd5c048f5f67b3591a9e7913328b8f0fa39874ee4915b4c3a0d128b70337bc835416ebc8591e0539a518cfb4601f56bb6eea2360df80636cdea0f176c3eabb5bee500b83e496c824e279b971276e045eb92356da109bdc9f51b1a01251f4255861db5aca4818dc6da350f7a9e3778716a91649ecba9c1dab3a406ea0cd16f55b4eaa6b2b426418cc20e08a37541544131f7e1350fcfd86589b71ad55a037c69485a56294473834b38da3451ff140affa93f9ecc0e7caa1c29048f19ae9a02cd715861e71bd556cc92ab4c93cf951bf1620bce8b307e9bdc878323fd1e88ca06353fe9ffeecda087fed76a20e6e49b51d58ec98d10e0228be5fb240b7dbc811a0412ca3778fffb088c7384346111fc3f2da34cb420c57cd4c24a5d531efca7594a0e878145a3395f1f69622b07c18438650050d8de066004d0bca00358f814399a980",
+        "0xf90211a072842cab13742d2efd7e0f6a956db55ad48b4e79e1cb099f7e58b4a48237a0d4a00dab8f861d786aee4342914f389c0cd35b3f08788bdcfcd9fa3d0b20ff6e362aa0bf236bd94f50cb3de3b5ef1e48644c24716422581c18d54d58cb61120e509201a081837d8f6604edcb04ce48de2a846beaf638c0d186348cfecaebec8a2d606d4ba09c18071e877176f9c3cf9598ccece7163870cac08334db2b0c5da4fef1073d34a05b1b3157e8220a7744c606c1ea64a655543a09f0afbc5323875638c33010a171a026b4f478cc79887b7a08feb7207e47e63e6dc2c40df3051939de75cc4318c82aa0dbe104712b86a32c0b275e149921363867cf3e5fc82f22057d0549728708b53ba07ba361edd002d8aba2014a801509be1911af1e9dcd5eff8b9dc03d584214c87ea0186d1382f9e710a238d2410f156ef71b66602d444cf551fb31d772cde63ab6d8a09237fde116822f6cc2e996a16ef157db33769e0c2bd397dcc210da4429632c55a06245718ed80cc0a8a3cc02a8e3bedc42cb0bbd44886453824a88e4f880727a7fa0e51a5ec706c9cd91c2a8e5eb283091176b39058a178c50aac3fc6e619fbe5495a0c4eb83fa3bf70c50f02079f4a4af5110d17d049f59e34845a66dd96ae52f9524a022fa6cca588f42dd353a2d30521c2b412812d2ec5e1e74975e85dfa24692cbe2a077569aba5e0ed1f35f1050a0e6ef8e26c9c266ebb61b44ad7cdae4e3edea3d2280",
+        "0xf901f1a0b7e58e827f8a312c4b45151c654d7be99d5852b48ca594c47f1404caa0543c8080a0a027ada2a3ea2ef5cd0e34763623598f4c910a3d8ece90857f63b611f1c22f72a0ed3fc86bafa039df191fb27de0476988e349e2b90ffb6b94dca7120aa010c595a0f44a1802da7bff1735481df06161457eaa0c84b1cc4a2690c794291abbf366afa068825375192b84414ef12d224f2d1c0c1266081dc15e6a0255ada942dbf71f07a0bf600ff4e3d36d6b0eb4460d9390ce25c8c058503b10ac60845b7d3e44a691e1a0d9c0dd460a57295ba7289a23f2bce25c484c0c2dbd057ca0c4e4709911dc68e0a041e58e3a0eab12e05805110dc718d3025fd5891c150c6282d1e82b1d03ff72ada052dc52d38269193fbfb1dc5440d5587bbd848e0d3ea092f15510ba28d9217cfea0667f726a49a579f59d903f48e1b2054bb441771398b1b4275deb5213e69c698ba0676cbfe9da867bd26b7944bb1a47c7c29c49f61ef400805ac83d14ce3ac88c1aa00ee8845075502a1db4d36fdca40d77464cf7b068b968ba41e049fccf8da7cb3aa0b1ae1859161d3b81394683e37c7f7a63d7bb4e998b04bf85b0965690850cc1a3a035d3759100e58b46a4c93060b0c69e3b575874cf59cb57ce59693e4a7b2ba6ffa05b2abf94b6695dab4496b7313cf2a1cdd5e635456e348b1f2d592cb520b2da6980",
+        "0xf8f1a0a92e2f9be3077920da3860a0efb53efb2b07502adcc3898bee57de281063a37e808080a0f4e1042ca36e1d24159128568ba56905be54110fe881aa17af51228b723f9291a0bb553082084cd53b42fa34bff790090a8c56020d002bc4025276184fdd2becdda034dec1babcad1cecc83d6ee685546adf6ffa26f431f56545775cc96b7a0a8ac180a074ebef62d2184fe403320adaf6e92cee1a0baac5ba654bf2d9ad6b2e09b438b380808080a04f6018260892f3e88206308c2e70ceae02885a81d97a2fc8a52c8a7472ecd8e0a05836877af4de6091855cf4d814aec55f69542e9cd3485dc7d9543e4415e045968080",
+        "0xf86f9f2037541969ca9496e77b938833cfa6ec047d132e9f8bf5894b19cad54b43ddb84df84b0187037484e19d1f1da056e81f171bcc55a6ff8345e692c0f86e5b48e01b996cadc001622fb5e363b421a0c5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470"
+      ],
+      "address": "0x35be31b0de16d67106f5cf0fa113db6617b51faf",
+      "block": 484165
+    },
+    "evidenceBytes": 563204,
+    "judgeMicros": 4420,
+    "verdict": "wrong: the server signed balance 1000972538999807773 for 0x35be31B0dE16d67106F5cf0FA113dB6617B51FAf, the chain holds 972538999807773"
+  },
+  "thirdPartyForged": "wrong: the server signed balance 1000972538999807773 for 0x35be31B0dE16d67106F5cf0FA113dB6617B51FAf, the chain holds 972538999807773",
+  "tickets": [
+    {
+      "serial": "0xd774972a5272a4fd8ef052d6d20b64b26fd910ce51c3520bb76165ea33b84c12",
+      "server": "0x000000000000000000000000046a4fa7ce005545c23c82cea3d8192db73e1019",
+      "signature": "0x9634633ac21d3b624956be0cabcb98e83b02d7e551c8484a191941a62e40b7de5f544db5420c9f17abd4d5898d1c949d"
+    },
+    {
+      "serial": "0xca3b4ac73847585bd9a074c8971bfe358a737f922dd1b35ec7a1f5c336ec05c2",
+      "server": "0x000000000000000000000000046a4fa7ce005545c23c82cea3d8192db73e1019",
+      "signature": "0x847c8502242b742a6a22456030579bf2bb90699f47c8e509d82cb2228ce05d1bb73401423770a28a152e157b30214d2e"
+    },
+    {
+      "serial": "0x07e36d3dbfbee9e2ab38ba696a1957081c90675a5198b1132357c688b2ca1053",
+      "server": "0x000000000000000000000000046a4fa7ce005545c23c82cea3d8192db73e1019",
+      "signature": "0xa2605b81b1b8c4dddd933ff79d54e975cf8b1d59f8fa30c1c30133a530487df984d87e55918464ecc8dd23c804681abe"
+    },
+    {
+      "serial": "0xb85489d174a84846d02599996302e8da7233bf3b8dcb7d133b8ff2dcd3b62f0c",
+      "server": "0x000000000000000000000000046a4fa7ce005545c23c82cea3d8192db73e1019",
+      "signature": "0xa6fe78a67b0ed4c78486b815838fb88311c8a536cb4e497172d0aae5200b042f5186816b290a49f9b3ddb17dabf26a13"
+    },
+    {
+      "serial": "0x52c8c54eb2b28ae5fa521bd672f635fec8728914e42a6bb5eaf8350f739ec75e",
+      "server": "0x00000000000000000000000032ca12a8efc6903298e4852c8e2bac5a69adbc54",
+      "signature": "0x97895698b05f882e80d189141507c5f0b72ad0cc8135522a86c30ffd32e4cb2f3f76e8ff6b3bf2ed79d70afbfa58b9cf"
+    },
+    {
+      "serial": "0x3ac9680fc3fe97041ec91d8bfb9fccc940413891de175fd1f281599643905bab",
+      "server": "0x00000000000000000000000098c9993761908d1db9e7d502568a5f51fa8e0862",
+      "signature": "0xa20ef1792d141639aad527558cf973a90bc38c95b31b131f69060e929d1a7b4d3590c427c88eece15234a8445c9a5015"
+    },
+    {
+      "serial": "0xc2c65a0e6ed9ead0cb90ac90085b2c052ce6cb3f1fb439c8345705a76cec4d36",
+      "server": "0x00000000000000000000000079661d1c47e52bcf4c90feba6b94579a8c580924",
+      "signature": "0x97fac67a746f712e0cf90c124f573c5a60e41d61cc40269418843bdc8a11ce1bdcba0d6161e7498a5a8189f7262fc667"
+    },
+    {
+      "serial": "0x0a7f2f7f61ef2d725cc4005fdbf4df652dc3116d0d4aaf9de27f3c7fb0de33fe",
+      "server": "0x0000000000000000000000000000000000000000000000000000000000000000",
+      "signature": "0x952ecbb93d34895822ade1713b03b776f1870257755ecc4b8ed49184c265518dbe796c845379adb0bd580535831717b6"
+    }
+  ]
+}

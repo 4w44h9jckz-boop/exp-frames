@@ -27,7 +27,7 @@ Short answers:
 | [`kohaku-rs-output.txt`](kohaku-rs-output.txt) | The run's output |
 
 The reader, the server and the issuers are kohaku-rs's `kohaku-ticket-read` and
-`kohaku-frame-ticket` (branch `claude/nifty-einstein-llp9cd`, commit `eea02a3`).
+`kohaku-frame-ticket` (branch `experiment/frames`, commit `eea02a3`).
 
 ## Run
 

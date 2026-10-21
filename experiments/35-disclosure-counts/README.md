@@ -62,7 +62,7 @@ The checks by hand, also in `results.md`:
 - **Association set.** The set's first label is the ETH-pool deposit of 0.1 ETH in block
   22,167,294.
 
-kohaku-rs's `kohaku-frame-wallet` (branch `claude/nifty-einstein-llp9cd`) computes every count
+kohaku-rs's `kohaku-frame-wallet` (branch `experiment/frames`) computes every count
 above from the same reads, with its own Poseidon and its own check of the tree, and they are
 equal. Its `disclosure` module words the crowd: under 10 "would all but name you", under 100
 "narrows you down".
