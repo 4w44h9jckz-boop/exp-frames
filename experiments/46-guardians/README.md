@@ -76,6 +76,16 @@ what each guardian holds and learns is listed.
    recovery key. Its posts can teach an observer, and itself, more than its share does:
    observation 3.
 
+4. **Which loss this covers: a lost device, not a stolen one.** The account lets its current
+   owner cancel any recovery, and that is what stopped the hostile guardians here. A thief who
+   holds the owner's key holds the same power: it can cancel every recovery the guardians start,
+   for as long as it likes, and move the account's ether itself. The seed on the device gives
+   it every note too, whatever the account does. So this recovery answers a device that is gone
+   or destroyed, whose key nobody else holds. A device that may be in someone else's hands needs
+   something else first: a device that does not give up the seed (a secure element), and an
+   account whose cancel the guardians can outvote, which this one, experiment 31's, does not
+   have. Neither was built or run here.
+
 | File | What |
 |---|---|
 | [`rebuild.test.ts`](rebuild.test.ts) | The run read back from public data: commitments, reveals, signers, the refusals, the envelopes and the guardians' posts |
