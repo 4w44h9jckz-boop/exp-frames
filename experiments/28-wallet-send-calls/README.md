@@ -191,7 +191,7 @@ simulation, a fixed `preVerificationGas` of 50,000, one operation per bundle.
 
 ## Part 2: the same dapp against a Rust wallet, and ERC-7715 (2026-10-20)
 
-kohaku-rs's `kohaku-frame-wallet` (`crates/frame-wallet`, branch `claude/nifty-einstein-llp9cd`)
+kohaku-rs's `kohaku-frame-wallet` (`crates/frame-wallet`, branch `experiment/frames`)
 is the wallet of `wallet.ts` written again in Rust, over `kohaku-frame-accounts`, and served as an
 EIP-1193 provider over HTTP. It has the same layout, the same estimation and the same ERC-7677
 binding. With `RUST_WALLET` set, `dapp.ts` spawns one per user through

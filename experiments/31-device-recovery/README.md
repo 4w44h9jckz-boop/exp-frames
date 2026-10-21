@@ -87,7 +87,7 @@ other zero bytes.
 
 ### The notes, from Rust
 
-kohaku-rs's `device_recovery` example (branch `claude/nifty-einstein-llp9cd`) ran the note half
+kohaku-rs's `device_recovery` example (branch `experiment/frames`) ran the note half
 against experiment 06's keyed pool, with a fresh keychain key split between the two devices:
 
 | Step | Tx | Block |
