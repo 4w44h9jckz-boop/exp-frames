@@ -20,7 +20,12 @@ export const EVM_VERSION = 'osaka'
 export const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 
 type SolcError = { severity: 'error' | 'warning' | 'info'; formattedMessage: string }
-type SolcContract = { abi?: Abi; evm: { bytecode: { object: string }; deployedBytecode?: { object: string } } }
+/** Where an external library's address goes: file -> library -> byte ranges in the bytecode. */
+export type LinkReferences = Record<string, Record<string, { start: number; length: number }[]>>
+type SolcContract = {
+  abi?: Abi
+  evm: { bytecode: { object: string; linkReferences?: LinkReferences }; deployedBytecode?: { object: string } }
+}
 type SolcOutput = { errors?: SolcError[]; contracts?: Record<string, Record<string, SolcContract>> }
 
 function run(language: 'Solidity' | 'Yul', file: string, outputs: string[]): Record<string, SolcContract> {
@@ -56,11 +61,29 @@ export function compileYul(file: string): Hex {
   return `0x${contract.evm.bytecode.object}`
 }
 
-export type CompiledSolidity = { abi: Abi; bytecode: Hex; deployedBytecode: Hex }
+export type CompiledSolidity = { abi: Abi; bytecode: Hex; deployedBytecode: Hex; linkReferences: LinkReferences }
 
 export function compileSolidity(file: string, contractName: string): CompiledSolidity {
-  const contracts = run('Solidity', file, ['abi', 'evm.bytecode.object', 'evm.deployedBytecode.object'])
+  const contracts = run('Solidity', file, ['abi', 'evm.bytecode.object', 'evm.bytecode.linkReferences', 'evm.deployedBytecode.object'])
   const c = contracts[contractName]
   if (!c) throw new Error(`${contractName} not found in ${file} (have: ${Object.keys(contracts).join(', ')})`)
-  return { abi: c.abi ?? [], bytecode: `0x${c.evm.bytecode.object}`, deployedBytecode: `0x${c.evm.deployedBytecode?.object ?? ''}` }
+  return {
+    abi: c.abi ?? [],
+    bytecode: `0x${c.evm.bytecode.object}`,
+    deployedBytecode: `0x${c.evm.deployedBytecode?.object ?? ''}`,
+    linkReferences: c.evm.bytecode.linkReferences ?? {},
+  }
+}
+
+/** Creation bytecode with each external library's placeholder replaced by its address. */
+export function linkBytecode(bytecode: Hex, refs: LinkReferences, addresses: Record<string, Hex>): Hex {
+  let code = bytecode.slice(2)
+  for (const libs of Object.values(refs)) {
+    for (const [name, spots] of Object.entries(libs)) {
+      const address = addresses[name]
+      if (!address) throw new Error(`no address for library ${name}`)
+      for (const { start, length } of spots) code = code.slice(0, 2 * start) + address.slice(2).toLowerCase() + code.slice(2 * (start + length))
+    }
+  }
+  return `0x${code}`
 }
