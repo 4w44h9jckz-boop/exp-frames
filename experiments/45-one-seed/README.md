@@ -234,3 +234,21 @@ and the ticket check exactly experiment 36's. Every transaction above is a fixtu
    - *BIP-44's last two levels are not hardened.* If the extended public key at
      `m/44'/60'/0'/0` leaks with one owner key, the parent key follows, classically. The wallet
      never publishes it.
+
+7. **Two public pieces that would change the post-quantum rows above,** read 2026-10-21, not
+   built here.
+   - The viewing key. `4w44h9jckz-boop/pq-stealth-scheme3-public` implements ERC-8441 (a Draft,
+     ethereum/ERCs#2059): ERC-5564 stealth announcements under an ML-KEM-768 encapsulation
+     combined with a secp256k1 ECDH secret. Under it, announcements sealed to the wallet stay
+     closed to a quantum adversary who keeps them. The cost is a 1,250-byte meta-address and a
+     1,122-byte announcement, against experiment 33's 84 bytes. Spending stays secp256k1, as it
+     says itself. Here that would be one more label, an ML-KEM-768 seed beside `view`.
+   - The owner keys. `4w44h9jckz-boop/zkboo-bip32` proves in zero knowledge, with hash-based
+     (MPC-in-the-head) proofs, knowledge of the seed behind a BIP-32 key. That is a post-quantum
+     way for the holder of the seed to authenticate an account whose ECDSA key a quantum
+     adversary could forge. Its cheap statements are the HMAC-SHA512 ones: BIP-39's seed,
+     BIP-32's master key and hardened children. A non-hardened child, as BIP-44's last two
+     levels are, needs a secp256k1 multiplication in the circuit, its expensive case. The
+     HKDF-SHA256 labels here would need a SHA-256 HMAC circuit, which it does not list. A
+     derivation chosen with such proofs in mind would keep every level hardened and stay on
+     HMAC-SHA512.
