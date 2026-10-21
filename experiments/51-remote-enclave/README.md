@@ -232,3 +232,14 @@ transaction; A and B were mined one block apart.
    revocation; the measurement is the process's own report of its file. The ciphertexts are not
    authenticated. And the output itself says one bit about the two bids, which whoever learns
    it learns, whatever the route.
+
+7. **Added after the run, from a later reading; no claim changes.**
+   - **Everything here is pre-quantum.** The bids are encrypted by a Baby Jubjub Diffie-Hellman
+     exchange, so the ciphertexts on the board can be harvested now and read later by a quantum
+     adversary, without the operator. The P-256 attestation and the Groth16 proof are pre-quantum
+     too.
+   - **In this run the attestation key is the operator's.** The host derives it and hands it to
+     the enclave, so for route A "integrity rests on" is this experiment's operator. The
+     manufacturer stands in for it only with real hardware.
+   - The reading's costly case, proving the decryption over a curve foreign to the proof system,
+     did not arise: the circuit proves the decryption, and Baby Jubjub is native to BN254.
