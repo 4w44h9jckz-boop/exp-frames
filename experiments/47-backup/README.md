@@ -58,12 +58,16 @@ against what an observer sees.
    It checked what they said against the chain: the contracts exist, the account is the seed's
    and owned as stated, a ticket carried only in the backup verifies and is unspent, and a
    received note's opening carried only in the backup is a leaf of its vault.
-2. **Would show it wrong: observed, in this run, through the payer and the timing; not through
-   what was posted.** The posts are random bytes from fresh senders. But both were paid by a
-   ticket paymaster whose only buyer is owner 0, so the payer names the wallet. And version 0
-   went out two blocks after owner 0 posted that paymaster's answers. A ticket hides its buyer
-   among the paymaster's buyers, and here there was one. The sizes differ too: version 0 needed
-   a third bucket.
+2. **Would show it wrong: observed, as linkage, not as leakage.** The two are separate
+   questions (see "Leakage and linkage" below).
+   - *Leakage,* what one post gives away by itself: nothing of the state. It is a pseudorandom
+     locator, a nonce and ciphertext from a fresh sender. Only its size class shows: version 0
+     needed a third bucket.
+   - *Linkage,* whether the posts join the wallet's identities over time: yes, in this run. Both
+     versions were paid by a ticket paymaster whose only buyer is owner 0, so the payer names the
+     wallet, and the same payer joins the two versions to each other. Version 0 also went out two
+     blocks after owner 0 posted that paymaster's answers. A ticket hides its buyer only among
+     its paymaster's buyers, and here there was one.
 3. **How much one leaked key opens.** One version's key opens that version and no other. But a
    version is cumulative, so the newest version's key opens the wallet's whole history (28
    transactions here), its unspent tickets, and the opening of a note someone made for it, which
@@ -147,6 +151,19 @@ calldata: version 0's 6,204 bytes took the transaction to 616,593 gas, inside on
 | sender | a fresh key at nonce 0, never funded, used once | nothing |
 | payer | ticket paymaster `0x6Ab8026c…`, whose `Bought` logs name one buyer, owner 0 | **owner 0**: the crowd of buyers is one |
 | when | version 0 two blocks after owner 0's answer post for the same paymaster; version 1 two blocks after version 0 | **owner 0**, by timing |
+
+## Leakage and linkage
+
+| Question | What it asks | Here |
+|---|---|---|
+| leakage | what one backup, read alone, tells an observer about the wallet's state | its size class, two or three buckets; nothing else |
+| linkage | whether backups, over time, join the wallet's accounts and each other | both versions joined to owner 0 through the paymaster's single buyer and the timing, and so to each other; their bytes and senders alone would not join them |
+
+A backup that leaks nothing can still link. Each version a wallet posts through the same
+paymaster, at times its other acts predict, adds one more post joined to the same buyer, so the
+backups over time draw the line between the wallet's accounts that the fresh senders were meant
+to break. The fixes differ too: padding and encryption answer leakage; a paymaster with many
+buyers, unpredictable timing, and no reuse of anything across versions answer linkage.
 
 ## How much one leaked key opens
 
