@@ -207,6 +207,24 @@ commitment, which had no state gas for its fresh slot. They are fixtures too.
    the owner needed nobody to rotate. The first envelope stays on the board for good, and the old
    set with the phrase opened it after the recovery. Only an envelope in a store that can drop
    it, or a new seed after a rotation, ends that. This is the vault post 30 names.
+   **What guessing the phrase costs an old quorum.** Against guardians who collude, the phrase
+   is the only barrier, and the envelope they can guess against is published for good, so the
+   guessing has no deadline. The figures, from this run:
+   - *Entropy, as generated:* five words drawn uniformly and independently from BIP-39's
+     English list of 2,048, so $H = 5 \cdot 11 = 55$ bits.
+   - *Stretch:* Argon2id, version 0x13, 64 MiB of memory, 3 passes, 1 lane, 32 bytes out, salted
+     with the domain and `address(R)`, so no guess serves two envelopes.
+   - *Measured:* 144 to 186 ms per evaluation, median 159 ms, on this run's machine: one core of an
+     `Intel(R) Xeon(R) Processor @ 2.10GHz` cloud container with 4 cores (five evaluations,
+     the 186 ms one including the decryption).
+   - *Derived:* on average $2^{H-1} = 2^{54} \approx 1.8 \times 10^{16}$ evaluations, about
+     $2.9 \times 10^{15}$ core-seconds at 159 ms, or about $9 \times 10^{7}$ core-years
+     ($8.2 \times 10^{7}$ to $1.1 \times 10^{8}$ over the measured range), each guess holding
+     64 MiB while it runs. This assumes nothing faster than this machine. Dedicated hardware
+     shortens it, and the 64 MiB per guess is what bounds that. A phrase the user picks,
+     not drawn at random, has less entropy than $H$, and the cost falls by a factor of two for
+     every bit lost.
+
 5. **An account deployed with an empty commitment pays for its first one.** Experiment 45 kept
    the commitment out of the CREATE2 address, so that the seed alone finds the account. The first
    `0x04` then writes a fresh slot: 97,920 state gas, once.
