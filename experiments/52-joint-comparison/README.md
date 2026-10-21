@@ -225,3 +225,15 @@ proved the same statement in 0.23 s. Loopback in effect, so no network time is i
 6. **What is not tested:** malicious parties, a network between them (both ran in one process),
    and any statement larger than this comparison. Alice's Paillier key is made once and used for
    every session of the run.
+
+7. **Added after the run, from a later reading; no claim changes.**
+   - **Who could compute the output, at each step.** Before Alice posts her share of `pi_c`,
+     nobody: the output wire stays shared, and each half of `pi_c` alone verifies for neither
+     output (`joint.test.ts`). After she posts it, Bob alone, who holds the other half. After
+     Bob settles, everyone. Alice never holds both halves before the chain does. The reading
+     agrees with the bond's rule as built: the side that stops after the other has posted pays
+     (S4).
+   - **"Told apart from a self-update" turns on the transaction's public shape,** not on the
+     proof's format: which notes are consumed, what outputs are written, who pays. Observation 2
+     compares two settlements of the same shape; a sealed comparison's session (two accounts
+     opening and joining, a share posted) is a shape a lone owner's update does not have.
