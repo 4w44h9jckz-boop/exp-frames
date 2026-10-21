@@ -11,14 +11,16 @@ each verifier cost** against the testnet's 500,000 gas of `VERIFY` and EIP-8141'
 
 ## Written before any run
 
-**The claim.** A private function proved on the user's device leaves Aztec's rollup as frames: its
-proof checked in a frame, each nullifier it spends a nonce key of the transaction, so that no
-sequencer orders the spends.
+**The claim.** Take away Aztec's rollup and a private function still works on L1 through frames.
+The user's device makes the proof, a `VERIFY` frame checks it, and the transaction carries every
+nullifier the function spends as one of its nonce keys. The protocol then refuses a second spend
+by itself, and no sequencer has to order the spends.
 
-**It would be shown wrong if:**
-- no proof of the private function, in any proof system Noir's toolchain targets, can be checked in
-  a frame within the testnet's validation budget;
-- or a nullifier spent twice is admitted or mined.
+**What would refute it:**
+- every proof system that Noir's toolchain can produce a verifier for costs more to check than
+  the testnet gives a `VERIFY` frame;
+- or the chain accepts a transaction that reuses a nullifier, either into the mempool or into a
+  block.
 
 **This entry is done when:**
 - the transfer is proved on the device and its verifier is deployed on the testnet;
@@ -168,12 +170,12 @@ budget with 488,000 to spare, and EIP-8141's with 88,000.
 proof is not zero-knowledge, so it would publish information about the spent notes. The transfer's
 number is the zero-knowledge verifier's.
 
-**Against what would show the claim wrong:**
+**Against what would refute the claim:**
 
-- *No proof Noir's toolchain targets fits the testnet's budget.* This holds for both of
-  Barretenberg's targets. For EIP-8141's 100,000 it holds for any pairing-based proof, by the
+- *Every verifier Noir's toolchain can produce costs more than the testnet's `VERIFY`
+  budget.* So far this is true for both of Barretenberg's targets. For EIP-8141's 100,000 it holds for any pairing-based proof, by the
   schedule. For the testnet's 500,000 it is open until Groth16 is measured.
-- *A nullifier spent twice is admitted or mined.* Not observed: the second spend was refused by
+- *A transaction reusing a nullifier gets into the mempool or a block.* Not observed: the second spend was refused by
   the nonce keys, before any proof was checked.
 
 ## Divergences from the plan
