@@ -231,9 +231,10 @@ and the ticket check exactly experiment 36's. Every transaction above is a fixtu
      announcements (ECDH over secp256k1) a quantum adversary holding the public key can open,
      the past ones included; the committee's BLS key, from which tickets could be forged, the
      paymaster's loss. The account's own answer is experiment 17's hash-based one-time keys.
-   - *BIP-44's last two levels are not hardened.* If the extended public key at
-     `m/44'/60'/0'/0` leaks with one owner key, the parent key follows, classically. The wallet
-     never publishes it.
+   - *BIP-44's last two levels are not hardened.* The path is kept for compatibility with other
+     wallets. So the extended public key at `m/44'/60'/0'/0` must never leave the wallet: it links
+     every owner key to every other, and with any one owner's private key it gives the parent
+     key, and so every owner key, classically. Nothing in this wallet exports it.
 
 7. **Two public pieces that would change the post-quantum rows above,** read 2026-10-21, not
    built here.
