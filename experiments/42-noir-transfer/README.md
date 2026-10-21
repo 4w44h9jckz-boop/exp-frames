@@ -136,6 +136,19 @@ the verifier's gas from everything else the transfer asks of the chain. Both poo
 and are accepted by Barretenberg's verifier when called directly, where no validation budget
 applies.
 
+**Proved from kohaku-rs.** A second transfer in the layout pool was proved by kohaku-rs's
+`kohaku-noir-transfer` (branch `experiment/noir-transfer`, `c1564b9`; `pool.ts --rust`, record
+`pool.rust.json`). In it, the first transfer's recipient spends the note it received with one it
+had deposited.
+
+- The witness comes from Noir's own executor, `acvm` 1.0.0-rc.6. The proof comes from Barretenberg
+  through `barretenberg-rs` 5.2.1, which drives the `bb` binary of the same release. Nothing runs
+  in JavaScript.
+- Proving took 468 ms with 4 threads. Barretenberg's verifier accepts the proof by call.
+- The transfer was mined in block 491,204 (`0x02c98ad7...`), at 2,772,915 gas.
+- The crate's tests check its Poseidon2 against `bb.js`'s outputs, and its root, nullifiers and
+  output notes against `build/drive.mjs`'s.
+
 **What the mined transfer cost** (`0x2a4cc880...`, 2,782,967 gas in all):
 
 | frame | execution | state |

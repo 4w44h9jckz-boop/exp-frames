@@ -55,7 +55,7 @@ const hasher = json('./hasher.json') as { results: { inputs: number; matches: bo
 type Receipt = { label: string; hash: string; block: number; frames: { execution: number; state: number; status: number }[] }
 type Attempt = { verifyExecution: number; simulation: { valid: boolean; violation: string | null }; hash?: string; error?: string }
 const pools = (json('./pool.json') as {
-  pools: { label: string; txs: Receipt[]; transfer: { nullifiers: string[]; honkAcceptsByCall: boolean; proofBytes: number; attempts: Attempt[]; again: Attempt } }[]
+  pools: { label: string; pool: string; txs: Receipt[]; transfer: { nullifiers: string[]; honkAcceptsByCall: boolean; proofBytes: number; attempts: Attempt[]; again: Attempt } }[]
 }).pools
 const pool = (label: string) => pools.find((p) => p.label === label)!
 
@@ -94,5 +94,26 @@ describe('experiment 42, the transfer as a frame transaction', () => {
     expect(transfer.frames[0].execution + transfer.frames[1].execution).toBeLessThan(12_000)
     expect(transfer.frames[1].state).toBe(2 * 97_920)
     expect(p.transfer.again.error).toMatch(/Nonce mismatch/)
+  })
+})
+
+const rust = json('./pool.rust.json') as {
+  pool: string
+  prover: string
+  nullifiers: string[]
+  honkAcceptsByCall: boolean
+  attempt: Attempt
+  mined: Receipt | null
+}
+
+describe('experiment 42, a transfer proved from kohaku-rs', () => {
+  it("was Noir's executor and Barretenberg from Rust, accepted by Barretenberg's verifier, and mined", () => {
+    expect(rust.pool).toBe(pool('layout').pool)
+    expect(rust.prover).toMatch(/^kohaku-noir-transfer, Noir 1\.0\.0-rc\.6\+2c22344a/)
+    expect(rust.honkAcceptsByCall).toBe(true)
+    expect(BigInt(rust.nullifiers[0])).toBeLessThan(BigInt(rust.nullifiers[1]))
+    expect(rust.attempt.simulation.valid).toBe(true)
+    expect(rust.mined?.hash).toBe(rust.attempt.hash)
+    expect(rust.mined?.frames.map((f) => f.status)).toEqual([1, 1, 1])
   })
 })

@@ -10,7 +10,8 @@
 // The proof comes from the wallet's prover, build/prove.mjs, run where Noir and bb.js are
 // installed (NOIR_PROVER_DIR, default ../noirwork).
 //
-// usage: npx tsx experiments/42-noir-transfer/pool.ts [--dry-run]
+// usage: npx tsx experiments/42-noir-transfer/pool.ts [--dry-run]     the two pools, proved by build/prove.mjs
+//        npx tsx experiments/42-noir-transfer/pool.ts --rust [--dry-run]  then a second transfer, from kohaku-rs
 import { execFileSync } from 'node:child_process'
 import { readFileSync, writeFileSync } from 'node:fs'
 import { resolve } from 'node:path'
@@ -119,6 +120,77 @@ async function offer(tx: FrameTx) {
 }
 
 /**
+ * The wallet's prover: `build/prove.mjs` under Node with Noir's and Barretenberg's packages
+ * (NOIR_PROVER_DIR), or kohaku-rs's `kohaku-noir-transfer`, which runs Noir's executor and drives
+ * Barretenberg's `bb` (KOHAKU_RS_DIR, BB).
+ */
+function proveWith(prover: 'js' | 'rust', request: unknown, name: string): Proved & { prover: string } {
+  const response = resolve(proverDir, `out/transfer.${name}.json`)
+  const input = JSON.stringify(request)
+  if (prover === 'js') {
+    execFileSync('node', [resolve(proverDir, 'prove.mjs'), response], { cwd: proverDir, input, stdio: ['pipe', 'ignore', 'inherit'] })
+  } else {
+    const crates = process.env.KOHAKU_RS_DIR ?? resolve(REPO_ROOT, '../kohaku-rs/crates')
+    const bb = process.env.BB ?? resolve(proverDir, 'node_modules/@aztec/bb.js/build/amd64-linux/bb')
+    execFileSync('cargo', ['run', '--quiet', '--release', '-p', 'kohaku-noir-transfer', '--example', 'prove', '--', response], {
+      cwd: crates,
+      input,
+      env: { ...process.env, BB: bb },
+      stdio: ['pipe', 'ignore', 'inherit'],
+    })
+  }
+  const proved = JSON.parse(readFileSync(response, 'utf8')) as Proved & { prover?: string }
+  return { ...proved, prover: proved.prover ?? 'build/prove.mjs, Noir 1.0.0-rc.6, bb.js 5.2.1' }
+}
+
+function transferTx(pool: Address, sourceId: Hex, slot: bigint, proved: Proved, verifyExecution: bigint): FrameTx {
+  const [n0, n1] = proved.nullifiers
+  return {
+    chainId,
+    nonceKeys: [hexToBigInt(n0), hexToBigInt(n1)],
+    nonceSeq: 0n,
+    sender: getAddress(pool),
+    frames: [
+      {
+        mode: Mode.VERIFY,
+        flags: Approve.NONE,
+        target: RECENT_ROOT,
+        limits: { execution: 10_000n, state: 0n },
+        value: 0n,
+        data: concatHex([sourceId, numberToHex(slot, { size: 8 }), proved.root]),
+      },
+      // Each nonce key's first use sets a slot, charged to the frame that approves payment.
+      verifyFrame({ scope: Approve.EXECUTION_AND_PAYMENT, target: null, execution: verifyExecution, state: 2n * STORAGE_SET_STATE_GAS }),
+      senderFrame({
+        target: pool,
+        data: encodeFunctionData({ abi, functionName: 'transfer', args: [proved.root, n0, n1, proved.outHashes[0], proved.outHashes[1], FEE, proved.proof] }),
+        execution: INSERT_EXECUTION,
+        state: INSERT_STATE,
+      }),
+    ],
+    signatures: [],
+    fees: FEES,
+    blobVersionedHashes: [],
+  }
+}
+
+/** Barretenberg's verifier on a proof and the public inputs the pool would pass it, by eth_call. */
+async function honkAccepts(pool: Address, proved: Proved) {
+  const [n0, n1] = proved.nullifiers
+  const inputs = [proved.root, n0, n1, proved.outHashes[0], proved.outHashes[1], word(FEE), word(hexToBigInt(pool))]
+  if (inputs.some((x, i) => hexToBigInt(x) !== hexToBigInt(proved.publicInputs[i]))) throw new Error('public inputs out of order')
+  return client.readContract({ address: HONK, abi: honkAbi, functionName: 'verify', args: [proved.proof, inputs] })
+}
+
+/** The slot EIP-8272 filed a pool's root at, most recently. */
+async function slotOf(pool: Address, root: Hex) {
+  const roots = await client.getContractEvents({ address: pool, abi, eventName: 'RecentRoot', fromBlock: 'earliest' })
+  const filed = roots.filter((r) => r.args.root === root)
+  if (!filed.length) throw new Error(`root ${root} was never filed`)
+  return filed[filed.length - 1].args.slot as bigint
+}
+
+/**
  * One pool, end to end: deploy, deposit four notes, prove a transfer of two of them, and offer the
  * transfer once for each VERIFY limit in `verifyLimits`; then offer the same spend again.
  */
@@ -180,56 +252,19 @@ async function runPool(label: string, verifier: Address, verifyLimits: bigint[])
     { owner: owner.toString(), value: (500n * UNIT - FEE).toString(), randomness: derive('out/1').toString() },
   ]
   const request = { nsk: nsk.toString(), spend, outs, fee: FEE.toString(), context: hexToBigInt(pool).toString(), leaves: leaves.slice(0, 4), target: 'evm' }
-  const response = resolve(proverDir, `out/transfer.${label}.json`)
-  execFileSync('node', [resolve(proverDir, 'prove.mjs'), response], { cwd: proverDir, input: JSON.stringify(request), stdio: ['pipe', 'ignore', 'inherit'] })
-  const proved = JSON.parse(readFileSync(response, 'utf8')) as Proved
+  const proved = proveWith('js', request, label)
   const [n0, n1] = proved.nullifiers
   console.log(`${label}: proved in ${proved.proveMs} ms; nullifiers ${n0} < ${n1}`)
-
-  // Barretenberg's verifier on the same proof and public inputs, by eth_call, where no
-  // validation budget applies.
-  const inputs = [proved.root, n0, n1, proved.outHashes[0], proved.outHashes[1], word(FEE), word(hexToBigInt(pool))]
-  if (inputs.some((x, i) => hexToBigInt(x) !== hexToBigInt(proved.publicInputs[i]))) throw new Error('public inputs out of order')
-  const honkAccepts = await client.readContract({ address: HONK, abi: honkAbi, functionName: 'verify', args: [proved.proof, inputs] })
+  // Barretenberg's verifier on the same proof, by eth_call, where no validation budget applies.
+  const honkAcceptsByCall = await honkAccepts(pool, proved)
 
   // The root the proof opens is the pool's, and is filed with EIP-8272 at a slot.
-  const roots = await client.getContractEvents({ address: pool, abi, eventName: 'RecentRoot', fromBlock: 'earliest' })
-  const filed = roots.filter((r) => r.args.root === proved.root)
-  if (!filed.length) throw new Error(`the prover's root ${proved.root} was never filed`)
-  const slot = filed[filed.length - 1].args.slot as bigint
+  const slot = await slotOf(pool, proved.root)
   const sourceId = await client.readContract({ address: pool, abi, functionName: 'sourceId' })
-
-  const transferTx = (verifyExecution: bigint): FrameTx => ({
-    chainId,
-    nonceKeys: [hexToBigInt(n0), hexToBigInt(n1)],
-    nonceSeq: 0n,
-    sender: getAddress(pool),
-    frames: [
-      {
-        mode: Mode.VERIFY,
-        flags: Approve.NONE,
-        target: RECENT_ROOT,
-        limits: { execution: 10_000n, state: 0n },
-        value: 0n,
-        data: concatHex([sourceId, numberToHex(slot, { size: 8 }), proved.root]),
-      },
-      // Each nonce key's first use sets a slot, charged to the frame that approves payment.
-      verifyFrame({ scope: Approve.EXECUTION_AND_PAYMENT, target: null, execution: verifyExecution, state: 2n * STORAGE_SET_STATE_GAS }),
-      senderFrame({
-        target: pool,
-        data: encodeFunctionData({ abi, functionName: 'transfer', args: [proved.root, n0, n1, proved.outHashes[0], proved.outHashes[1], FEE, proved.proof] }),
-        execution: INSERT_EXECUTION,
-        state: INSERT_STATE,
-      }),
-    ],
-    signatures: [],
-    fees: FEES,
-    blobVersionedHashes: [],
-  })
 
   const attempts = []
   for (const limit of verifyLimits) {
-    const a = await offer(transferTx(limit))
+    const a = await offer(transferTx(pool, sourceId, slot, proved, limit))
     console.log(label, limit, a.simulation.valid, a.simulation.violation, a.hash ?? a.error)
     if (a.hash) {
       const r = await waitForFrameTxReceipt(client, a.hash)
@@ -239,7 +274,7 @@ async function runPool(label: string, verifier: Address, verifyLimits: bigint[])
     attempts.push({ verifyExecution: Number(limit), ...a })
   }
   // The same two notes again, to another output: the nonce keys are used.
-  const again = await offer(transferTx(verifyLimits[verifyLimits.length - 1]))
+  const again = await offer(transferTx(pool, sourceId, slot, proved, verifyLimits[verifyLimits.length - 1]))
   console.log(label, 'again', again.simulation.valid, again.simulation.violation, again.hash ?? again.error)
 
   return {
@@ -255,11 +290,66 @@ async function runPool(label: string, verifier: Address, verifyLimits: bigint[])
       fee: FEE.toString(),
       proveMs: proved.proveMs,
       proofBytes: (proved.proof.length - 2) / 2,
-      honkAcceptsByCall: honkAccepts,
+      honkAcceptsByCall,
+      prover: proved.prover,
       attempts,
       again,
     },
   }
+}
+
+/**
+ * A second transfer in the layout pool, proved by kohaku-rs: the recipient of the first spends
+ * the note it received (index 4) with one it deposited (index 1).
+ */
+async function rustTransfer(pool: Address) {
+  const notes = await client.getContractEvents({ address: pool, abi, eventName: 'Note', fromBlock: 'earliest' })
+  const leaves: Hex[] = []
+  for (const l of notes) leaves[Number(l.args.index)] = l.args.note as Hex
+  const nsk = derive('other/nsk')
+  const owner = await H([OWNER, derive('nsk')])
+  const request = {
+    nsk: nsk.toString(),
+    spend: [
+      { index: 1, value: (5n * UNIT).toString(), randomness: derive('note/1').toString() },
+      { index: 4, value: (600n * UNIT).toString(), randomness: derive('out/0').toString() },
+    ],
+    outs: [
+      { owner: owner.toString(), value: (300n * UNIT).toString(), randomness: derive('out/2').toString() },
+      { owner: (await H([OWNER, nsk])).toString(), value: (305n * UNIT - FEE).toString(), randomness: derive('out/3').toString() },
+    ],
+    fee: FEE.toString(),
+    context: hexToBigInt(pool).toString(),
+    leaves,
+    target: 'evm',
+  }
+  const proved = proveWith('rust', request, 'layout.rust')
+  console.log(`layout, from kohaku-rs: proved in ${proved.proveMs} ms by ${proved.prover}`)
+  const honkAcceptsByCall = await honkAccepts(pool, proved)
+  const slot = await slotOf(pool, proved.root)
+  const sourceId = await client.readContract({ address: pool, abi, functionName: 'sourceId' })
+  const a = await offer(transferTx(pool, sourceId, slot, proved, MAX_VERIFY_GAS_TESTNET - 10_000n))
+  console.log('layout, from kohaku-rs:', a.simulation.valid, a.simulation.violation, a.hash ?? a.error)
+  const mined = a.hash ? (await waitForFrameTxReceipt(client, a.hash), await receiptOf('transfer from kohaku-rs', a.hash)) : null
+  return {
+    pool,
+    prover: proved.prover,
+    proveMs: proved.proveMs,
+    root: proved.root,
+    nullifiers: proved.nullifiers,
+    outHashes: proved.outHashes,
+    honkAcceptsByCall,
+    attempt: a,
+    mined,
+  }
+}
+
+if (process.argv.includes('--rust')) {
+  // Run once, after the main run: the layout pool's second transfer, proved from kohaku-rs.
+  const record = JSON.parse(readFileSync(file('pool.json'), 'utf8')) as { pools: { label: string; pool: Address }[] }
+  const result = await rustTransfer(record.pools.find((p) => p.label === 'layout')!.pool)
+  if (!DRY_RUN) writeFileSync(file('pool.rust.json'), `${JSON.stringify({ chainId: Number(chainId), ...result }, null, 2)}\n`)
+  process.exit(0)
 }
 
 if (!(await client.getCode({ address: ACCEPT }))) {
