@@ -50,3 +50,49 @@ describe('experiment 42, a Noir transfer checked in a frame', () => {
     expect(bn254(4) + 7 * (6_000 + 150)).toBe(224_050)
   })
 })
+
+const hasher = json('./hasher.json') as { results: { inputs: number; matches: boolean; gas: number }[] }
+type Receipt = { label: string; hash: string; block: number; frames: { execution: number; state: number; status: number }[] }
+type Attempt = { verifyExecution: number; simulation: { valid: boolean; violation: string | null }; hash?: string; error?: string }
+const pools = (json('./pool.json') as {
+  pools: { label: string; txs: Receipt[]; transfer: { nullifiers: string[]; honkAcceptsByCall: boolean; proofBytes: number; attempts: Attempt[]; again: Attempt } }[]
+}).pools
+const pool = (label: string) => pools.find((p) => p.label === label)!
+
+describe('experiment 42, the transfer as a frame transaction', () => {
+  it("hashed as Barretenberg does, at one permutation per three inputs", () => {
+    expect(hasher.results.map((r) => r.inputs)).toEqual([1, 2, 3, 4, 5, 6, 7])
+    for (const r of hasher.results) expect(r.matches).toBe(true)
+  })
+
+  it('gave both pools a real proof that Barretenberg accepts by call', () => {
+    for (const p of pools) {
+      expect(p.transfer.honkAcceptsByCall).toBe(true)
+      expect(p.transfer.proofBytes).toBe(8000)
+      expect(BigInt(p.transfer.nullifiers[0])).toBeLessThan(BigInt(p.transfer.nullifiers[1]))
+    }
+  })
+
+  it('was refused with the real verifier, by its limits and then by running out within them', () => {
+    const [full, capped] = pool('zk').transfer.attempts
+    expect(full.verifyExecution).toBeGreaterThan(onchain.results[0].verifyGas)
+    expect(full.simulation.violation).toMatch(/MAX_VERIFY_GAS/)
+    expect(full.error).toMatch(/exceeds MAX_VERIFY_GAS/)
+    expect(capped.verifyExecution).toBeLessThan(TESTNET_VERIFY)
+    expect(capped.simulation.violation).toBe('validation prefix frame reverted')
+    expect(capped.hash).toBeUndefined()
+  })
+
+  it('was mined with AcceptAnyProof, with the nullifiers as nonce keys, and not again', () => {
+    const p = pool('layout')
+    const [mined] = p.transfer.attempts
+    expect(mined.simulation.valid).toBe(true)
+    const transfer = p.txs.find((t) => t.label === 'transfer')!
+    expect(transfer.hash).toBe(mined.hash)
+    expect(transfer.frames.map((f) => f.status)).toEqual([1, 1, 1])
+    // Everything the prefix pays besides the verifier, and the nonce keys' two fresh slots.
+    expect(transfer.frames[0].execution + transfer.frames[1].execution).toBeLessThan(12_000)
+    expect(transfer.frames[1].state).toBe(2 * 97_920)
+    expect(p.transfer.again.error).toMatch(/Nonce mismatch/)
+  })
+})
