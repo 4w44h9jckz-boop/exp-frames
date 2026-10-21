@@ -1,0 +1,167 @@
+{
+  "run": "r1",
+  "coWithdraw": "exp-e2e-frames c8eb5cc80df46fec185367fdb7758d1b528c950f",
+  "pool": "0x73e47a8DA2C83Beb802708Fc473B5B7D094f3eE6",
+  "commitment": "0x0aec3999bba8e7f1a5483ad6cc45486082d378069bc3d1e39d044d170affc7ba",
+  "nullifierHash": "0x13c421ee66dbfcb0cadf6644a8457471cc974260f4fd2358a67435a027ecc27a",
+  "leafIndex": 19,
+  "leaves": 20,
+  "shareBytes": [
+    1811012,
+    1811012,
+    1811012
+  ],
+  "splitMs": 483,
+  "localMs": 1578,
+  "members": [
+    {
+      "member": 0,
+      "verified": true,
+      "proveMs": 1242,
+      "peers": [
+        {
+          "peer": 1,
+          "messagesSent": 4,
+          "messagesReceived": 2,
+          "bytesSent": 416,
+          "bytesReceived": 336
+        },
+        {
+          "peer": 2,
+          "messagesSent": 2,
+          "messagesReceived": 4,
+          "bytesSent": 336,
+          "bytesReceived": 416
+        }
+      ]
+    },
+    {
+      "member": 1,
+      "verified": true,
+      "proveMs": 1242,
+      "peers": [
+        {
+          "peer": 0,
+          "messagesSent": 2,
+          "messagesReceived": 4,
+          "bytesSent": 336,
+          "bytesReceived": 416
+        },
+        {
+          "peer": 2,
+          "messagesSent": 4,
+          "messagesReceived": 2,
+          "bytesSent": 448,
+          "bytesReceived": 336
+        }
+      ]
+    },
+    {
+      "member": 2,
+      "verified": true,
+      "proveMs": 1241,
+      "peers": [
+        {
+          "peer": 0,
+          "messagesSent": 4,
+          "messagesReceived": 2,
+          "bytesSent": 416,
+          "bytesReceived": 336
+        },
+        {
+          "peer": 1,
+          "messagesSent": 2,
+          "messagesReceived": 4,
+          "bytesSent": 336,
+          "bytesReceived": 448
+        }
+      ]
+    }
+  ],
+  "proof": "0x18af09f5d14f98f48c465ca6bac986ac1b0ca897864cfc26b50da7f009ba7408109f7a4c1188f9655c1f70fd6996538c8e47f00e5bb1d11362cd09944c185f5a27cc3d14fd3cdfb7a4320154f490decf9dd18d8ea08748abceabad95785a3ce113074be19c4022f0fd11c5eccfcfc863b048425005370110e0216f797632d74f250ff926a54d00d340780fe7599a74d025a79d150dfbd9f4df773371fbef8c1c155e4844c2bc13647706773b9b7cbcb304ad3cceae4b1f9072dcbca7d1ef9a9507b9440cb223c4d476b7b734b1bd30f2e4bc3f8e21709cfd677ea4ef5dd9e00c11811e30e8c016b596d0865dce4f6da0f8e87033147c6f21f6053d513f4bef80",
+  "publicInputs": [
+    "11207932887062373870291204463121471334756121072143779872749018421801686853211",
+    "8940480332707726760986392606805983722506779944146053614903604075605804237434",
+    "543409956071182453666378574472866486337270005787",
+    "661629184445078547974805341198029042084897308390",
+    "10000000000",
+    "0"
+  ],
+  "after": {
+    "alone": [
+      {
+        "member": 0,
+        "privateValues": 28293,
+        "valuesEqualToTheWitness": 0
+      },
+      {
+        "member": 1,
+        "privateValues": 28293,
+        "valuesEqualToTheWitness": 0
+      },
+      {
+        "member": 2,
+        "privateValues": 28293,
+        "valuesEqualToTheWitness": 0
+      }
+    ],
+    "nullifierWire": 7,
+    "pairs": [
+      {
+        "equalsWitness": true,
+        "members": [
+          0,
+          1
+        ]
+      },
+      {
+        "equalsWitness": true,
+        "members": [
+          1,
+          2
+        ]
+      },
+      {
+        "equalsWitness": true,
+        "members": [
+          2,
+          0
+        ]
+      }
+    ],
+    "privateShared": 28293,
+    "publicInClear": 7,
+    "secretWire": 8,
+    "nullifierMatches": true,
+    "secretMatches": true
+  },
+  "rows": [
+    {
+      "step": "deposit: the note into experiment 06's keyed pool",
+      "outcome": "mined",
+      "hash": "0x90a8c76e569f80f81f599a67aa601c82a1a9bb5dd22f61c088e108bb95be7678",
+      "block": "493524",
+      "gasUsed": "1202990"
+    },
+    {
+      "step": "R1a. the owner extends a witness with the secret changed by one",
+      "outcome": "refused by the owner's witness extension: Error: witness: assertion failed: 11207932887062373870291204463121471334756121072143779872749018421801686853211 != 10309482833236185377189720976999207646543448013172024763564269218841349821550: tornado-core/circuits/merkleTree.circom:50:4"
+    },
+    {
+      "step": "R1b. the committee proves over shares of a witness with the secret changed by one (run by hand after A, with run.ts's commands)",
+      "outcome": "refused by the committee: Error: the proof does not verify"
+    },
+    {
+      "step": "R2. the committee's proof, paying another recipient",
+      "outcome": "refused: validation prefix frame reverted; eth_sendRawTransaction refused: Missing or invalid parameters."
+    },
+    {
+      "step": "A. the withdrawal, the committee's proof checked in the keyed pool's VERIFY",
+      "outcome": "mined",
+      "hash": "0x5a28ca2e484b69ec10a1c5740b9eeb3210745dd7a679a30a32bfd3fd1f428f2a",
+      "block": "493526",
+      "gasUsed": "567857",
+      "frames": "1:5579 / 1:244808+97920s / 1:14381+183600s"
+    }
+  ]
+}
