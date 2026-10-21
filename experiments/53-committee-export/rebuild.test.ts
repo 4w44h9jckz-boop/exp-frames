@@ -57,3 +57,24 @@ describe('experiment 53, a note handed to a committee', () => {
     expect([record.after.nullifierMatches, record.after.secretMatches]).toEqual([true, true])
   })
 })
+
+describe('experiment 53, the second arm', () => {
+  const arm2 = JSON.parse(readFileSync(new URL('./record-arm2-r1.json', import.meta.url), 'utf8'))
+  const N2_WITHDRAWAL: Hex = '0x6d59b72823afe7c54b770c69b99d38b8051a800194867c05ef1a26960b8b0824'
+  const N3_DEPOSIT: Hex = '0x3f8ea6e6add49928fb07fac505c28945953f47969238911fe67f13c4b17fab2e'
+
+  it("withdrew N2 to R, and R itself deposited N3: the chain's link", () => {
+    const w = frameTxFromJson(fixture(N2_WITHDRAWAL).tx)
+    expect(w.nonceKeys).toEqual([BigInt(arm2.N2.nullifierHash)])
+    const { args } = decodeFunctionData({ abi: poolAbi, data: w.frames.at(-1)!.data })
+    expect(getAddress(args[3] as Hex)).toBe(getAddress(arm2.R))
+    const d = frameTxFromJson(fixture(N3_DEPOSIT).tx)
+    expect(getAddress(d.sender)).toBe(getAddress(arm2.R))
+    const call = d.frames.find((f) => f.target && getAddress(f.target) === keyedPool.address)!
+    expect(decodeFunctionData({ abi: poolAbi, data: call.data }).args[0]).toBe(arm2.N3.commitment)
+  })
+
+  it('records what the retained shares open: N2, spent; not N3', () => {
+    expect(arm2.after).toMatchObject({ pairsRebuildN2: true, n2OpeningRead: true, n2Spent: true, n3OpeningInRetainedShares: false, n3Live: true })
+  })
+})

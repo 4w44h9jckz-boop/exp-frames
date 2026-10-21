@@ -217,3 +217,54 @@ and through the chain, anything the old note's spend can be followed to.
 - Afterwards, members 0 and 1's retained files are rebuilt, as in the first run: N2's nullifier
   and secret. Recorded: whether N2's nullifier hash is a spent nonce key; whether anything in the
   retained files is N3's opening; and what the chain links N2's withdrawal to.
+
+### The second arm's results (2026-10-21)
+
+```bash
+RUN=r1 npx tsx experiments/53-committee-export/arm2.ts   # record-arm2-r1.json
+```
+
+| Step | Tx | Block | `gasUsed` |
+|---|---|---|---|
+| N2 deposited by this experiment's account | [`0x762a8784...`](https://dora.privacy.ethrex.xyz/tx/0x762a8784671f885e29b13782d34bc32be6bb6f455b5248199219c6d11ab91c01) | 493,624 | |
+| the committee's proof withdraws N2 to the owner's fresh address R (`VERIFY` 244,808) | [`0x6d59b728...`](https://dora.privacy.ethrex.xyz/tx/0x6d59b72823afe7c54b770c69b99d38b8051a800194867c05ef1a26960b8b0824) | 493,626 | |
+| R topped up with 0.002 ETH | [`0x689a3d57...`](https://dora.privacy.ethrex.xyz/tx/0x689a3d57bbab304935de4d75385d9b0231a75ab1aebb594e6a7806672cfa0d1a) | 493,627 | |
+| R's re-commit, first attempt | refused in simulation, not sent: R could not cover the deposit's maximum cost | | |
+| R topped up with 0.01 ETH more | [`0xcc422ae2...`](https://dora.privacy.ethrex.xyz/tx/0xcc422ae26ba0a3dd26eac17e82381baeddf5bacfd7b87aa5239b0a084474cb93) | 493,632 | 26,102 |
+| **the re-commit: R deposits N3 under fresh randomness, no committee** | [`0x3f8ea6e6...`](https://dora.privacy.ethrex.xyz/tx/0x3f8ea6e6add49928fb07fac505c28945953f47969238911fe67f13c4b17fab2e) | 493,633 | 1,203,002 |
+
+The first attempt stopped at the re-commit; the script was made to resume after N2's withdrawal
+and run again, and the first attempt's rows were recovered from the chain into the record.
+
+| After the re-commit | Outcome |
+|---|---|
+| members 0 and 1, and every other pair, rebuild N2's witness | yes |
+| what they read is N2's nullifier and secret | yes |
+| N2's nullifier hash is a spent nonce key | yes: N2 opens nothing that can be spent |
+| N3's opening is in the retained shares | no |
+| N3 is in the pool and unspent | yes |
+
+**What the arm shows.** The re-commit put the state beyond the shares' reach for spending: they
+open only N2, which is spent. It did not put it beyond their reach for following. N2's opening
+names N2's withdrawal, which paid R, and R deposited N3 in public, so two members holding their
+files can follow the state to N3's leaf, though not open it. In this pool a re-commit is a
+withdrawal and a deposit, both visible; a re-commit that the chain cannot follow needs a change
+note inside a private self-update, as experiment 32's registry has. The committee's circuit is
+the pool's, so this arm cannot use one.
+
+### What else the readings asked to record
+
+- **The commitment check's cost in communication: none.** The committee opens the note's
+  commitment inside the circuit. The client extends the whole witness before sharing, and
+  co-groth16's prover exchanges a constant number of messages whatever the circuit holds:
+  6 messages and under 800 bytes per member in this run. What the hash adds is witness values,
+  so share bytes: 64 per private value (two field elements of a replicated share); the hash's own
+  share of the 28,293 values was not isolated.
+- **Semi-honest only.** co-snarks' REP3 protects against members who follow the protocol. A
+  member who deviates can make the proof leak an honest party's input (ePrint 2025/1026); the
+  chain would still not accept a false statement.
+- **The three operators.** Members 0, 1 and 2 were three processes run by this experiment on one
+  machine: chosen, not sampled, and one operator in fact.
+- **Rounds and bytes per party,** for the gradient's table: the owner sends each member
+  1,811,012 bytes once; each member sends its peers 6 messages, 752 to 784 bytes, in the
+  prover's rounds (the seed exchange and two openings); the result is one transaction.
