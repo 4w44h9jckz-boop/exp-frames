@@ -1,0 +1,4 @@
+# Only what proving needs is kept: enclave.r1cs is rebuilt by circom (README, "The proving key").
+enclave.r1cs
+enclave_0.zkey
+enclave_js/*.js
