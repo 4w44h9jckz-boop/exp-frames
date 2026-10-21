@@ -9,7 +9,7 @@ import { readFileSync } from 'node:fs'
 import { type Hex, decodeFunctionData, getAddress, slice, toHex } from 'viem'
 import { describe, expect, it } from 'vitest'
 import { type FrameTxJson, frameTxFromJson, frameTxHash } from '../../src/frametx/index.js'
-import { keyedPool } from '../06-privacy-pool/deployment.js'
+import { keyedPool } from './keyed-pool.js'
 import { type PoolProof, poolAbi, withdrawalTx } from '../06-privacy-pool/pool.js'
 
 const DEPOSIT: Hex = '0x90a8c76e569f80f81f599a67aa601c82a1a9bb5dd22f61c088e108bb95be7678'
@@ -19,6 +19,10 @@ const fixture = (hash: Hex) =>
   JSON.parse(readFileSync(new URL(`../../test/fixtures/chain/${hash}.json`, import.meta.url), 'utf8')) as { tx: FrameTxJson }
 
 describe('experiment 53, a note handed to a committee', () => {
+  it('describes the keyed pool, without a key, at the address the run used', () => {
+    expect(keyedPool.address).toBe(record.pool)
+  })
+
   it("deposited the note's commitment in the keyed pool", () => {
     const mined = frameTxFromJson(fixture(DEPOSIT).tx)
     const call = mined.frames.find((f) => f.target && getAddress(f.target) === keyedPool.address)!
