@@ -1,0 +1,161 @@
+{
+  "chainId": "0x1fcd",
+  "registry": "0x246FBf1ca115E6f9993658e0e46F24E4C9054Df6",
+  "sourceId": "0x6179493cf24f5301957df0902b043bd06e1f63a944913daf91569934333f1c20",
+  "verifier": "0xFe46ff84b94D2Dcb381E2B0A5c5a5a8A886829bc",
+  "hasher": "0x38955FBe81DBf136A84A1c711619C0Ab8Ce7813b",
+  "vaults": [
+    {
+      "label": "vault/a",
+      "address": "0x7Bc7902c7DEABFbD7Abd783C49BA7Bf946D13314",
+      "kind": "0x0",
+      "amount": "0x38d7ea4c68000",
+      "scope": "0x2fa7d06a139262400b399c0652443e198a7d3b06005608a3569f80baba982e3f"
+    },
+    {
+      "label": "vault/b",
+      "address": "0xFF52Ebefff973bc75eef6BD6D52887B6fDFB9757",
+      "kind": "0x1",
+      "amount": "0x71afd498d0000",
+      "scope": "0x063918a0cf8663f718337168fbca90347bb49c808915294c140daa54a84b474a"
+    },
+    {
+      "label": "vault/c",
+      "address": "0xbD80555C4E78Ad93D2227555299dc720415774C3",
+      "kind": "0x0",
+      "amount": "0x38d7ea4c68000",
+      "scope": "0x2a850b160bcf1c3878492c0ada3699ed4e79870c3ed7a231bea4ea26ec1c56e6"
+    }
+  ],
+  "float": "0x38d7ea4c68000",
+  "fee": "0x2540be400",
+  "fees": {
+    "maxPriorityFeePerGas": "0x1",
+    "maxFeePerGas": "0x64",
+    "maxFeePerBlobGas": "0x0"
+  },
+  "raised": {
+    "maxPriorityFeePerGas": "0x1f40",
+    "maxFeePerGas": "0x2710",
+    "maxFeePerBlobGas": "0x0"
+  },
+  "nullifiers": {
+    "a": "0x1f0753471bc3392b95254fed5f9ef6d9b4c7ae677098c3161252a86457032717",
+    "b1": "0x0fa223a8b6db923ad97d42a61674b95e9104dfea6f020ba140991017483629d9",
+    "b2": "0x07294e6611c316e0768f1814370faf7859919112678112c8a2b1da3ff5f844f2",
+    "z": "0x01cf80ca1cba0ee542d0f221c22c221b058152ec101d12fd891de03fd983a253"
+  },
+  "registry32": "0xbC85035Ae5aE1a35E638Ae54E58eAAa1DC2eE990",
+  "rows": [
+    {
+      "step": "setup done",
+      "outcome": "4 leaves",
+      "balances": {
+        "vault/a": "0x71afd498d0000",
+        "vault/b": "0xaa87bee538000",
+        "vault/c": "0x38d7ea4c68000",
+        "registry": "0x38d7ea4c68000"
+      }
+    },
+    {
+      "step": "X1. A's withdrawal naming B's vault",
+      "outcome": "refused: validation prefix frame reverted; eth_sendRawTransaction refused: Missing or invalid parameters."
+    },
+    {
+      "step": "X2. A's withdrawal naming C's vault, A's twin",
+      "outcome": "refused: validation prefix frame reverted; eth_sendRawTransaction refused: Missing or invalid parameters."
+    },
+    {
+      "step": "X3. A's note proved under B's scope",
+      "outcome": "the prover fails: no leaf under that scope opens to these secrets"
+    },
+    {
+      "step": "Y1. the pending withdrawal copied with another recipient",
+      "outcome": "refused: validation prefix frame reverted; eth_sendRawTransaction refused: Missing or invalid parameters."
+    },
+    {
+      "step": "Y2. the pending withdrawal copied with a higher priority fee",
+      "outcome": "refused: validation prefix frame reverted; eth_sendRawTransaction refused: Missing or invalid parameters."
+    },
+    {
+      "step": "Y2, the positive control: a withdrawal proved for those fees",
+      "outcome": "valid in simulation",
+      "gasUsed": "0x8a6e0"
+    },
+    {
+      "step": "A. A: the shared note spent whole",
+      "outcome": "mined",
+      "hash": "0xdc4debd1c5050b21921893c84220dd88665155071e412000e292d15a1596084b",
+      "block": "0x773ea",
+      "gasUsed": "0x8a6f8",
+      "effectiveGasPrice": "0x8",
+      "frames": "1:5579 / 1:230365+97920s / 1:27683+183600s",
+      "balances": {
+        "vault/a": "0x38d7ea4c68000",
+        "vault/b": "0xaa87bee538000",
+        "vault/c": "0x38d7ea4c68000",
+        "registry": "0x38d80f88d2c40"
+      }
+    },
+    {
+      "step": "B1. B: the same secrets, 0.001 ETH out, 0.002 ETH in change",
+      "outcome": "mined",
+      "hash": "0x4e1ceffa630e9479d5839bef550b78521e5ad4637a05bf804018f00ac3a9d485",
+      "block": "0x773ec",
+      "gasUsed": "0x1936f4",
+      "effectiveGasPrice": "0x8",
+      "frames": "1:5579 / 1:230370+97920s / 1:1014810+281520s",
+      "balances": {
+        "vault/a": "0x38d7ea4c68000",
+        "vault/b": "0x71afd498d0000",
+        "vault/c": "0x38d7ea4c68000",
+        "registry": "0x38d834bcf58a0"
+      }
+    },
+    {
+      "step": "X4. B's change note naming A's vault, which still holds a2",
+      "outcome": "refused: validation prefix frame reverted; eth_sendRawTransaction refused: Missing or invalid parameters."
+    },
+    {
+      "step": "B2. B: the change note spent",
+      "outcome": "mined",
+      "hash": "0xb8c106513ddacdc937ec57c2b635f8feb1cb5d9d2ed5130b3524240da141971a",
+      "block": "0x773ed",
+      "gasUsed": "0x8a709",
+      "effectiveGasPrice": "0x8",
+      "frames": "1:5579 / 1:230370+97920s / 1:27683+183600s",
+      "balances": {
+        "vault/a": "0x38d7ea4c68000",
+        "vault/b": "0x0",
+        "vault/c": "0x38d7ea4c68000",
+        "registry": "0x38d859f960458"
+      }
+    },
+    {
+      "step": "Z0. experiment 32's withdrawal as its owner made it",
+      "outcome": "valid in simulation",
+      "gasUsed": "0x87020"
+    },
+    {
+      "step": "Z1. the same payload, copied with a higher priority fee, against experiment 32's registry",
+      "outcome": "mined",
+      "hash": "0x59272e374c551bae00b271f03b7313a28ab16b2d4d6253e95ba1d698f074b305",
+      "block": "0x773ef",
+      "gasUsed": "0x87020",
+      "effectiveGasPrice": "0x1f47",
+      "frames": "1:5579 / 1:229314+97920s / 1:14670+183600s",
+      "balances": {
+        "vault/a": "0x38d7ea4c68000",
+        "vault/b": "0x0",
+        "vault/c": "0x38d7ea4c68000",
+        "registry": "0x38d859f960458"
+      }
+    }
+  ],
+  "final": {
+    "vault/a": "0x38d7ea4c68000",
+    "vault/b": "0x0",
+    "vault/c": "0x38d7ea4c68000",
+    "registry": "0x38d859f960458"
+  }
+}
