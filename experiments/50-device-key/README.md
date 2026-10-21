@@ -223,3 +223,24 @@ here.
 
 7. **Not tested, and labelled:** the enclave's own protection of the key, its attestation, and any
    platform's API. The key is software, in this process.
+
+## Cases a later reading listed, and which this run covers
+
+Added after the run, at the coordinator's request; the claim and "would show it wrong" above are
+unchanged. "By code" means the registry's source rules the case out, but no transaction tried it.
+
+| Case | Covered? |
+|---|---|
+| protocol P256 entry, high `s` | not run on that route. D2 ran on the ARBITRARY route. For the P256 scheme the protocol itself enforces low `s` (experiment 11 measured the refusal) |
+| protocol P256 entry, a signer other than the note's owner | not run on that route; by code (`SIGPARAM` signer must equal `owner`). D1 ran on the ARBITRARY route |
+| an owner-key entry with a 32-byte `msg` | not run; by code (both routes require an empty `msg`) |
+| WebAuthn: a challenge that is not the signature hash, no user-presence flag, the wrong relying party, trailing bytes | not built. This run has no WebAuthn arm; experiment 11's `WebAuthnAccount` makes those checks for an account, not for a note |
+| a chain without `0x100` failing closed | not run; by code: a call to an empty address succeeds with no return data, and the registry requires the returned word to be 1, read from memory it zeroes first |
+| a secp256k1 key, a delegation or an upgrade authorizing the same update | not run; by code: the registry has no other authorization path, no owner and no upgrade, and is deployed by CREATE2 without a proxy. D3 (no signature) is the nearest run case |
+| an update on another chain | not run; the signature hash commits to the chain ID |
+
+**What the ARBITRARY entry cost against the validation budget was not isolated.** The figures
+show the entry's whole cost to the transaction: C's 2,132 gas beyond its `VERIFY` difference with
+E is the scheme's 100 plus the 128 bytes' calldata. Whether the client counts the 100 alone, or
+the 100 and the bytes, against the `VERIFY` budget is not separated by these runs: the `VERIFY`
+frame's own gas (243,355) includes neither.
