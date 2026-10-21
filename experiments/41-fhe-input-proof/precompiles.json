@@ -1,0 +1,16 @@
+{
+  "chainId": 8141,
+  "block": 490853,
+  "g2Msm128": {
+    "gas": 1509230,
+    "ok": true,
+    "inputBytes": 36864,
+    "schedule": 1509120
+  },
+  "pairing8": {
+    "gas": 298610,
+    "ok": true,
+    "inputBytes": 3072,
+    "schedule": 298500
+  }
+}
