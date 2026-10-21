@@ -16,7 +16,7 @@
 //        npx tsx experiments/42-noir-transfer/pool.ts --groth16 --send <url> [--label <name>] [--out <file>]
 //            a fresh Groth16 pool; its transfer and three double spends handed to the node at <url>
 import { execFileSync } from 'node:child_process'
-import { readFileSync, writeFileSync } from 'node:fs'
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import {
   type Address,
@@ -129,6 +129,7 @@ async function offer(tx: FrameTx) {
  * Barretenberg's `bb` (KOHAKU_RS_DIR, BB).
  */
 function proveWith(prover: 'js' | 'rust', request: unknown, name: string): Proved & { prover: string } {
+  mkdirSync(resolve(proverDir, 'out'), { recursive: true })
   const response = resolve(proverDir, `out/transfer.${name}.json`)
   const input = JSON.stringify(request)
   if (prover === 'js') {

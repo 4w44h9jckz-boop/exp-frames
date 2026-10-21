@@ -11,7 +11,7 @@
 import { execFileSync } from 'node:child_process'
 import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
-import { join } from 'node:path'
+import { join, resolve } from 'node:path'
 import { compile_program, createFileManager } from '@noir-lang/noir_wasm'
 import { Noir } from '@noir-lang/noir_js'
 import { Barretenberg, UltraHonkBackend } from '@aztec/bb.js'
@@ -82,7 +82,8 @@ if (req.target === 'groth16') {
   // (G16_TOOL), which proves with the hash-to-field gnark's Solidity verifier checks. The keys
   // (transfer.ccs, transfer.pk, transfer.vk) are read from G16_KEYS, for example experiment 42's
   // build/groth16/; the witness and the proof are written to a scratch directory, removed after.
-  const keys = process.env.G16_KEYS ?? new URL('./g16/', import.meta.url).pathname
+  // Resolved here: groth16tool runs in the scratch directory, where a relative path would miss.
+  const keys = resolve(process.env.G16_KEYS ?? new URL('./g16/', import.meta.url).pathname)
   const tool = process.env.G16_TOOL ?? new URL('./g16tool/g16tool', import.meta.url).pathname
   const dir = mkdtempSync(join(tmpdir(), 'g16-'))
   const key = (f) => join(keys, f)
