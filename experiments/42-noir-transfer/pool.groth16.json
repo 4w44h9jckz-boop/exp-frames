@@ -1,0 +1,150 @@
+{
+  "chainId": 8141,
+  "block": 491278,
+  "groth16": "0xFaFcC27256f82DCCE5dDE9Af5f0b4011A5d77265",
+  "adapter": "0x969ea284cFA80Cad9FAcd31b96c2e638e7cfD50e",
+  "label": "groth16",
+  "pool": "0x075C0b55F186Ba23f5458DAA9959580eEBa1bF61",
+  "verifier": "0x969ea284cFA80Cad9FAcd31b96c2e638e7cfD50e",
+  "txs": [
+    {
+      "label": "deploy",
+      "hash": "0x8d1dfc9e34d37e0a4b4c34aac1c4e46f096b9dbb61f2835664b0d9fb4845af11",
+      "block": 491275,
+      "gasUsed": 4871528,
+      "frames": [
+        {
+          "execution": 100,
+          "state": 0,
+          "status": 1
+        },
+        {
+          "execution": 969586,
+          "state": 3861720,
+          "status": 1
+        }
+      ]
+    },
+    {
+      "label": "deposit four notes",
+      "hash": "0xd7ba4afbeaaacb6f711241c883ebc8446e6f5b13663cb048862be93cdd6ab83a",
+      "block": 491276,
+      "gasUsed": 7988951,
+      "frames": [
+        {
+          "execution": 100,
+          "state": 0,
+          "status": 1
+        },
+        {
+          "execution": 1450382,
+          "state": 3427200,
+          "status": 1
+        },
+        {
+          "execution": 1021590,
+          "state": 0,
+          "status": 1
+        },
+        {
+          "execution": 1021590,
+          "state": 0,
+          "status": 1
+        },
+        {
+          "execution": 1021498,
+          "state": 0,
+          "status": 1
+        }
+      ]
+    },
+    {
+      "label": "transfer",
+      "hash": "0x10d33e629d2cc0b3873e9a000539b48566dd5026481802dfea99a67584768afd",
+      "block": 491278,
+      "gasUsed": 3017933,
+      "frames": [
+        {
+          "execution": 5579,
+          "state": 0,
+          "status": 1
+        },
+        {
+          "execution": 356540,
+          "state": 195840,
+          "status": 1
+        },
+        {
+          "execution": 2337257,
+          "state": 97920,
+          "status": 1
+        }
+      ]
+    }
+  ],
+  "transfer": {
+    "root": "0x115efaf11148111ee4fe9bbca247d095ef1912158609b0447098221aba434c1c",
+    "slot": 521069,
+    "nullifiers": [
+      "0x081bf880da3742c4218cd894ca66d5a0838d018c1bd93f0c088cc127daf37bb6",
+      "0x30090441ff4f8aa6ef766115ea1f6369a7901df13ab4bab88466cf967c1d6992"
+    ],
+    "outHashes": [
+      "0x23c9a48fd64836db518b5bfaa786c0ae904712f18ede44a1bc69e2f6e14dff2f",
+      "0x2cebdb2ad22d405c27a410b6f0e4a14ff70c3b732b4956f336d6a6ff1fbea347"
+    ],
+    "fee": "10000000000",
+    "proveMs": 1576,
+    "proofBytes": 384,
+    "honkAcceptsByCall": true,
+    "prover": "build/prove.mjs, Noir 1.0.0-rc.6, bb.js 5.2.1",
+    "attempts": [
+      {
+        "verifyExecution": 490000,
+        "raw": "0x06f90389821fcdf842a0081bf880da3742c4218cd894ca66d5a0838d018c1bd93f0c088cc127daf37bb6a030090441ff4f8aa6ef766115ea1f6369a7901df13ab4bab88466cf967c1d69928094075c0b55f186ba23f5458daa9959580eeba1bf61f90323f8670180940000000000000000000000000000000000008272c48227108080b848e4ba094fcee89c4833c08426bc9236325fa6b9430f266b976fcc495ba8c3db55000000000007f36d115efaf11148111ee4fe9bbca247d095ef1912158609b0447098221aba434c1cce010380c883077a108302fd008080f902a8028094075c0b55f186ba23f5458daa9959580eeba1bf61c8832625a08305fa0080b90284b4b15d56115efaf11148111ee4fe9bbca247d095ef1912158609b0447098221aba434c1c081bf880da3742c4218cd894ca66d5a0838d018c1bd93f0c088cc127daf37bb630090441ff4f8aa6ef766115ea1f6369a7901df13ab4bab88466cf967c1d699223c9a48fd64836db518b5bfaa786c0ae904712f18ede44a1bc69e2f6e14dff2f2cebdb2ad22d405c27a410b6f0e4a14ff70c3b732b4956f336d6a6ff1fbea34700000000000000000000000000000000000000000000000000000002540be40000000000000000000000000000000000000000000000000000000000000000e00000000000000000000000000000000000000000000000000000000000000180160bc13daec206296436de00005205b8a495af48b2a2d34cf6c0de77e32c62ec1cf524573d55df0ce9e2a7082f8777b3bbe0982d3386653039ac9c0297781cd023f6db848d06c27ce0f83abec9f3f91cb494b2df08454f53e2956b1afc4acf261733d43a8fa3a0be2325812f80a22a2734fa388be8c956c4a415041ca4c5747a171ab81d8ac7c997302fc036e2c62313a2fd422ccaaa1baf6133db3c3d59ab3d24f66180422047a2f8317ad108493d78fdd9ba3693add061f6778e00d950711c2b462f2c4c38f785d7f8054309d544b1a2eaa95ac5eb64d2dd08818b9e52afc01028861d881cf3aa2c416a911d58f687b7e60c84f7928c440faa5c0c81e1522404b1810a63792f851b4fa932c787a888648690935ddd0f01b7ef934392d517c002595700def5c68ea2b9784a187d9d74049d7ea3907982c55aeda4c119c303c72259c9c94e58840e45dcce269bb61ebf2caacc2747eb4b1b6bc7bf917c47fc5727624ec54e975ef244c9a87c0a0001f66e5638047978688b2d1d6430c5080b4fc0c3016480c0",
+        "rawBytes": 909,
+        "simulation": {
+          "executionError": null,
+          "executionStatus": "success",
+          "frames": [
+            {
+              "gasUsed": "0x15cb",
+              "succeeded": true
+            },
+            {
+              "gasUsed": "0x570bc",
+              "succeeded": true
+            },
+            {
+              "gasUsed": "0x23a9e9",
+              "succeeded": true
+            }
+          ],
+          "gasUsed": "0x2e0ccd",
+          "maxCost": "0x1587f554",
+          "payer": "0x075c0b55f186ba23f5458daa9959580eeba1bf61",
+          "prefixShape": "SelfVerify",
+          "valid": true,
+          "violation": null
+        },
+        "hash": "0x10d33e629d2cc0b3873e9a000539b48566dd5026481802dfea99a67584768afd"
+      }
+    ],
+    "again": {
+      "raw": "0x06f90389821fcdf842a0081bf880da3742c4218cd894ca66d5a0838d018c1bd93f0c088cc127daf37bb6a030090441ff4f8aa6ef766115ea1f6369a7901df13ab4bab88466cf967c1d69928094075c0b55f186ba23f5458daa9959580eeba1bf61f90323f8670180940000000000000000000000000000000000008272c48227108080b848e4ba094fcee89c4833c08426bc9236325fa6b9430f266b976fcc495ba8c3db55000000000007f36d115efaf11148111ee4fe9bbca247d095ef1912158609b0447098221aba434c1cce010380c883077a108302fd008080f902a8028094075c0b55f186ba23f5458daa9959580eeba1bf61c8832625a08305fa0080b90284b4b15d56115efaf11148111ee4fe9bbca247d095ef1912158609b0447098221aba434c1c081bf880da3742c4218cd894ca66d5a0838d018c1bd93f0c088cc127daf37bb630090441ff4f8aa6ef766115ea1f6369a7901df13ab4bab88466cf967c1d699223c9a48fd64836db518b5bfaa786c0ae904712f18ede44a1bc69e2f6e14dff2f2cebdb2ad22d405c27a410b6f0e4a14ff70c3b732b4956f336d6a6ff1fbea34700000000000000000000000000000000000000000000000000000002540be40000000000000000000000000000000000000000000000000000000000000000e00000000000000000000000000000000000000000000000000000000000000180160bc13daec206296436de00005205b8a495af48b2a2d34cf6c0de77e32c62ec1cf524573d55df0ce9e2a7082f8777b3bbe0982d3386653039ac9c0297781cd023f6db848d06c27ce0f83abec9f3f91cb494b2df08454f53e2956b1afc4acf261733d43a8fa3a0be2325812f80a22a2734fa388be8c956c4a415041ca4c5747a171ab81d8ac7c997302fc036e2c62313a2fd422ccaaa1baf6133db3c3d59ab3d24f66180422047a2f8317ad108493d78fdd9ba3693add061f6778e00d950711c2b462f2c4c38f785d7f8054309d544b1a2eaa95ac5eb64d2dd08818b9e52afc01028861d881cf3aa2c416a911d58f687b7e60c84f7928c440faa5c0c81e1522404b1810a63792f851b4fa932c787a888648690935ddd0f01b7ef934392d517c002595700def5c68ea2b9784a187d9d74049d7ea3907982c55aeda4c119c303c72259c9c94e58840e45dcce269bb61ebf2caacc2747eb4b1b6bc7bf917c47fc5727624ec54e975ef244c9a87c0a0001f66e5638047978688b2d1d6430c5080b4fc0c3016480c0",
+      "rawBytes": 909,
+      "simulation": {
+        "executionError": null,
+        "executionStatus": null,
+        "frames": null,
+        "gasUsed": null,
+        "maxCost": "0x1587f554",
+        "payer": null,
+        "prefixShape": "SelfVerify",
+        "valid": false,
+        "violation": "Invalid Transaction: Nonce mismatch: expected 1, got 0"
+      },
+      "error": "Invalid params: Frame transaction validation-prefix simulation failed: Invalid Transaction: Nonce mismatch: expected 1, got 0"
+    }
+  }
+}

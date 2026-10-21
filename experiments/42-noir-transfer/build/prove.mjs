@@ -6,8 +6,9 @@
 // usage: node prove.mjs <response.json> < request.json
 //
 // request: { nsk, spend: [{ index, value, randomness }] x2, outs: [{ owner, value, randomness }] x2,
-//            fee, context, leaves: [hex], target: 'evm' | 'evm-no-zk' }
+//            fee, context, leaves: [hex], target: 'evm' | 'evm-no-zk' | 'groth16' }
 // response: { root, nullifiers, outHashes, fee, context, proof, publicInputs, proveMs }
+import { execFileSync } from 'node:child_process'
 import { readFileSync, writeFileSync } from 'node:fs'
 import { compile_program, createFileManager } from '@noir-lang/noir_wasm'
 import { Noir } from '@noir-lang/noir_js'
@@ -72,11 +73,29 @@ const { witness } = await new Noir(program).execute({
   out_values: req.outs.map((o) => BigInt(o.value).toString()),
   out_randomness: req.outs.map((o) => hex(BigInt(o.randomness))),
 })
-const backend = new UltraHonkBackend(program.bytecode, api)
+let proof
 const t = Date.now()
-const proof = await backend.generateProof(witness, { verifierTarget: req.target })
+if (req.target === 'groth16') {
+  // Groth16 over BN254: Sunspot's R1CS, proving key and witness loader, through groth16tool
+  // (G16_TOOL), which proves with the hash-to-field gnark's Solidity verifier checks.
+  const dir = process.env.G16_DIR ?? new URL('./g16/', import.meta.url).pathname
+  const tool = process.env.G16_TOOL ?? new URL('./g16tool/g16tool', import.meta.url).pathname
+  writeFileSync(`${dir}/request.json`, JSON.stringify(program))
+  writeFileSync(`${dir}/request.gz`, witness)
+  const run = (args) => execFileSync(tool, args, { cwd: dir, stdio: ['ignore', 'ignore', 'inherit'] })
+  run(['prove', 'request.json', 'request.gz', 'transfer.ccs', 'transfer.pk', 'request.proof', 'request.pw'])
+  run(['export', 'transfer.vk', 'request.proof', 'request.pw', 'request.sol', 'request.calldata.json'])
+  const c = JSON.parse(readFileSync(`${dir}/request.calldata.json`, 'utf8'))
+  proof = {
+    proof: Buffer.from([...c.proof, ...c.commitmentsWords, ...c.commitmentPok].map((w) => w.slice(2)).join(''), 'hex'),
+    publicInputs: c.inputs,
+  }
+} else {
+  const backend = new UltraHonkBackend(program.bytecode, api)
+  proof = await backend.generateProof(witness, { verifierTarget: req.target })
+  if (!(await backend.verifyProof(proof, { verifierTarget: req.target }))) throw new Error('the proof does not verify')
+}
 const proveMs = Date.now() - t
-if (!(await backend.verifyProof(proof, { verifierTarget: req.target }))) throw new Error('the proof does not verify')
 await api.destroy()
 writeFileSync(process.argv[2], `${JSON.stringify({
   root: hex(root),

@@ -27,5 +27,35 @@
     "branch": "experiment/noir-transfer",
     "commit": "c1564b9",
     "crate": "crates/noir-transfer"
+  },
+  "sunspot": {
+    "repository": "https://github.com/reilabs/sunspot",
+    "module": "github.com/reilabs/sunspot/go v0.0.0-20261006090243-0a9f7d01070c",
+    "commit": "0a9f7d01070cfb8b34cbfa77e4782e18adacc096",
+    "used": [
+      "the sunspot CLI built from the module, unmodified: compile (ACIR to R1CS) and setup",
+      "its acir package, unmodified, as a library in groth16tool: loading the ACIR and the witness"
+    ],
+    "licence": "Apache-2.0",
+    "approved": "the owner, through the coordinator, for W11's Groth16 measurement"
+  },
+  "gnark": {
+    "repository": "https://github.com/consensys/gnark",
+    "tag": "v0.14.0",
+    "commit": "97c089202ab64e0c63334e3f8f82d5f04027d65b",
+    "used": [
+      "Groth16 setup and proving on BN254, unmodified, through Sunspot and groth16tool",
+      "the Solidity verifier in build/groth16/Verifier.sol, exported by gnark and deployed unmodified"
+    ],
+    "licence": "Apache-2.0"
+  },
+  "gnark-crypto": {
+    "repository": "https://github.com/consensys/gnark-crypto",
+    "tag": "v0.19.0",
+    "commit": "0ba437ac1a06c541abba888c4eff29844b465691",
+    "used": [
+      "BN254 arithmetic under gnark, unmodified"
+    ],
+    "licence": "Apache-2.0"
   }
 }

@@ -12,6 +12,7 @@
 //
 // usage: npx tsx experiments/42-noir-transfer/pool.ts [--dry-run]     the two pools, proved by build/prove.mjs
 //        npx tsx experiments/42-noir-transfer/pool.ts --rust [--dry-run]  then a second transfer, from kohaku-rs
+//        npx tsx experiments/42-noir-transfer/pool.ts --groth16 [--dry-run]  a third pool, on Groth16
 import { execFileSync } from 'node:child_process'
 import { readFileSync, writeFileSync } from 'node:fs'
 import { resolve } from 'node:path'
@@ -174,12 +175,12 @@ function transferTx(pool: Address, sourceId: Hex, slot: bigint, proved: Proved, 
   }
 }
 
-/** Barretenberg's verifier on a proof and the public inputs the pool would pass it, by eth_call. */
-async function honkAccepts(pool: Address, proved: Proved) {
+/** A verifier (Barretenberg's by default) on a proof and the public inputs the pool would pass it, by eth_call. */
+async function honkAccepts(pool: Address, proved: Proved, verifier: Address = HONK) {
   const [n0, n1] = proved.nullifiers
   const inputs = [proved.root, n0, n1, proved.outHashes[0], proved.outHashes[1], word(FEE), word(hexToBigInt(pool))]
   if (inputs.some((x, i) => hexToBigInt(x) !== hexToBigInt(proved.publicInputs[i]))) throw new Error('public inputs out of order')
-  return client.readContract({ address: HONK, abi: honkAbi, functionName: 'verify', args: [proved.proof, inputs] })
+  return client.readContract({ address: verifier, abi: honkAbi, functionName: 'verify', args: [proved.proof, inputs] })
 }
 
 /** The slot EIP-8272 filed a pool's root at, most recently. */
@@ -194,7 +195,7 @@ async function slotOf(pool: Address, root: Hex) {
  * One pool, end to end: deploy, deposit four notes, prove a transfer of two of them, and offer the
  * transfer once for each VERIFY limit in `verifyLimits`; then offer the same spend again.
  */
-async function runPool(label: string, verifier: Address, verifyLimits: bigint[]) {
+async function runPool(label: string, verifier: Address, verifyLimits: bigint[], target = 'evm', checker: Address = HONK) {
   const initcode = concatHex([NOTE_POOL, pad(verifier), pad(HASHER), keccak256(toHex(`exp-frames/42/${label}/8272`))])
   const salt = saltOf(`exp-frames/42/note-pool/${label}`)
   const pool = create2Address(initcode, salt)
@@ -251,12 +252,12 @@ async function runPool(label: string, verifier: Address, verifyLimits: bigint[])
     { owner: other.toString(), value: (600n * UNIT).toString(), randomness: derive('out/0').toString() },
     { owner: owner.toString(), value: (500n * UNIT - FEE).toString(), randomness: derive('out/1').toString() },
   ]
-  const request = { nsk: nsk.toString(), spend, outs, fee: FEE.toString(), context: hexToBigInt(pool).toString(), leaves: leaves.slice(0, 4), target: 'evm' }
+  const request = { nsk: nsk.toString(), spend, outs, fee: FEE.toString(), context: hexToBigInt(pool).toString(), leaves: leaves.slice(0, 4), target }
   const proved = proveWith('js', request, label)
   const [n0, n1] = proved.nullifiers
   console.log(`${label}: proved in ${proved.proveMs} ms; nullifiers ${n0} < ${n1}`)
   // Barretenberg's verifier on the same proof, by eth_call, where no validation budget applies.
-  const honkAcceptsByCall = await honkAccepts(pool, proved)
+  const honkAcceptsByCall = await honkAccepts(pool, proved, checker)
 
   // The root the proof opens is the pool's, and is filed with EIP-8272 at a slot.
   const slot = await slotOf(pool, proved.root)
@@ -349,6 +350,23 @@ if (process.argv.includes('--rust')) {
   const record = JSON.parse(readFileSync(file('pool.json'), 'utf8')) as { pools: { label: string; pool: Address }[] }
   const result = await rustTransfer(record.pools.find((p) => p.label === 'layout')!.pool)
   if (!DRY_RUN) writeFileSync(file('pool.rust.json'), `${JSON.stringify({ chainId: Number(chainId), ...result }, null, 2)}\n`)
+  process.exit(0)
+}
+
+if (process.argv.includes('--groth16')) {
+  // A third pool, against gnark's Groth16 verifier behind Groth16Adapter, proved through
+  // Sunspot: the transfer as it would run if the verifier fits the testnet's budget.
+  const g16 = JSON.parse(readFileSync(file('groth16.json'), 'utf8')) as { address: Address }
+  const initcode = concatHex([compileYul(`${DIR}/Groth16Adapter.yul`), pad(g16.address)])
+  const salt = saltOf('exp-frames/42/groth16-adapter')
+  const adapter = create2Address(initcode, salt)
+  if (!(await client.getCode({ address: adapter }))) {
+    await sendFrames(client, privateKey, [deployFrame(initcode, salt).frame], { label: 'deploy Groth16Adapter' })
+    if (DRY_RUN) process.exit(0)
+  }
+  const result = await runPool('groth16', adapter, [MAX_VERIFY_GAS_TESTNET - 10_000n], 'groth16', adapter)
+  const record = { chainId: Number(chainId), block: Number(await client.getBlockNumber()), groth16: g16.address, adapter, ...result }
+  if (!DRY_RUN) writeFileSync(file('pool.groth16.json'), `${JSON.stringify(record, null, 2)}\n`)
   process.exit(0)
 }
 

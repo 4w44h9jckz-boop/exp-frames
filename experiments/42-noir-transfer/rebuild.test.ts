@@ -117,3 +117,37 @@ describe('experiment 42, a transfer proved from kohaku-rs', () => {
     expect(rust.mined?.frames.map((f) => f.status)).toEqual([1, 1, 1])
   })
 })
+
+const g16 = json('./groth16.json') as { verifyGas: number; verifySucceeded: boolean; changedInputSucceeded: boolean; proofBytes: number }
+const g16pool = json('./pool.groth16.json') as {
+  adapter: string
+  txs: Receipt[]
+  transfer: { proofBytes: number; honkAcceptsByCall: boolean; attempts: Attempt[]; again: Attempt }
+}
+
+describe('experiment 42, Groth16 through Sunspot', () => {
+  it("costs gnark's verifier less than the testnet's budget and more than EIP-8141's", () => {
+    expect(g16.verifySucceeded).toBe(true)
+    expect(g16.changedInputSucceeded).toBe(false)
+    expect(g16.proofBytes).toBe(384)
+    expect(g16.verifyGas).toBeLessThan(TESTNET_VERIFY)
+    expect(g16.verifyGas).toBeGreaterThan(EIP8141_VERIFY)
+    // Four pairs for the proof, two for the commitment's proof of knowledge, seven inputs.
+    const pairing = (k: number) => 34_000 * k + 45_000
+    expect(g16.verifyGas).toBeGreaterThan(pairing(4) + pairing(2) + 7 * (6_000 + 150))
+  })
+
+  it('carried the transfer, mined within the budget, and refused it again', () => {
+    expect(g16pool.transfer.honkAcceptsByCall).toBe(true)
+    expect(g16pool.transfer.proofBytes).toBe(384)
+    const [mined] = g16pool.transfer.attempts
+    expect(mined.simulation.valid).toBe(true)
+    const transfer = g16pool.txs.find((t) => t.label === 'transfer')!
+    expect(transfer.hash).toBe(mined.hash)
+    expect(transfer.frames.map((f) => f.status)).toEqual([1, 1, 1])
+    const prefix = transfer.frames[0].execution + transfer.frames[1].execution
+    expect(prefix).toBeLessThan(TESTNET_VERIFY)
+    expect(prefix).toBeGreaterThan(g16.verifyGas)
+    expect(g16pool.transfer.again.error).toMatch(/Nonce mismatch/)
+  })
+})

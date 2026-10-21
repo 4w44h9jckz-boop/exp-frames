@@ -95,8 +95,8 @@ is a projection and not a measurement. Groth16 also trades away something UltraH
 trusted setup for each circuit, not the universal one.
 
 The candidate route found is Reilabs' Sunspot. It compiles a Noir program's ACIR to gnark's Groth16
-over BN254 and is published under Apache-2.0. It is not among the pieces this experiment's plan
-pinned, so it is held until it is agreed; see the log.
+over BN254 and is published under Apache-2.0. It was not among the pieces this experiment's plan
+pinned, so it waited for the owner's agreement; it is measured in the third part below.
 
 ## Results, second part: the transfer as a frame transaction
 
@@ -173,10 +173,68 @@ number is the zero-knowledge verifier's.
 **Against what would refute the claim:**
 
 - *Every verifier Noir's toolchain can produce costs more than the testnet's `VERIFY`
-  budget.* So far this is true for both of Barretenberg's targets. For EIP-8141's 100,000 it holds for any pairing-based proof, by the
-  schedule. For the testnet's 500,000 it is open until Groth16 is measured.
-- *A transaction reusing a nullifier gets into the mempool or a block.* Not observed: the second spend was refused by
-  the nonce keys, before any proof was checked.
+  budget.* True for both of Barretenberg's targets, and false for Groth16 through Sunspot,
+  whose transfer was admitted and mined (third part). Against EIP-8141's 100,000, every
+  pairing-based proof costs more, by the schedule.
+- *A transaction reusing a nullifier gets into the mempool or a block.* Not observed, in any of
+  the three pools: each second spend was refused by the nonce keys, before any proof was checked.
+
+## Results, third part: Groth16, through Sunspot
+
+Run on 2026-10-21, after the owner agreed to Sunspot and gnark, unmodified and pinned (`pins.json`).
+The records are `groth16.json` (the verifier alone) and `pool.groth16.json` (the transfer), and
+`rebuild.test.ts` reads both back.
+
+**The proof.**
+
+- Sunspot compiles the same ACIR the UltraHonk verifiers check, from Noir 1.0.0-rc.6, to 37,667
+  R1CS constraints. Sunspot's README asks for Noir 1.0.0-beta.22, but it read this release's ACIR
+  unchanged.
+- gnark proves it in about 0.5 s. The proof is 384 bytes: the three points, plus a commitment and
+  its proof of knowledge.
+- `groth16tool/` is this repository's code, over Sunspot's and gnark's packages. It proves with
+  one prover option Sunspot's command line does not set: gnark's Solidity verifier hashes the
+  commitment to a field with Keccak-256, and cannot check gnark's default RFC 9380 hash, so a
+  proof from Sunspot's own `prove` reverts in it. It then exports gnark's Solidity verifier
+  (`build/groth16/Verifier.sol`) and the proof as that verifier takes it.
+
+**The trusted setup** (`build/groth16/setup.json`) was run by this session with Sunspot's `setup`.
+That is gnark's single-party setup, with the container's randomness and no ceremony. Its toxic
+waste is not provably destroyed, so whoever ran it could forge proofs for this circuit. That
+makes it fit for measuring gas and for nothing that holds value. A pool that held value would
+need a multi-party ceremony for each circuit, and again for every change to the circuit; this is
+the cost Groth16 adds over UltraHonk's universal setup.
+
+**The verifier.** gnark's verifier, deployed unmodified at `0xFaFcC272...`, costs **351,601
+gas** on the real proof, by call, and refuses it with a public input changed. The projection of
+224,050 left out gnark's commitment: checking its proof of knowledge is a second pairing check of
+two pairs, which adds 113,000. The verifier calls every precompile with `GAS` immediately before
+the `STATICCALL`, as the validation trace rules require.
+
+| verifier | verify gas | testnet `VERIFY` (500,000) | EIP-8141 `VERIFY` (100,000) | proof |
+|---|---:|---|---|---:|
+| UltraHonk, zero knowledge | 3,494,968 | 7.0 times over | 35 times over | 8,000 B |
+| Groth16 (Sunspot, gnark) | 351,601 | fits, 70% | 3.5 times over | 384 B |
+
+**The transfer, mined.** A third `NotePool`, against gnark's verifier behind `Groth16Adapter.yul`
+(Barretenberg's `verify(bytes, bytes32[])` interface in front of gnark's), took the same four
+deposits and the same transfer. The proof was made by `build/prove.mjs`: Noir's executor for the
+witness, then `groth16tool` for the proof. The transaction is 909 bytes raw.
+
+- Simulated valid, admitted by the node, and mined in block 491,278 (`0x10d33e62...`), 3,017,933
+  gas in all.
+- The same two notes again were refused: "Nonce mismatch: expected 1, got 0".
+
+| frame | execution | state |
+|---|---:|---:|
+| 0, EIP-8272 root | 5,579 | 0 |
+| 1, the pool's `VERIFY`, with the adapter and gnark's verifier | 356,540 | 195,840 |
+| 2, two insertions | 2,337,257 | 97,920 |
+
+The validation prefix used **362,119 gas**: 72% of the testnet's 500,000, and 3.6 times
+EIP-8141's 100,000. So with Groth16, the claim holds on the testnet: a private transfer on Aztec's
+model, proved on the device, is checked in a frame with its nullifiers as nonce keys, and is
+mined. It does not hold under EIP-8141's budget, and no pairing-based proof can make it.
 
 ## Divergences from the plan
 
@@ -189,6 +247,9 @@ number is the zero-knowledge verifier's.
   pool against `AcceptAnyProof` was added to separate the verifier's gas from the rest.
 - A first `NotePool`, `0x54eb475b...`, was deployed and given the same four notes before
   `pool.ts` took its final shape; its transfer was refused the same way. It is not in `pool.json`.
+- Groth16 was proved with the R1CS and keys from Sunspot's command line, but through
+  `groth16tool` rather than Sunspot's `prove`, for the hash-to-field reason above. Sunspot and
+  gnark are not modified.
 - The circuit was compiled and proved with the npm packages of Noir and `bb.js`, not with `nargo`
   and `bb` binaries, because the binaries' release pages cannot be reached from where this ran.
   The packages are the same releases at the pinned commits.
