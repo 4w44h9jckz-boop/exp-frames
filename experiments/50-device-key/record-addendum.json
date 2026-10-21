@@ -1,0 +1,119 @@
+{
+  "registryV4": "0xD99DC49F8b0c37f9FaF1C88fF86e5dd92d3cC6e9",
+  "budgetP1": {
+    "entryBytes": 309,
+    "violation": "prefix gas budget exceeded: 610100 > 500000 (MAX_VERIFY_GAS)",
+    "prefixLimits": "610000",
+    "countedForSignatures": "100"
+  },
+  "sigHashP1": "0x25b76fdee1c4db95784654eff35e234c9dd5b75431e8a9036717c6c8d7e6099a",
+  "budgetP2": {
+    "entryBytes": 391,
+    "violation": "prefix gas budget exceeded: 610100 > 500000 (MAX_VERIFY_GAS)",
+    "prefixLimits": "610000",
+    "countedForSignatures": "100"
+  },
+  "sigHashP2": "0xcd5bc8965f3ef9805bb4b783d4a7520fc04c409a4854f382e11d76a178a9afbc",
+  "assertions": {
+    "P1": {
+      "entry": "0x0025008800170001e3d05b23c7d36a4c8e9a003e1f841e5c781c23247fab56ea2ba6bc748c06b9de05000000017b2274797065223a22776562617574686e2e676574222c226368616c6c656e6765223a224a6264763375484532355634526c54763831346a544a335674315178364b6b445a786647794e666d435a6f222c226f726967696e223a2268747470733a2f2f6578702d6672616d65732e74657374222c2263726f73734f726967696e223a66616c73657dd8a11d1ecbd13456740250e9b7e94af43bae04e2003dfb1cac8c7a9999c802b04fb44d8726021b3e4c58548855e6382a32bbbed1db164167da3d903de32d903c147a0bd9df12912f510f46232be5e2eb18a72face738e82b11e8beeef0c59097404088dc8e8442b509d1a2459b1117fe9bcad5e09e71eafe8d9a7cdae5f14589",
+      "authenticatorData": "0xe3d05b23c7d36a4c8e9a003e1f841e5c781c23247fab56ea2ba6bc748c06b9de0500000001",
+      "clientDataJSON": "{\"type\":\"webauthn.get\",\"challenge\":\"Jbdv3uHE25V4RlTv814jTJ3Vt1Qx6KkDZxfGyNfmCZo\",\"origin\":\"https://exp-frames.test\",\"crossOrigin\":false}",
+      "message": "0x3631c865c01fb4b755b62c8e013a8925b04247eb80489e0e1c2a9b0bb3c69016"
+    },
+    "P2": {
+      "entry": "0x002500da00170001e3d05b23c7d36a4c8e9a003e1f841e5c781c23247fab56ea2ba6bc748c06b9de05000000017b2274797065223a22776562617574686e2e676574222c226368616c6c656e6765223a227a5676496c6c382d2d594262744c6544314b64534438424d514a704956504f43345231326f586970723777222c226f726967696e223a2268747470733a2f2f6578702d6672616d65732e74657374222c2263726f73734f726967696e223a66616c73652c226f746865725f6b6579735f63616e5f62655f61646465645f68657265223a22646f206e6f7420636f6d7061726520636c69656e74446174614a534f4e20616761696e737420612074656d706c617465227d2e50fb40920ac5636b4724eeae57a4fba0621af5a86ff8ae1c5a63e199c0f3cf479a5fe7b0c7e86c3e2ad96dbdb3902ef7b1c2dfe488d1c44953aa8403a22a69b293f3ba6a39a8be503806586ca66ae22b7908e65ef5a158c5f57d5f5065170571b7ad87bb77db0b86429035ce0b8f9c6e135aba77408fbdeaf168ce47ba0bce",
+      "authenticatorData": "0xe3d05b23c7d36a4c8e9a003e1f841e5c781c23247fab56ea2ba6bc748c06b9de0500000001",
+      "clientDataJSON": "{\"type\":\"webauthn.get\",\"challenge\":\"zVvIll8--YBbtLeD1KdSD8BMQJpIVPOC4R12oXipr7w\",\"origin\":\"https://exp-frames.test\",\"crossOrigin\":false,\"other_keys_can_be_added_here\":\"do not compare clientDataJSON against a template\"}",
+      "message": "0xf7b9622ef930ee08fdb08ace83424e11439d97c7b88a26a88108ee595cdd4fe2"
+    }
+  },
+  "rows": [
+    {
+      "step": "N1. a challenge that is not the signature hash",
+      "by": "the registry (its VERIFY reverted)",
+      "outcome": "refused: validation prefix frame reverted; eth_sendRawTransaction refused: Missing or invalid parameters."
+    },
+    {
+      "step": "N2. the user-presence flag clear",
+      "by": "the registry (its VERIFY reverted)",
+      "outcome": "refused: validation prefix frame reverted; eth_sendRawTransaction refused: Missing or invalid parameters."
+    },
+    {
+      "step": "N3. another relying party's hash",
+      "by": "the registry (its VERIFY reverted)",
+      "outcome": "refused: validation prefix frame reverted; eth_sendRawTransaction refused: Missing or invalid parameters."
+    },
+    {
+      "step": "N4. eight trailing bytes after the declared parts",
+      "by": "the registry (its VERIFY reverted)",
+      "outcome": "refused: validation prefix frame reverted; eth_sendRawTransaction refused: Missing or invalid parameters."
+    },
+    {
+      "step": "N5. high s",
+      "by": "the registry (its VERIFY reverted)",
+      "outcome": "refused: validation prefix frame reverted; eth_sendRawTransaction refused: Missing or invalid parameters."
+    },
+    {
+      "step": "N6. a stranger's passkey",
+      "by": "the registry (its VERIFY reverted)",
+      "outcome": "refused: validation prefix frame reverted; eth_sendRawTransaction refused: Missing or invalid parameters."
+    },
+    {
+      "step": "N7. an assertion over the same update on another chain, sent here",
+      "by": "the registry (its VERIFY reverted)",
+      "outcome": "refused: validation prefix frame reverted; eth_sendRawTransaction refused: Missing or invalid parameters."
+    },
+    {
+      "step": "N8. the same update, signed for and sent with another chain ID",
+      "by": "the node, at admission (not its simulation endpoint)",
+      "outcome": "the simulation endpoint calls it valid; eth_sendRawTransaction refused: Missing or invalid parameters."
+    },
+    {
+      "step": "P1. a passkey-owned note updated through the WebAuthn arm",
+      "by": "",
+      "outcome": "mined",
+      "hash": "0xfa0963fc7d68b8cc7383cac3ce9fe790e96469003bfff2177689a8160f0b291c",
+      "block": "493699",
+      "gasUsed": "580414",
+      "frames": "1:5579 / 1:251572+97920s / 1:14670+183600s"
+    },
+    {
+      "step": "N9. P1's assertion reused on P2's update",
+      "by": "the registry (its VERIFY reverted)",
+      "outcome": "refused: validation prefix frame reverted; eth_sendRawTransaction refused: Missing or invalid parameters."
+    },
+    {
+      "step": "P2. the same, with one more clientDataJSON field",
+      "by": "",
+      "outcome": "mined",
+      "hash": "0x1424c2da3b6a1637cac02ed4115e7ad60dbe264fa53537c6a1d6b4285f05746f",
+      "block": "493701",
+      "gasUsed": "581792",
+      "frames": "1:5579 / 1:251614+97920s / 1:14670+183600s"
+    },
+    {
+      "step": "N10. a protocol P256 entry with high s, registry version 3",
+      "by": "the node",
+      "outcome": "refused: frame signature list does not authenticate the sender; eth_sendRawTransaction refused: Missing or invalid parameters."
+    }
+  ],
+  "setup": [
+    {
+      "step": "deploy registry version 4",
+      "hash": "0x22805a2add8089b9e5652159ac8f8211fb308284c50371c7e4fab83271695b14",
+      "block": "493684"
+    },
+    {
+      "step": "deposit P1 and P2 in version 4",
+      "hash": "0xcd7bdcecb9f56ab4ff9349d25095cd47ff5475e2784562ce3c13f10fc0156393",
+      "block": "493685"
+    },
+    {
+      "step": "deposit V3 in version 3",
+      "hash": "0xbcb27c7697cb4226e60570d3e4f6f0592e1a8a0905e0a351d44a794a8b57f237",
+      "block": "493686"
+    }
+  ],
+  "note": "The setup ran in a first invocation that stopped at N8 (the simulation endpoint called it valid; nothing was sent); its hashes were recovered from the chain. The second invocation ran N1 to N10, P1 and P2."
+}
