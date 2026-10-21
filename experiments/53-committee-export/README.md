@@ -127,6 +127,17 @@ key of A: whoever holds two files links the deposit to the withdrawal, now and l
 
 ### The FHE half, priced and not run
 
+Under this experiment's own "done when", the FHE half runs only if it fits. It does not, for
+three reasons, each enough alone:
+
+| Reason | Source |
+|---|---|
+| a committee-held key reads the export afterwards, by construction: any quorum holding the key's shares decrypts, and C1's key was dealt, so its dealer held it whole once | the committee session's C1 record |
+| the input's proof (tfhe-zk-pok) shows the ciphertext is well formed and its plaintext known to the sender, not that it is the opening of this note's commitment | tfhe-rs and tfhe-zk-pok, as C1 builds them |
+| checking that proof in `VERIFY` misses the testnet's 500,000: experiment 41 measured a floor of 3,936,012 gas on BLS12-381, and a later derivation counting the proof's later challenges gives 5,578,044 (derived, not measured here or in experiment 41); on BLS12-446, which C1 uses, there is no precompile at all | the wallet session's experiment 41 |
+
+The details:
+
 What it would take to hand the same opening to the FHE committee of the committee session's C1,
 from that session's records and the wallet session's experiment 41:
 - **The export.** C1's input is one `FheUint64` in a proven compact list, 18,786 bytes, with a
