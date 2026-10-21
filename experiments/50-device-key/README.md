@@ -244,3 +244,166 @@ show the entry's whole cost to the transaction: C's 2,132 gas beyond its `VERIFY
 E is the scheme's 100 plus the 128 bytes' calldata. Whether the client counts the 100 alone, or
 the 100 and the bytes, against the `VERIFY` budget is not separated by these runs: the `VERIFY`
 frame's own gas (243,355) includes neither.
+
+## Addendum, 2026-10-21: a passkey arm, written before its run
+
+The owner adopted six amendments to this experiment before it ran; they reached this session
+after the run above. They are carried out here, beside the original claim and results, which are
+unchanged. Everything below was written before the addendum's first transaction.
+
+**Simulated, as above.** The key is a software P-256 key, and the "authenticator" is software that
+produces what a browser's `navigator.credentials.get()` returns.
+
+**The path the original run took.** Both: the precompile at `0x100` called from `VERIFY` (an
+ARBITRARY entry) and the protocol's own P256 signature scheme. Their costs are in "Gas" above.
+
+**The addendum's claim.** A note can be owned by a WebAuthn passkey that stays on the user's
+device. A WebAuthn authenticator never signs a bare digest. It signs `authenticatorData ||
+SHA-256(clientDataJSON)`, and `clientDataJSON` carries a challenge. Here the challenge is the
+frame transaction's signature hash. The registry's `VERIFY` rebuilds that message and checks it:
+the relying party, the user-presence flag, the type, and the challenge. It then calls the
+precompile at `0x100` on the message's SHA-256. The update is authorized by the passkey alone.
+
+**The addendum would be shown wrong if any of these is observed:**
+- the passkey arm's check does not fit EIP-8141's 100,000 of `VERIFY` gas;
+- one signature authorizes a second update, or an update on another chain;
+- the arm accepts an assertion whose challenge is not the signature hash, whose user-presence
+  flag is clear, whose relying party is another, or that carries bytes beyond what it declares;
+- another party must be online.
+
+**Its stated limits, not tested:**
+- **Device-bound keys only.** The claim covers keys that cannot leave the device. A passkey
+  synced through a cloud account puts its provider in custody, and is a different step of the
+  gradient.
+- **The chain cannot tell where the key lives.** Nothing the chain sees distinguishes a key in
+  an enclave from a software key, or from a key on a server. This experiment measures the chain's
+  side of "a key you hold", not an enclave.
+- **Recovery.** A device-bound key is not derived from experiment 45's seed. The paths that bring
+  a note back after the device is lost are experiment 31's second device, or experiment 46's
+  guardians with the phrase the user keeps. Neither is built for these notes here.
+- **Malleability.** `(r, s)` and `(r, n - s)` both verify unless a low-`s` rule applies. That
+  matters only where a signature is used as an identifier. The registry applies the rule anyway.
+
+**Figures to cite, quoted:** `P256VERIFY` costs 6,900 gas for its 160 bytes (EIP-7951). RIP-7212
+on rollups costs 3,450.
+
+**It is done when** a note owned by a passkey is updated on the testnet through the registry's
+WebAuthn check. Each negative case below is run and its refusal attributed to the node or to the
+registry. The record gives the exact bytes signed, the hash passed to the precompile, and the arm's
+`VERIFY` gas.
+
+**The plan, fixed before the run:**
+- **Registry version 4.** It is version 3 with the owner check replaced by the WebAuthn arm. The
+  kernel, verifier, hasher and Balance application are the ones above.
+- **The entry.** One ARBITRARY entry: `authLen (2) || clientLen (2) || challengeIndex (2) ||
+  typeIndex (2) || authenticatorData || clientDataJSON || r || s || qx || qy`. Its length must be
+  exactly `8 + authLen + clientLen + 128`.
+- **What `VERIFY` checks:**
+  - `authenticatorData` starts with `SHA-256("exp-frames.test")` and has the user-presence bit;
+  - `"type":"webauthn.get"` and `"challenge":"<base64url(signature hash)>"` sit at their
+    indices;
+  - `s <= n/2`;
+  - `keccak256(qx || qy)[12:]` is the note's `owner`;
+  - `P256VERIFY(SHA-256(authenticatorData || SHA-256(clientDataJSON)), r, s, qx, qy)` returns 1.
+- **Mined:** a note's update through the arm (P1). A second note's update (P2), whose
+  `clientDataJSON` carries one extra field, as browsers may add, so the two arms differ only in
+  the entry's length.
+- **Refused, by simulation and `eth_sendRawTransaction`, each attributed:**
+  - a challenge that is not the signature hash;
+  - the user-presence flag clear;
+  - another relying party's hash;
+  - eight trailing bytes after the declared parts;
+  - high `s`;
+  - P1's assertion reused on P2's update;
+  - an assertion made over the signature hash the same update would have on another chain;
+  - the same update sent with another chain ID;
+  - a protocol P256 entry with high `s`, on registry version 3.
+- **The budget question.** What the node counts against `MAX_VERIFY_GAS` for the ARBITRARY entry,
+  100 or 100 plus its bytes. The node's refusal message names the prefix budget it computed. The
+  plan offers each of P1's and P2's updates once with a `VERIFY` limit above the budget, reads
+  that number, and subtracts the frames' limits. The difference between the two arms isolates
+  whether the bytes count.
+
+### The addendum's results (2026-10-21, ethrex `v23.0.0-hegota-testnet-hotfix-64b8fc09`)
+
+```bash
+npx tsx experiments/50-device-key/passkey-run.ts    # record-addendum.json
+```
+
+**Simulated, as above:** software passkeys and a software authenticator.
+
+Registry version 4 is `0xD99DC49F8b0c37f9FaF1C88fF86e5dd92d3cC6e9`, 3,301 B of creation code
+([`OwnedStateRegistryV4.yul`](OwnedStateRegistryV4.yul); the arm in [`passkey.ts`](passkey.ts)).
+
+| Step | Tx | Block | `gasUsed` | Frames: execution + state gas |
+|---|---|---|---|---|
+| deploy version 4 | [`0x22805a2a...`](https://dora.privacy.ethrex.xyz/tx/0x22805a2add8089b9e5652159ac8f8211fb308284c50371c7e4fab83271695b14) | 493,684 | | |
+| deposit P1 and P2 in version 4 | [`0xcd7bdcec...`](https://dora.privacy.ethrex.xyz/tx/0xcd7bdcecb9f56ab4ff9349d25095cd47ff5475e2784562ce3c13f10fc0156393) | 493,685 | | |
+| deposit a note in version 3, for N10 | [`0xbcb27c76...`](https://dora.privacy.ethrex.xyz/tx/0xbcb27c7697cb4226e60570d3e4f6f0592e1a8a0905e0a351d44a794a8b57f237) | 493,686 | | |
+| **P1.** a passkey-owned note updated through the WebAuthn arm, 309-byte entry | [`0xfa0963fc...`](https://dora.privacy.ethrex.xyz/tx/0xfa0963fc7d68b8cc7383cac3ce9fe790e96469003bfff2177689a8160f0b291c) | 493,699 | **580,414** | 8272 5,579 · VERIFY **251,572** + 97,920 · update 14,670 + 183,600 |
+| **P2.** the same with one more `clientDataJSON` field, 391-byte entry | [`0x1424c2da...`](https://dora.privacy.ethrex.xyz/tx/0x1424c2da3b6a1637cac02ed4115e7ad60dbe264fa53537c6a1d6b4285f05746f) | 493,701 | **581,792** | 8272 5,579 · VERIFY **251,614** + 97,920 · update 14,670 + 183,600 |
+
+The setup ran in a first invocation, which stopped at N8 before sending anything (below); its
+hashes were recovered from the chain into the record.
+
+**The arm's gas.** P1's `VERIFY` is 15,589 more than the control's (E, 235,983): the WebAuthn
+checks, two SHA-256 calls and `P256VERIFY`. That is 15.6 % of EIP-8141's 100,000. Experiment
+11's `WebAuthnAccount` spends 15,542 on the same work. P2's 82 more bytes cost 42 more in `VERIFY`
+and 1,378 more in the whole transaction.
+
+**What was signed, and what the precompile was given (P1).**
+
+| | |
+|---|---|
+| signature hash (the challenge) | `0x25b76fdee1c4db95784654eff35e234c9dd5b75431e8a9036717c6c8d7e6099a` |
+| `authenticatorData` | `0xe3d05b23…c06b9de` (SHA-256 of `exp-frames.test`) `05` (user present and verified) `00000001` |
+| `clientDataJSON` | `{"type":"webauthn.get","challenge":"Jbdv3uHE25V4RlTv814jTJ3Vt1Qx6KkDZxfGyNfmCZo","origin":"https://exp-frames.test","crossOrigin":false}` |
+| the hash passed to `P256VERIFY` | `0x3631c865c01fb4b755b62c8e013a8925b04247eb80489e0e1c2a9b0bb3c69016` = SHA-256(`authenticatorData` ‖ SHA-256(`clientDataJSON`)) |
+
+P2's are in `record-addendum.json`. Its `clientDataJSON` ends with
+`"other_keys_can_be_added_here":"do not compare clientDataJSON against a template"`, a field
+browsers add.
+
+| Refused | Refused by | How |
+|---|---|---|
+| **N1.** a challenge that is not the signature hash | the registry | its `VERIFY` reverted |
+| **N2.** the user-presence flag clear | the registry | the same |
+| **N3.** another relying party's hash | the registry | the same |
+| **N4.** eight trailing bytes after the declared parts | the registry | the same |
+| **N5.** high `s` | the registry | the same |
+| **N6.** a stranger's passkey | the registry | the same |
+| **N7.** an assertion over this update's signature hash on chain ID 1, sent here | the registry | the same: the challenge does not match |
+| **N8.** this update signed for and sent with chain ID 1 | **the node, at admission** | `ethrex_simulateFrameTransaction` called it valid; `eth_sendRawTransaction` refused it |
+| **N9.** P1's assertion reused on P2's update | the registry | its `VERIFY` reverted |
+| **N10.** a protocol P256 entry with high `s` (version 3) | the node | "frame signature list does not authenticate the sender" |
+
+Each was simulated and offered to `eth_sendRawTransaction`, which answered "Missing or invalid
+parameters." every time.
+
+**The budget question, answered: 100, not the bytes.** Offered with its `VERIFY` limit at 600,000,
+each update was refused with the node's own sum, "prefix gas budget exceeded: 610100 > 500000
+(MAX_VERIFY_GAS)". The two prefix frames' limits are 610,000 (the EIP-8272 frame's 10,000 and
+`VERIFY`'s 600,000), so the node counted exactly 100 for the ARBITRARY entry. It counted the same
+100 for P1's 309 bytes and for P2's 391. The entry's bytes are paid as calldata in the transaction,
+not counted against the validation budget.
+
+### The addendum's observations
+
+1. **The addendum's claim holds, simulated.** A passkey-owned note was updated twice, each update
+   authorized by the passkey alone. The registry checks the arm in 15,589 gas of `VERIFY`. None of
+   the addendum's "would show it wrong" conditions was observed.
+
+2. **Most refusals are the registry's.** The relying party, presence, challenge, trailing bytes,
+   high `s`, the key, and reuse across updates or chains are all checked in the registry's
+   `VERIFY` (N1 to N7, N9). An ARBITRARY entry is opaque to the protocol. The node refused only
+   what the transaction's envelope carries: a foreign chain ID (N8) and the protocol's own P256
+   scheme's high `s` (N10).
+
+3. **The testnet's simulation endpoint does not check the chain ID.** N8 was "valid" in
+   `ethrex_simulateFrameTransaction` and refused only at admission. Experiment 22 found ethrex
+   refusing a wrong chain ID at admission too. A wallet that trusts the simulation alone would
+   not catch it.
+
+4. **A longer passkey assertion costs calldata, not budget.** The validation budget counts 100
+   for an ARBITRARY entry of any length. The bytes cost the transaction about 16 gas each as
+   calldata. In `VERIFY` they cost what the extra SHA-256 words cost.
