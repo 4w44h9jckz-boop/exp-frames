@@ -201,7 +201,9 @@ The records are `groth16.json` (the verifier alone) and `pool.groth16.json` (the
 **The trusted setup** (`build/groth16/setup.json`) was run by this session with Sunspot's `setup`.
 That is gnark's single-party setup, with the container's randomness and no ceremony. Its toxic
 waste is not provably destroyed, so whoever ran it could forge proofs for this circuit. That
-makes it fit for measuring gas and for nothing that holds value. A pool that held value would
+makes it fit for measuring gas and for nothing that holds value. The proving key, the R1CS and the
+verifying key are committed beside `setup.json`, checked against its hashes by `rebuild.test.ts`,
+so that anyone can make a new proof the deployed verifier accepts with `groth16tool prove`. A pool that held value would
 need a multi-party ceremony for each circuit, and again for every change to the circuit; this is
 the cost Groth16 adds over UltraHonk's universal setup.
 

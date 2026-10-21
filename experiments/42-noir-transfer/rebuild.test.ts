@@ -1,5 +1,6 @@
 // Experiment 42's records read back: the proofs Barretenberg made natively, each EVM verifier's
 // gas on the testnet against both budgets, and the floor under any pairing-based verifier.
+import { createHash } from 'node:crypto'
 import { readFileSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
 
@@ -149,5 +150,15 @@ describe('experiment 42, Groth16 through Sunspot', () => {
     expect(prefix).toBeLessThan(TESTNET_VERIFY)
     expect(prefix).toBeGreaterThan(g16.verifyGas)
     expect(g16pool.transfer.again.error).toMatch(/Nonce mismatch/)
+  })
+})
+
+describe("experiment 42, Groth16's keys", () => {
+  it('are the keys the setup recorded', () => {
+    const setup = json('./build/groth16/setup.json') as { proving_key_sha256: string; verifying_key_sha256: string; circuit: { ccs_sha256: string } }
+    const sha = (f: string) => createHash('sha256').update(readFileSync(new URL(f, import.meta.url))).digest('hex')
+    expect(sha('./build/groth16/transfer.pk')).toBe(setup.proving_key_sha256)
+    expect(sha('./build/groth16/transfer.vk')).toBe(setup.verifying_key_sha256)
+    expect(sha('./build/groth16/transfer.ccs')).toBe(setup.circuit.ccs_sha256)
   })
 })
