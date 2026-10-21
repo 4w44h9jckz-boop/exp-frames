@@ -323,3 +323,87 @@ registry. The record gives the exact bytes signed, the hash passed to the precom
   plan offers each of P1's and P2's updates once with a `VERIFY` limit above the budget, reads
   that number, and subtracts the frames' limits. The difference between the two arms isolates
   whether the bytes count.
+
+### The addendum's results (2026-10-21, ethrex `v23.0.0-hegota-testnet-hotfix-64b8fc09`)
+
+```bash
+npx tsx experiments/50-device-key/passkey-run.ts    # record-addendum.json
+```
+
+**Simulated, as above:** software passkeys and a software authenticator.
+
+Registry version 4 is `0xD99DC49F8b0c37f9FaF1C88fF86e5dd92d3cC6e9`, 3,301 B of creation code
+([`OwnedStateRegistryV4.yul`](OwnedStateRegistryV4.yul); the arm in [`passkey.ts`](passkey.ts)).
+
+| Step | Tx | Block | `gasUsed` | Frames: execution + state gas |
+|---|---|---|---|---|
+| deploy version 4 | [`0x22805a2a...`](https://dora.privacy.ethrex.xyz/tx/0x22805a2add8089b9e5652159ac8f8211fb308284c50371c7e4fab83271695b14) | 493,684 | | |
+| deposit P1 and P2 in version 4 | [`0xcd7bdcec...`](https://dora.privacy.ethrex.xyz/tx/0xcd7bdcecb9f56ab4ff9349d25095cd47ff5475e2784562ce3c13f10fc0156393) | 493,685 | | |
+| deposit a note in version 3, for N10 | [`0xbcb27c76...`](https://dora.privacy.ethrex.xyz/tx/0xbcb27c7697cb4226e60570d3e4f6f0592e1a8a0905e0a351d44a794a8b57f237) | 493,686 | | |
+| **P1.** a passkey-owned note updated through the WebAuthn arm, 309-byte entry | [`0xfa0963fc...`](https://dora.privacy.ethrex.xyz/tx/0xfa0963fc7d68b8cc7383cac3ce9fe790e96469003bfff2177689a8160f0b291c) | 493,699 | **580,414** | 8272 5,579 · VERIFY **251,572** + 97,920 · update 14,670 + 183,600 |
+| **P2.** the same with one more `clientDataJSON` field, 391-byte entry | [`0x1424c2da...`](https://dora.privacy.ethrex.xyz/tx/0x1424c2da3b6a1637cac02ed4115e7ad60dbe264fa53537c6a1d6b4285f05746f) | 493,701 | **581,792** | 8272 5,579 · VERIFY **251,614** + 97,920 · update 14,670 + 183,600 |
+
+The setup ran in a first invocation, which stopped at N8 before sending anything (below); its
+hashes were recovered from the chain into the record.
+
+**The arm's gas.** P1's `VERIFY` is 15,589 more than the control's (E, 235,983): the WebAuthn
+checks, two SHA-256 calls and `P256VERIFY`. That is 15.6 % of EIP-8141's 100,000. Experiment
+11's `WebAuthnAccount` spends 15,542 on the same work. P2's 82 more bytes cost 42 more in `VERIFY`
+and 1,378 more in the whole transaction.
+
+**What was signed, and what the precompile was given (P1).**
+
+| | |
+|---|---|
+| signature hash (the challenge) | `0x25b76fdee1c4db95784654eff35e234c9dd5b75431e8a9036717c6c8d7e6099a` |
+| `authenticatorData` | `0xe3d05b23…c06b9de` (SHA-256 of `exp-frames.test`) `05` (user present and verified) `00000001` |
+| `clientDataJSON` | `{"type":"webauthn.get","challenge":"Jbdv3uHE25V4RlTv814jTJ3Vt1Qx6KkDZxfGyNfmCZo","origin":"https://exp-frames.test","crossOrigin":false}` |
+| the hash passed to `P256VERIFY` | `0x3631c865c01fb4b755b62c8e013a8925b04247eb80489e0e1c2a9b0bb3c69016` = SHA-256(`authenticatorData` ‖ SHA-256(`clientDataJSON`)) |
+
+P2's are in `record-addendum.json`. Its `clientDataJSON` ends with
+`"other_keys_can_be_added_here":"do not compare clientDataJSON against a template"`, a field
+browsers add.
+
+| Refused | Refused by | How |
+|---|---|---|
+| **N1.** a challenge that is not the signature hash | the registry | its `VERIFY` reverted |
+| **N2.** the user-presence flag clear | the registry | the same |
+| **N3.** another relying party's hash | the registry | the same |
+| **N4.** eight trailing bytes after the declared parts | the registry | the same |
+| **N5.** high `s` | the registry | the same |
+| **N6.** a stranger's passkey | the registry | the same |
+| **N7.** an assertion over this update's signature hash on chain ID 1, sent here | the registry | the same: the challenge does not match |
+| **N8.** this update signed for and sent with chain ID 1 | **the node, at admission** | `ethrex_simulateFrameTransaction` called it valid; `eth_sendRawTransaction` refused it |
+| **N9.** P1's assertion reused on P2's update | the registry | its `VERIFY` reverted |
+| **N10.** a protocol P256 entry with high `s` (version 3) | the node | "frame signature list does not authenticate the sender" |
+
+Each was simulated and offered to `eth_sendRawTransaction`, which answered "Missing or invalid
+parameters." every time.
+
+**The budget question, answered: 100, not the bytes.** Offered with its `VERIFY` limit at 600,000,
+each update was refused with the node's own sum, "prefix gas budget exceeded: 610100 > 500000
+(MAX_VERIFY_GAS)". The two prefix frames' limits are 610,000 (the EIP-8272 frame's 10,000 and
+`VERIFY`'s 600,000), so the node counted exactly 100 for the ARBITRARY entry. It counted the same
+100 for P1's 309 bytes and for P2's 391. The entry's bytes are paid as calldata in the transaction,
+not counted against the validation budget.
+
+### The addendum's observations
+
+1. **The addendum's claim holds, simulated.** A passkey-owned note was updated twice, each update
+   authorized by the passkey alone. The registry checks the arm in 15,589 gas of `VERIFY`. None of
+   the addendum's "would show it wrong" conditions was observed.
+
+2. **Most refusals are the registry's.** The relying party, presence, challenge, trailing bytes,
+   high `s`, the key, and reuse across updates or chains are all checked in the registry's
+   `VERIFY` (N1 to N7, N9). An ARBITRARY entry is opaque to the protocol. The node refused only
+   what the transaction's envelope carries: a foreign chain ID (N8) and the protocol's own P256
+   scheme's high `s` (N10).
+
+3. **The testnet's simulation endpoint does not check the chain ID.** N8 was "valid" in
+   `ethrex_simulateFrameTransaction` and refused only at admission. Experiment 22 found ethrex
+   refusing a wrong chain ID at admission too. A wallet that trusts the simulation alone would
+   not catch it.
+
+4. **A longer passkey assertion costs calldata, not budget.** The validation budget counts 100
+   for an ARBITRARY entry of any length. The bytes cost the transaction about 16 gas each as
+   calldata. In `VERIFY` they cost what the extra SHA-256 words cost.
