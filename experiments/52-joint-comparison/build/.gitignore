@@ -1,0 +1,3 @@
+# Only what proving needs is kept: joint.r1cs is rebuilt by circom (README, "The proving key"); the joint prover reads it.
+joint_0.zkey
+joint_js/*.js
