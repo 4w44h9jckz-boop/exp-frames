@@ -9,7 +9,9 @@
 //            fee, context, leaves: [hex], target: 'evm' | 'evm-no-zk' | 'groth16' }
 // response: { root, nullifiers, outHashes, fee, context, proof, publicInputs, proveMs }
 import { execFileSync } from 'node:child_process'
-import { readFileSync, writeFileSync } from 'node:fs'
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
 import { compile_program, createFileManager } from '@noir-lang/noir_wasm'
 import { Noir } from '@noir-lang/noir_js'
 import { Barretenberg, UltraHonkBackend } from '@aztec/bb.js'
@@ -77,15 +79,20 @@ let proof
 const t = Date.now()
 if (req.target === 'groth16') {
   // Groth16 over BN254: Sunspot's R1CS, proving key and witness loader, through groth16tool
-  // (G16_TOOL), which proves with the hash-to-field gnark's Solidity verifier checks.
-  const dir = process.env.G16_DIR ?? new URL('./g16/', import.meta.url).pathname
+  // (G16_TOOL), which proves with the hash-to-field gnark's Solidity verifier checks. The keys
+  // (transfer.ccs, transfer.pk, transfer.vk) are read from G16_KEYS, for example experiment 42's
+  // build/groth16/; the witness and the proof are written to a scratch directory, removed after.
+  const keys = process.env.G16_KEYS ?? new URL('./g16/', import.meta.url).pathname
   const tool = process.env.G16_TOOL ?? new URL('./g16tool/g16tool', import.meta.url).pathname
+  const dir = mkdtempSync(join(tmpdir(), 'g16-'))
+  const key = (f) => join(keys, f)
   writeFileSync(`${dir}/request.json`, JSON.stringify(program))
   writeFileSync(`${dir}/request.gz`, witness)
   const run = (args) => execFileSync(tool, args, { cwd: dir, stdio: ['ignore', 'ignore', 'inherit'] })
-  run(['prove', 'request.json', 'request.gz', 'transfer.ccs', 'transfer.pk', 'request.proof', 'request.pw'])
-  run(['export', 'transfer.vk', 'request.proof', 'request.pw', 'request.sol', 'request.calldata.json'])
+  run(['prove', 'request.json', 'request.gz', key('transfer.ccs'), key('transfer.pk'), 'request.proof', 'request.pw'])
+  run(['export', key('transfer.vk'), 'request.proof', 'request.pw', 'request.sol', 'request.calldata.json'])
   const c = JSON.parse(readFileSync(`${dir}/request.calldata.json`, 'utf8'))
+  rmSync(dir, { recursive: true, force: true })
   proof = {
     proof: Buffer.from([...c.proof, ...c.commitmentsWords, ...c.commitmentPok].map((w) => w.slice(2)).join(''), 'hex'),
     publicInputs: c.inputs,

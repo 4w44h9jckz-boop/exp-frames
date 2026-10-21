@@ -13,6 +13,8 @@
 // usage: npx tsx experiments/42-noir-transfer/pool.ts [--dry-run]     the two pools, proved by build/prove.mjs
 //        npx tsx experiments/42-noir-transfer/pool.ts --rust [--dry-run]  then a second transfer, from kohaku-rs
 //        npx tsx experiments/42-noir-transfer/pool.ts --groth16 [--dry-run]  a third pool, on Groth16
+//        npx tsx experiments/42-noir-transfer/pool.ts --groth16 --send <url> [--label <name>] [--out <file>]
+//            a fresh Groth16 pool; its transfer and three double spends handed to the node at <url>
 import { execFileSync } from 'node:child_process'
 import { readFileSync, writeFileSync } from 'node:fs'
 import { resolve } from 'node:path'
@@ -50,6 +52,7 @@ import {
   verifyFrame,
   waitForFrameTxReceipt,
 } from '../../src/frametx/index.js'
+import { parseArgs } from './args.js'
 import { HASHER } from './hasher.js'
 
 const DIR = 'experiments/42-noir-transfer'
@@ -345,7 +348,169 @@ async function rustTransfer(pool: Address) {
   }
 }
 
-if (process.argv.includes('--rust')) {
+/** eth_sendRawTransaction to `url` alone, with the node's answer kept word for word. */
+async function handTo(url: string, raw: Hex) {
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'eth_sendRawTransaction', params: [raw] }),
+  })
+  const text = await response.text()
+  let body: unknown = text
+  try {
+    body = JSON.parse(text)
+  } catch {}
+  return { httpStatus: response.status, body }
+}
+
+/** A frame transaction's receipt from the chain, or null if it has none yet. */
+async function chainReceipt(hash: Hex) {
+  const r = await rpc<{ status: Hex } | null>(client, 'eth_getTransactionReceipt', [hash])
+  return r ? await receiptOf('', hash) : null
+}
+
+/**
+ * For a mempool run (exp-e2e-frames' X4): a fresh Groth16 pool deployed and filled on the chain,
+ * then, to the node at `url` alone, the transfer of notes 0 and 2 and, while it is pending, two
+ * double spends, each with a real proof that the verifier accepts on its own:
+ *
+ *   (a) notes 0 and 2 again, to other outputs;
+ *   (b) note 0 beside note 4, which nothing else spends;
+ *   (c) once the transfer is mined, (a)'s bytes again.
+ *
+ * Reads and receipts come from the chain's RPC. The record keeps each transaction's bytes, hash,
+ * destination and the node's answer word for word; it holds no key, note secret or witness.
+ */
+async function sendRun(adapter: Address, url: string, label: string) {
+  const initcode = concatHex([NOTE_POOL, pad(adapter), pad(HASHER), keccak256(toHex(`exp-frames/42/${label}/8272`))])
+  const salt = saltOf(`exp-frames/42/note-pool/${label}`)
+  const pool = create2Address(initcode, salt)
+  const chainTxs: Awaited<ReturnType<typeof receiptOf>>[] = []
+  const sent = async (what: string, frames: Frame[]) => {
+    const done = await sendFrames(client, privateKey, frames, { label: `${label}: ${what}` })
+    if (DRY_RUN) process.exit(0)
+    if (done?.hash) chainTxs.push(await receiptOf(what, done.hash))
+  }
+  if (!(await client.getCode({ address: pool }))) {
+    const deploy = deployFrame(initcode, salt).frame
+    await sent('deploy', [{ ...deploy, limits: { execution: 1_500_000n, state: deploy.limits.state + 1152n * CPSB } }])
+  }
+
+  // Experiment 42's four notes, and a fifth for the sender that only (b) touches.
+  const nsk = derive('nsk')
+  const owner = await H([OWNER, nsk])
+  const other = await H([OWNER, derive('other/nsk')])
+  const deposits = [
+    { owner, value: 700n * UNIT, randomness: derive('note/0') },
+    { owner: other, value: 5n * UNIT, randomness: derive('note/1') },
+    { owner, value: 400n * UNIT, randomness: derive('note/2') },
+    { owner: other, value: 9n * UNIT, randomness: derive('note/3') },
+    { owner, value: 50n * UNIT, randomness: derive('note/4') },
+  ]
+  if ((await client.readContract({ address: pool, abi, functionName: 'nextIndex' })) === 0n) {
+    await sent(
+      'deposit five notes',
+      deposits.map((d, i) =>
+        senderFrame({
+          target: pool,
+          value: d.value,
+          data: encodeFunctionData({ abi, functionName: 'deposit', args: [word(d.owner), word(d.randomness)] }),
+          execution: 2_000_000n,
+          state: (i === 0 ? 36n : 4n) * STORAGE_SET_STATE_GAS,
+        }),
+      ),
+    )
+  }
+  const notes = await client.getContractEvents({ address: pool, abi, eventName: 'Note', fromBlock: 'earliest' })
+  const leaves: Hex[] = []
+  for (const l of notes) leaves[Number(l.args.index)] = l.args.note as Hex
+  for (const [i, d] of deposits.entries()) {
+    if (hexToBigInt(leaves[i]) !== (await H([NOTE, d.owner, d.value, d.randomness]))) throw new Error(`leaf ${i} is not deposit ${i}`)
+  }
+  const sourceId = await client.readContract({ address: pool, abi, functionName: 'sourceId' })
+
+  // Every proof first, against the tree of the five deposits, so that the double spends go out
+  // while the transfer is still pending.
+  const proveSpend = async (name: string, spent: number[], outs: { owner: bigint; value: bigint; randomness: string }[]) => {
+    const request = {
+      nsk: nsk.toString(),
+      spend: spent.map((index) => ({ index, value: deposits[index].value.toString(), randomness: deposits[index].randomness.toString() })),
+      outs: outs.map((o) => ({ owner: o.owner.toString(), value: o.value.toString(), randomness: derive(o.randomness).toString() })),
+      fee: FEE.toString(),
+      context: hexToBigInt(pool).toString(),
+      leaves: leaves.slice(0, deposits.length),
+      target: 'groth16',
+    }
+    const proved = proveWith('js', request, `${label}.${name}`)
+    const verifies = await honkAccepts(pool, proved, adapter)
+    const slot = await slotOf(pool, proved.root)
+    const tx = transferTx(pool, sourceId, slot, proved, MAX_VERIFY_GAS_TESTNET - 10_000n)
+    const raw = serializeFrameTx(tx)
+    console.log(`${label} ${name}: proved in ${proved.proveMs} ms, verifies alone: ${verifies}`)
+    return { name, spent, nullifiers: proved.nullifiers, verifiesAlone: verifies, raw, hash: keccak256(raw), rawBytes: (raw.length - 2) / 2 }
+  }
+  const transfer = await proveSpend('transfer', [0, 2], [
+    { owner: other, value: 600n * UNIT, randomness: 'out/0' },
+    { owner, value: 500n * UNIT - FEE, randomness: 'out/1' },
+  ])
+  const a = await proveSpend('a', [0, 2], [
+    { owner: other, value: 300n * UNIT, randomness: 'send/a/0' },
+    { owner, value: 800n * UNIT - FEE, randomness: 'send/a/1' },
+  ])
+  const b = await proveSpend('b', [0, 4], [
+    { owner: other, value: 600n * UNIT, randomness: 'send/b/0' },
+    { owner, value: 150n * UNIT - FEE, randomness: 'send/b/1' },
+  ])
+
+  const handed: Record<string, unknown>[] = []
+  const hand = async (step: string, t: typeof transfer) => {
+    const answer = await handTo(url, t.raw)
+    console.log(`${label} ${step}: ${t.hash} to ${url}:`, JSON.stringify(answer.body))
+    handed.push({ step, tx: t.name, spent: t.spent, nullifiers: t.nullifiers, verifiesAlone: t.verifiesAlone, url, hash: t.hash, rawBytes: t.rawBytes, raw: t.raw, at: new Date().toISOString(), answer })
+  }
+  await hand('transfer', transfer)
+  await hand('a, while the transfer is pending', a)
+  await hand('b, while the transfer is pending', b)
+
+  // The transfer mined, by the chain's RPC; then (a) again.
+  const deadline = Date.now() + 10 * 60_000
+  let mined = await chainReceipt(transfer.hash)
+  while (!mined && Date.now() < deadline) {
+    await new Promise((r) => setTimeout(r, 3_000))
+    mined = await chainReceipt(transfer.hash)
+  }
+  console.log(`${label} transfer:`, mined ? `mined in block ${mined.block}` : 'not mined within ten minutes')
+  if (mined) await hand('c, (a) again after the transfer is mined', a)
+
+  // Whether either double spend reached the chain, a few blocks on.
+  const settle = Number(await client.getBlockNumber()) + 3
+  while (Number(await client.getBlockNumber()) < settle && Date.now() < deadline) await new Promise((r) => setTimeout(r, 3_000))
+  const onChain = { transfer: mined, a: await chainReceipt(a.hash), b: await chainReceipt(b.hash) }
+  return {
+    chainId: Number(chainId),
+    label,
+    pool,
+    adapter,
+    url,
+    chainTxs,
+    handed,
+    onChain,
+    block: Number(await client.getBlockNumber()),
+  }
+}
+
+const args = parseArgs(process.argv.slice(2))
+
+if (args.mode === 'groth16-send') {
+  const g16 = JSON.parse(readFileSync(file('groth16.json'), 'utf8')) as { address: Address }
+  const adapter = create2Address(concatHex([compileYul(`${DIR}/Groth16Adapter.yul`), pad(g16.address)]), saltOf('exp-frames/42/groth16-adapter'))
+  if (!(await client.getCode({ address: adapter }))) throw new Error(`Groth16Adapter is not deployed at ${adapter}; run --groth16 first`)
+  const record = { groth16: g16.address, ...(await sendRun(adapter, args.url, args.label)) }
+  if (!DRY_RUN) writeFileSync(args.out ? resolve(args.out) : file(`pool.send.${args.label}.json`), `${JSON.stringify(record, null, 2)}\n`)
+  process.exit(0)
+}
+
+if (args.mode === 'rust') {
   // Run once, after the main run: the layout pool's second transfer, proved from kohaku-rs.
   const record = JSON.parse(readFileSync(file('pool.json'), 'utf8')) as { pools: { label: string; pool: Address }[] }
   const result = await rustTransfer(record.pools.find((p) => p.label === 'layout')!.pool)
@@ -353,7 +518,7 @@ if (process.argv.includes('--rust')) {
   process.exit(0)
 }
 
-if (process.argv.includes('--groth16')) {
+if (args.mode === 'groth16') {
   // A third pool, against gnark's Groth16 verifier behind Groth16Adapter, proved through
   // Sunspot: the transfer as it would run if the verifier fits the testnet's budget.
   const g16 = JSON.parse(readFileSync(file('groth16.json'), 'utf8')) as { address: Address }

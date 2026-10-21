@@ -238,6 +238,37 @@ EIP-8141's 100,000. So with Groth16, the claim holds on the testnet: a private t
 model, proved on the device, is checked in a frame with its nullifiers as nonce keys, and is
 mined. It does not hold under EIP-8141's budget, and no pairing-based proof can make it.
 
+## For a mempool run: `pool.ts --groth16 --send <url>`
+
+A mode added after the results above, for an end-to-end run through mempool nodes (exp-e2e-frames'
+X4). It changes nothing in the modes that made this entry's records, and `args.test.ts` holds
+that fixed.
+
+```text
+NOIR_PROVER_DIR=<dir with prove.mjs, transfer/ and the npm packages> \
+G16_KEYS=experiments/42-noir-transfer/build/groth16 G16_TOOL=<groth16tool built from groth16tool/> \
+npx tsx experiments/42-noir-transfer/pool.ts --groth16 --send <url> [--label <name>] [--out <file>]
+```
+
+- **On the chain directly:** a fresh `NotePool` (named by `--label`, by default the time) behind
+  the deployed `Groth16Adapter` and gnark's verifier, and five deposits. They are this entry's
+  four notes, plus a fifth for the sender that only spend (b) touches.
+- **Proofs:** each is made with `groth16tool` from the committed proving key, and checked against
+  the deployed verifier by call before anything is sent.
+- **To the node at `<url>` alone, by `eth_sendRawTransaction`:**
+  - the transfer of notes 0 and 2;
+  - then, while it is pending, (a) notes 0 and 2 again, to other outputs;
+  - and (b) note 0 beside note 4, which nothing else spends;
+  - then, once the transfer is mined, (c) the bytes of (a) again.
+- **Reads and receipts** come from the chain's RPC.
+- **The record**, `pool.send.<label>.json` or `--out`:
+  - each handed transaction's bytes, hash, nullifiers and destination;
+  - whether its proof verifies on its own;
+  - the node's answer word for word: the HTTP status and the JSON-RPC body;
+  - and, from the chain, whether the transfer, (a) or (b) was mined.
+- **Nothing secret:** the record and standard output hold no key, note secret or witness. The
+  prover's working files go to a scratch directory that is removed.
+
 ## Divergences from the plan
 
 - Barretenberg's verifiers keep under the contract size limit by putting their largest functions in
