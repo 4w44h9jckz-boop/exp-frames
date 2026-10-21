@@ -1,0 +1,13 @@
+{
+  "tfhe-rs": {
+    "repository": "https://github.com/zama-ai/tfhe-rs",
+    "commit": "0a43e3cda269a1ef13690c99f2ce06b56bd9e43e",
+    "used": ["tfhe-zk-pok 0.11.0, unmodified, as a git dependency", "tfhe-rs's ZK v2 compact public-key encryption parameters, read from tfhe/src/shortint/parameters/v1_8/compact_public_key_only/p_fail_2_minus_128/ks_pbs.rs"],
+    "licence": "BSD-3-Clause-Clear: no express or implied licence to any party's patent rights"
+  },
+  "kohaku-rs": {
+    "repository": "https://github.com/4w44h9jckz-boop/kohaku-rs",
+    "branch": "experiment/fhe-input",
+    "commit": "dd56f87"
+  }
+}
