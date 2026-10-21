@@ -148,7 +148,7 @@ the nonce key. The tip is 0.1 gwei, so that the max cost stays under one ticket:
 | bound: the same, another key named in the frame's data and signing, `0x3683b748…` | **refused**: "validation prefix frame reverted" | | |
 
 The control's copy raised the tip from 0.1 to 0.11 gwei. The paymaster, not the note, paid the
-difference, about 6.9 billion wei on 692,548 gas, to the block's producer. That is the leak the
+difference, 0.01 gwei on each of 692,548 gas, about $6.9 \times 10^{12}$ wei, to the block's producer. That is the leak the
 binding closes. Every mined transaction above is a fixture in `test/fixtures/chain/`.
 
 ## Observations
