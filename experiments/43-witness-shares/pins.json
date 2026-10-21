@@ -1,0 +1,27 @@
+{
+  "kohaku-rs": {
+    "repository": "https://github.com/4w44h9jckz-boop/kohaku-rs",
+    "branch": "experiment/witness-share",
+    "commit": "7863a47",
+    "crate": "crates/witness-share",
+    "used": ["share_withdrawal: the deposit, the inputs, the witness and the shares", "assemble_withdrawal: the committee's proof in the wallet's withdrawal transaction"]
+  },
+  "co-snarks": {
+    "repository": "https://github.com/TaceoLabs/co-snarks",
+    "commit": "436f63fa17f2f10ece38c6650df68da99fbc0307",
+    "used": ["co-circom-types' CompressedRep3SharedWitness::share_rep3 and mpc-core's REP3 types, unmodified, in kohaku-rs"],
+    "licence": "MIT OR Apache-2.0 for co-circom-types and mpc-core"
+  },
+  "taceo-circom-types": {
+    "repository": "https://crates.io/crates/taceo-circom-types",
+    "version": "0.3.1",
+    "used": ["the witness type share_rep3 takes"],
+    "licence": "MIT OR Apache-2.0"
+  },
+  "exp-e2e-frames": {
+    "repository": "https://github.com/4w44h9jckz-boop/exp-e2e-frames",
+    "commit": "c8eb5cc",
+    "used": ["the share format, committee/co-withdraw/README.md", "co-withdraw local and verify, built and run unmodified from committee/"],
+    "licence": "Apache-2.0, as its committee workspace declares"
+  }
+}
