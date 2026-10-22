@@ -1,0 +1,49 @@
+{
+  "chainId": 8141,
+  "block": 490958,
+  "results": [
+    {
+      "target": "evm",
+      "address": "0xBc9F4175E23d19D953c6479Eb02eb595E7E2ff69",
+      "deployedBytes": 18240,
+      "libraries": [
+        {
+          "name": "RelationsLib",
+          "address": "0x95e96c105d21a7DB155019eE8C88bc6709545aa7",
+          "deployedBytes": 7972
+        },
+        {
+          "name": "ZKTranscriptLib",
+          "address": "0x761862aBCeffCfC51D9f95bbEC79CFaf7F5Ebc71",
+          "deployedBytes": 6151
+        }
+      ],
+      "proofBytes": 8000,
+      "publicInputs": 7,
+      "calldataBytes": 8356,
+      "verifyGas": 3494968,
+      "verifySucceeded": true,
+      "returned": "0x0000000000000000000000000000000000000000000000000000000000000001",
+      "changedInputSucceeded": false
+    },
+    {
+      "target": "evm-no-zk",
+      "address": "0x14D07Ab339a4133432a8195C784FF6150620A408",
+      "deployedBytes": 17186,
+      "libraries": [
+        {
+          "name": "RelationsLib",
+          "address": "0x4cDdcc9B2520de9f0F1d511d4740Cd0fF37E9a2A",
+          "deployedBytes": 7972
+        }
+      ],
+      "proofBytes": 7072,
+      "publicInputs": 7,
+      "calldataBytes": 7428,
+      "verifyGas": 1782522,
+      "verifySucceeded": true,
+      "returned": "0x0000000000000000000000000000000000000000000000000000000000000001",
+      "changedInputSucceeded": false
+    }
+  ]
+}

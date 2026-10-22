@@ -1,0 +1,12 @@
+{
+  "ran_by": "the session that ran this experiment, on 2026-10-21, in one cloud container",
+  "how": "sunspot setup transfer.ccs: gnark's groth16.Setup, one party, randomness from the container, no ceremony",
+  "toxic_waste": "not provably destroyed; it lived in one process's memory, which has exited. Whoever ran it could forge proofs for this circuit. Fit for a gas measurement, not for value",
+  "circuit": {
+    "constraints": 37667,
+    "ccs_sha256": "e674a1d3dcc62f545719aa80e0dd7cf00764505bf9fea98fccd8e925269e5a17"
+  },
+  "proving_key_sha256": "4b095abe5762889589288355287eb346093e2f6c049f0e83500fffeb7ac299a1",
+  "verifying_key_sha256": "9757c8ba86c6762657ddf932597a1036288b3bb5e46572213d88743652e9364e",
+  "kept": "all three are committed beside this file: the verifying key transfer.vk, the R1CS transfer.ccs (4.3 MB) and the proving key transfer.pk (13.9 MB), so that a new proof the deployed verifier accepts can be made from groth16tool prove. The proving key is public by design; what must not exist is the setup's toxic waste, and that is the caveat above"
+}

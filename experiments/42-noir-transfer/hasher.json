@@ -1,0 +1,42 @@
+{
+  "chainId": 8141,
+  "block": 491037,
+  "hasher": "0x4A3d85b02e2338ee80b5f47dd9702F330865D189",
+  "results": [
+    {
+      "inputs": 1,
+      "matches": true,
+      "gas": 32329
+    },
+    {
+      "inputs": 2,
+      "matches": true,
+      "gas": 32396
+    },
+    {
+      "inputs": 3,
+      "matches": true,
+      "gas": 32463
+    },
+    {
+      "inputs": 4,
+      "matches": true,
+      "gas": 61662
+    },
+    {
+      "inputs": 5,
+      "matches": true,
+      "gas": 61729
+    },
+    {
+      "inputs": 6,
+      "matches": true,
+      "gas": 61796
+    },
+    {
+      "inputs": 7,
+      "matches": true,
+      "gas": 90995
+    }
+  ]
+}

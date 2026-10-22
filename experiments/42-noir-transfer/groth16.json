@@ -1,0 +1,12 @@
+{
+  "chainId": 8141,
+  "block": 491265,
+  "address": "0xFaFcC27256f82DCCE5dDE9Af5f0b4011A5d77265",
+  "deployedBytes": 6995,
+  "publicInputs": 7,
+  "proofBytes": 384,
+  "calldataBytes": 612,
+  "verifyGas": 351601,
+  "verifySucceeded": true,
+  "changedInputSucceeded": false
+}
