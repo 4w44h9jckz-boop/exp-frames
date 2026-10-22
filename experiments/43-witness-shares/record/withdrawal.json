@@ -1,0 +1,17 @@
+{
+  "chainId": 8141,
+  "deposit": "0xdf36bedc6eaf225aa7b6803dcf7546681675ba991245254a2ae56a613c9d1052",
+  "fees": "chain::WALLET_FEES",
+  "leafIndex": 9,
+  "pool": "0xe19605853a749322655470199fd31d3f3e53baf9",
+  "publicInputs": {
+    "fee": "0x9d69c4ddd800",
+    "nullifierHash": "0x0dac892690da828524426a81a4ef2e25f2e90211ae3bcb49a0c85fb17f9af93d",
+    "recipient": "0x0d919708edb507731672f9f5e2c75dedfcc04d07",
+    "refund": "0x0",
+    "relayer": "0xe19605853a749322655470199fd31d3f3e53baf9",
+    "root": "0x0b5321c3f279eb07b631fc1b802ebff9878e05d7bf7db9a39c34eb97495a5b63"
+  },
+  "rootSlot": 523382,
+  "salt": "0x81be1a49c6e7af5c478664c52a11108448c5879591d088b1947dae517e7bca17"
+}

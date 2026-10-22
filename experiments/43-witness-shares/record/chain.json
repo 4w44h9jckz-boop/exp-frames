@@ -1,0 +1,52 @@
+{
+  "deposit": {
+    "hash": "0xdf36bedc6eaf225aa7b6803dcf7546681675ba991245254a2ae56a613c9d1052",
+    "block": 493475,
+    "status": 1,
+    "gasUsed": 1212999,
+    "payer": "0xb922f7fe9f9192d9346c70c0698005598a192888",
+    "frames": [
+      {
+        "execution": 100,
+        "state": 0,
+        "status": 1
+      },
+      {
+        "execution": 993657,
+        "state": 195840,
+        "status": 1
+      }
+    ]
+  },
+  "withdrawal": {
+    "hash": "0x1a7c9606ee464caa30d73e6b72e53bfacc43397cde775c5723423b29525363da",
+    "block": 493514,
+    "status": 1,
+    "gasUsed": 579697,
+    "payer": "0xe19605853a749322655470199fd31d3f3e53baf9",
+    "frames": [
+      {
+        "execution": 5579,
+        "state": 0,
+        "status": 1
+      },
+      {
+        "execution": 244744,
+        "state": 97920,
+        "status": 1
+      },
+      {
+        "execution": 14255,
+        "state": 183600,
+        "status": 1
+      },
+      {
+        "execution": 11531,
+        "state": 0,
+        "status": 1
+      }
+    ],
+    "sender": "0xe19605853a749322655470199fd31d3f3e53baf9",
+    "carriesCommitteeProof": true
+  }
+}
