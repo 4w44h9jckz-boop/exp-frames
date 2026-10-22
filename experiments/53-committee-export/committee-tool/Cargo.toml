@@ -1,0 +1,23 @@
+# A thin tool over the committee session's co-withdraw library, pinned at exp-e2e-frames
+# c8eb5cc and used unmodified: the note's commitment, the circuit's inputs from the chain's
+# leaves, and the witness reconstructed from two members' shares. Its own workspace, seeded
+# with that commit's Cargo.lock so the same versions build.
+[package]
+name = "committee-tool"
+version = "0.1.0"
+edition = "2024"
+license = "Apache-2.0"
+publish = false
+
+[workspace]
+
+[dependencies]
+co-withdraw = { git = "https://github.com/4w44h9jckz-boop/exp-e2e-frames", rev = "c8eb5cc80df46fec185367fdb7758d1b528c950f" }
+kohaku-tornadocash = { git = "https://github.com/4w44h9jckz-boop/kohaku-rs", rev = "ab056aba3348b94b682d166c933265ccf21a759d" }
+kohaku-tornadocash-circuit = { git = "https://github.com/4w44h9jckz-boop/kohaku-rs", rev = "ab056aba3348b94b682d166c933265ccf21a759d" }
+ark-bn254 = "0.6"
+ark-ff = "0.6"
+anyhow = "1"
+hex = "0.4"
+ruint = "1"
+serde_json = "1"

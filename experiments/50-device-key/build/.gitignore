@@ -1,0 +1,4 @@
+# Only what proving needs is kept: kernel.r1cs is rebuilt by circom (README, "The proving key").
+kernel.r1cs
+kernel_0.zkey
+kernel_js/*.js

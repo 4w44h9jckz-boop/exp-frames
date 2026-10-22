@@ -1,0 +1,3 @@
+# The run's working files: the shares and inputs hold the note's opening, so they are never committed.
+work/
+committee-tool/target/
