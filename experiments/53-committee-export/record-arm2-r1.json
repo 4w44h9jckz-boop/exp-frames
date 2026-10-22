@@ -1,0 +1,61 @@
+{
+  "run": "r1",
+  "coWithdraw": "exp-e2e-frames c8eb5cc80df46fec185367fdb7758d1b528c950f",
+  "pool": "0x73e47a8DA2C83Beb802708Fc473B5B7D094f3eE6",
+  "R": "0xdc28255962C856A5b3cc1016Ad3Db9EcF476BA28",
+  "N2": {
+    "commitment": "0x0760fc788dd8c43ca70c3b1cfcfced1d6a7ae3b4bf55a896bd310506fd0c8da0",
+    "nullifierHash": "0x0e168835c171e9bd416bede7728c41fadeea27f57320aef0a0a48ca0d7e48048"
+  },
+  "N3": {
+    "commitment": "0x089835b73f2e261597ee0da57144dfcaed94cfac4c90c06cdd2f562c8bdc85e8",
+    "nullifierHash": "0x0dd668957f65d9ce25d25e076334cf4e356985336dc1e94e59560e732d9e2de5"
+  },
+  "after": {
+    "pairsRebuildN2": true,
+    "n2OpeningRead": true,
+    "n2Spent": true,
+    "n3OpeningInRetainedShares": false,
+    "n3Live": true,
+    "chainLink": "N2's withdrawal paid R (0xdc28255962C856A5b3cc1016Ad3Db9EcF476BA28); R's own deposit put N3 in the pool: the chain links N2 to N3's leaf, though not to N3's opening"
+  },
+  "rows": [
+    {
+      "step": "N2: this experiment's account deposits note N2",
+      "outcome": "mined",
+      "hash": "0x762a8784671f885e29b13782d34bc32be6bb6f455b5248199219c6d11ab91c01",
+      "block": "493624"
+    },
+    {
+      "step": "N2: the committee's proof, withdrawing to the owner's fresh address R",
+      "outcome": "mined",
+      "hash": "0x6d59b72823afe7c54b770c69b99d38b8051a800194867c05ef1a26960b8b0824",
+      "block": "493626"
+    },
+    {
+      "step": "top-up: 0.002 ETH for R (first attempt)",
+      "outcome": "mined",
+      "hash": "0x689a3d57bbab304935de4d75385d9b0231a75ab1aebb594e6a7806672cfa0d1a",
+      "block": "493627"
+    },
+    {
+      "step": "re-commit, first attempt: R's deposit with 0.002 ETH of gas money",
+      "outcome": "refused in simulation, not sent: validation prefix frame reverted (R could not cover the transaction's maximum cost)"
+    },
+    {
+      "step": "top-up: 0.01 ETH more for R, from this experiment's account",
+      "outcome": "mined",
+      "hash": "0xcc422ae26ba0a3dd26eac17e82381baeddf5bacfd7b87aa5239b0a084474cb93",
+      "block": "493632",
+      "gasUsed": "26102"
+    },
+    {
+      "step": "re-commit: R deposits N3, fresh randomness, no committee",
+      "outcome": "mined",
+      "hash": "0x3f8ea6e6add49928fb07fac505c28945953f47969238911fe67f13c4b17fab2e",
+      "block": "493633",
+      "gasUsed": "1203002"
+    }
+  ],
+  "note": "Rows before the second top-up are from the first attempt, recovered from the chain; the script was then made to resume after N2's withdrawal."
+}
