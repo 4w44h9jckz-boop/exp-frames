@@ -6,6 +6,16 @@ and its public functions plain `SENDER` frames on L1". This experiment writes on
 a transfer of notes, in Noir, proves it on the device, and asks whether a frame can check the
 proof.
 
+> **Read after the run, 2026-10-26.** The circuit here is this repository's, on Aztec's note
+> and nullifier model, not Aztec's protocol: it has no account contract, kernel or private
+> execution environment. Aztec's own client proof is a different system, verified inside
+> Aztec's rollup circuits with no verifier of its own on L1. So the quoted sentence's "becomes a
+> dependency frame" needs that proof in a format the fold accepts. Aztec's public functions run
+> in its own VM, after and atomically with the private part; as frames they would be rewritten
+> as EVM calls. And Aztec hides which contract ran, which a pool as sender gives up. Sources:
+> docs.aztec.network v6.0.0, "Transactions" and "Private Kernel Circuit";
+> AztecProtocol/aztec-packages at `c1b606f9`, `barretenberg/cpp/src/barretenberg/chonk/README.md`.
+
 The first question: **which proof systems can Noir's toolchain verify on the EVM, and what does
 each verifier cost** against the testnet's 500,000 gas of `VERIFY` and EIP-8141's 100,000?
 

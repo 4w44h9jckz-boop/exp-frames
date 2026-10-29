@@ -6,6 +6,15 @@ a TFHE ciphertext, and its proof of knowledge is Zama's `tfhe-zk-pok`, the proof
 to a compact ciphertext list. This experiment asks whether that proof, as its authors ship it, can
 be checked by the EVM inside a `VERIFY` frame.
 
+> **Read after the run, 2026-10-26.** The sentence quoted above describes Fhenix's planned
+> threshold network, as Fhenix's blog and SDK introduction do. Fhenix's CoFHE documentation
+> and its `TaskManager` contract describe what runs today. One Intel TDX enclave checks each
+> input's proof and signs, and the chain checks that one signature. Another enclave holds the
+> whole key and decrypts. This experiment's answer stands either way: the proof of knowledge, as
+> tfhe-rs ships it, costs far more than a `VERIFY` frame can spend. Sources:
+> cofhe-docs.fhenix.zone (ZK Verifier, Teecryptor, Future plans); FhenixProtocol/cofhe-contracts
+> at `b5c20ed4`, `TaskManager.sol`.
+
 Two questions come first, in this order.
 1. **Can the proof be made on BLS12-381**, the curve whose pairings EIP-2537 prices? tfhe-rs makes
    it on BLS12-446, which the EVM does not pair.
