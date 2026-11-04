@@ -200,3 +200,119 @@ run shows the wallet can build and send each path; only the local chain shows a 
 **Contracts:** kohaku-rs `crates/frame-pq/contracts/`, `SphincsAccount.yul` and `SphincsSender.yul`,
 compiled by solc 0.8.37 (EVM version osaka, optimizer on, 200 runs): runtimes of 1,168 and 157
 bytes before their appended arguments.
+
+## Results, the test network modelled (2026-11-04)
+
+Every figure below is from the ethrex Hegota test network, chain 8141, blocks 688,182 to 688,354,
+with EIP-8288 **modelled**: each account and the paymaster were deployed with the triple in their
+own `VERIFY` data, and every leanSPHINCS signature was made over the transaction's signature hash
+and checked here with leanVM's verifier, never on chain. A "declared" figure is what EIP-8288
+would add: 3,000 gas per dependency. The local chain, where a block's proof would check them, has
+not run (amendment 1), so **experiment 49 is not done**.
+
+Code: kohaku-rs branch `experiment/pq-keys`, crate `frame-pq`, example `pq_wallet`; the runs used
+`ae68097` (arms 1, 2, 4, 5) and `e2ac92b` (arms 3, 6), built with `-C target-cpu=native`.
+Commands: the example's header. Records: `results/`; the mined transactions are fixtures in
+`test/fixtures/chain/`. No mnemonic, secret key or signature is recorded; each signature's
+keccak256 and whether it verified are.
+
+### Arm 1, the signer (`results/1-signer.json`)
+
+On this machine (4 threads, Intel Xeon at 2.10 GHz), medians of nine: key generation 18.7 ms,
+signing 46.0 ms, verifying 0.14 ms. A public key is 32 bytes, a signature 7,740.
+
+### Arm 2, the account (`results/2-account-testnet.json`)
+
+| Step | Tx | Block | `gasUsed` | Frames | Declared |
+|---|---|---|---|---|---|
+| the funder deploys account 0 and funds it | `0x73d80d75...` | 688,182 | 2,429,985 | | |
+| account 0, owner 0's triple | `0xe77a4e92...` | 688,184 | 25,750 | `VERIFY` 2,666 · post 4,593 | 3,000 |
+| a triple naming owner 1's key | refused before inclusion: "validation prefix frame reverted" | | | | |
+
+Experiment 45's owner transaction, the same post, used 27,782 (`VERIFY` 2,404). With the declared
+3,000, the leanSPHINCS one is 28,750.
+
+### Arm 3, recovery (`results/4-recover-testnet.json`)
+
+| Step | Tx | Block | `gasUsed` | Frames: execution + state |
+|---|---|---|---|---|
+| the funder pays three guardians' accounts | `0x80ac08b5...` | 688,320 | 595,676 | |
+| owner 0 commits account 0 to `R` and posts the envelope (277 bytes) | `0x1d4d4671...` | 688,322 | 142,641 | 2,666 · 12,393 + 97,920 · 6,689 |
+| guardians 2 and 3, with `R`, start a recovery to their own key | `0x922f7a72...` | 688,324 | 141,270 | 3,444 · 24,528 + 97,920 |
+| owner 0 cancels it | `0xc9aade71...` | 688,326 | 28,837 | 2,666 · 12,373 |
+| guardian 1's own key starts a recovery | refused before inclusion | | | |
+| guardian 1 deploys its account and posts its share, sealed with ML-KEM-768 (1,138 bytes) | `0xf7cbcc0b...` | 688,328 | 404,093 | 15,296 + 290,700 · 446 · 13,765 |
+| guardian 3 does the same | `0xc612166e...` | 688,330 | 404,093 | the same |
+| the new device joins `R`, finds the envelope, opens it with the phrase (189 ms) and has the seed | off chain | | | |
+| `R` starts a recovery to owner 1 | `0x7040602b...` | 688,332 | 43,350 | 3,444 · 24,528 |
+| owner 1 finishes it, past the unlock time | `0x16a7ca5d...` | 688,352 | 41,529 | 3,020 · 24,699 |
+| account 0, owner 1's triple | `0xb4154ce2...` | 688,354 | 27,798 | 2,666 · 4,855 |
+
+Each authorised step declares one dependency, 3,000 more. Experiment 46's start and finish used
+33,924 and 42,604.
+
+### Arms 4 and 5, a fresh sender, a recipient, the bound ticket (`results/3-tickets-testnet.json`)
+
+| Step | Tx | Block | `gasUsed` | Frames: execution + state | Declared |
+|---|---|---|---|---|---|
+| account 0 deploys the bound paymaster, buys 2 tickets, deposits a note | `0x0791c2f3...` | 688,273 | 3,897,709 | | 3,000 |
+| a fresh sender deploys itself and posts, paid by a bound ticket | `0x7b526ab7...` | 688,275 | 640,298 | deploy 15,296 + 474,300 · `VERIFY` 446 · pay **122,277** · post 4,855 | 6,000 |
+| the withdrawal to a leanSPHINCS recipient, the pool its own sender, paid by a bound ticket | `0xfc601b1c...` | 688,278 | 694,111 | root 5,579 · pool 244,817 · pay **122,277** + 97,920 · payout 14,410 + 183,600 | 3,000 |
+| the recipient deploys itself and sends a tenth back, paying its own gas | `0x2a9fcab2...` | 688,280 | 333,547 | deploy 15,296 + 290,700 · `VERIFY` 446 · 3,000 | 3,000 |
+
+The ticket requests were signed by account 0's owner key with leanSPHINCS, and the issuers saw
+the blinded points and the requests only. The withdrawal's copies:
+- **(a) fees raised, the triple kept:** the node's simulation accepted it, and the binder's
+  signature does not verify over the copy's hash. It was not sent. On a chain where nothing checks
+  the dependency, the binding binds nothing; that is what modelling means here.
+- **(b) the triple removed:** refused before inclusion.
+- **(c) another key named, declared and signing:** refused before inclusion, by the pairing.
+
+### Arm 6, sealing (`results/5-seal-testnet.json`)
+
+The funder deposited a pool note and posted its opening sealed with ML-KEM-768 to the viewing key
+(`0xc294d595...`, block 688,339, 1,231,044 gas, 1,355 sealed bytes). A device with only the seed
+read the board's 191 messages, opened one, and found the note at leaf 30, unspent (3.6 s).
+
+### Arm 7, the passkey
+
+Not built, as planned. What can stand in for it is a leanSPHINCS key kept encrypted under the
+passkey's `prf` output, so the passkey still gates each use. What the user loses, each a property
+the authenticator's P-256 key has and this does not: the key never leaving the authenticator; a
+signature naming the site it was made for; and an attestation that still means something after a
+quantum computer. None of the three was measured.
+
+### Predictions, as far as the modelled runs reach
+
+1. **Held:** 25,750, or 28,750 with the declared 3,000, is under twice experiment 45's 27,782.
+2. **Wrong:** a fresh sender cost 640,298, 646,298 declared, not under 500,000. The account's
+   self-deployment alone is 474,300 state gas: a new account and 190 bytes of code.
+3. **Held, modelled:** the bound check used 122,277 against experiment 48's 122,350. With a
+   dependency frame the check would loop over frames instead; that is the local chain's to
+   measure.
+4. **Not tested:** it is about the local chain. Modelled, copy (a) is accepted.
+5. **Held:** signing 46.0 ms and key generation 18.7 ms.
+
+### Against "would show it wrong", modelled
+
+- No path in the table needed an elliptic-curve key in these runs. The funder's secp256k1 key
+  only funded. The issuers' BLS signatures and the pool's Groth16 proof are outside, as said.
+- The recovery restored owner 1's leanSPHINCS key from the seed through a leanSPHINCS recovery key.
+- The bound check fits: 122,277 of 500,000.
+- The binder's key did not reach the issuers.
+
+None of this is shown on a chain that checks the signatures. That is the local chain's.
+
+### Passes that stopped
+
+Three earlier passes of arms 4 and 5 stopped before their record: at the fresh sender's
+self-deployment, whose state gas was reserved for the initcode and passed 500,000 (fixed in
+`fd2a2c8`); at the recipient's spend, whose tip and amount exceeded what it held (`efd085f`); and
+at a fresh sender whose label a stopped pass had used (`ae68097`). Their mined steps: blocks
+688,232 to 688,234, 688,244 to 688,251, and 688,261 to 688,263.
+
+### Conditions
+
+- leanVM has no zero knowledge yet: no result here depends on hiding a signature, but anything
+  said about what a party cannot learn holds only once it does.
+- EIP-8288 is a draft, and here it is modelled.
