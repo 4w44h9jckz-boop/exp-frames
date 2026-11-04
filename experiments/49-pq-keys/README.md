@@ -5,9 +5,12 @@ a backup anyone can store, and a ticket bound to the transaction it pays for. Ev
 authorises something on those paths is an elliptic-curve key: secp256k1 for the owners, the
 recovery key, the fresh senders, the pool's recipients and the one-time binder, and P-256 for the
 passkey accounts of experiments 11 and 50. A quantum computer running Shor's algorithm recovers
-any of them from its public key, and a public key is on chain from its first signature. EF
-Protocol's deadline for moving off them reads: December 2029 published, December 2028 stated as a
-hope.
+any of them from its public key, and a public key is on chain from its first signature. The
+target for moving off them is December 2028, as Justin Drake gave it in his Devcon 8 talk; the
+September roadmap had December 2029.
+
+*Amended 2026-11-04, wording only: the date sentence above replaces "December 2029 published,
+December 2028 stated as a hope". No claim, falsifier or prediction changed.*
 
 This experiment gives each of the wallet's paths a hash-based form, leanSPHINCS, and runs each
 path with it beside the classical records. The classical runs stay as they are; this one is new,
