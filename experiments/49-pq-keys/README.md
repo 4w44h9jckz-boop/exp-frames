@@ -366,9 +366,9 @@ The binary is then `target/release/examples/pq_wallet`.
 | 4, 5 | `MODE=tickets RUN=0 RECORD=3-tickets-local.json pq_wallet` | the seed; account 0 from arm 2 | the record | the paymaster and a note; two tickets issued; a fresh sender's first transaction and the withdrawal mined; copies (b) and (c) refused; the recipient's spend mined |
 | 3 | `MODE=recover STATE_DIR=<a 0700 directory> RECORD=4-recover-local.json pq_wallet` | the seed; account 0, still held by owner 0 | the record; `STATE_DIR/phrase.txt` | as on the test network; it waits out the account's 120 s delay |
 | 6 | `MODE=seal RECORD=5-seal-local.json pq_wallet` | the seed | the record | a note deposited and its opening sealed; a device with only the seed finds it |
-| 4, 5, prediction 4 | the same with `SEND_COPY_A=1 RUN=1`, last | as above | the record | copy (a) sent before the original, with no witness for its hash. What the node does with it is prediction 4: refused at admission, or never in a block whose proof the node accepts. **It may stall block production** if the builder keeps proposing it; run it last |
+| 4, 5, prediction 4 | the same with `SEND_COPY_A=1`, on a second seed, last | as above | the record | copy (a) sent before the original, with no witness for its hash. What the node does with it is prediction 4: refused at admission, or never in a block whose proof the node accepts. **It may stall block production** if the builder keeps proposing it; run it last |
 
-Arm 3 leaves account 0 held by owner 1, and `MODE=tickets` needs owner 0, so the copy (a) run uses a second seed: `MODE=new`, `MODE=account`, then the tickets row. Each record names its
+Arm 3 leaves account 0 held by owner 1, and `MODE=tickets` needs owner 0, so the copy (a) run uses a second seed: `MODE=new`, `MODE=addresses` (its funder also needs 1 ETH at genesis), `MODE=account`, then the tickets row with `RUN=0`. Each record names its
 transactions; capture them as fixtures if the chain is to be kept.
 
 **Not run here.** The dependency carrier is built but untested on any chain. The test network
