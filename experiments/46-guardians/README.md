@@ -239,3 +239,8 @@ commitment, which had no state gas for its fresh slot. They are fixtures too.
      from the envelope. A post-quantum account would check a hash-based one-time key for `R`, as
      experiment 17's account does, and the shares would travel off the chain or under a
      post-quantum KEM.
+
+## A post-quantum run
+
+Experiment 49 runs this experiment's paths again with leanSPHINCS keys, beside the records above,
+which stay as they are: [`../49-pq-keys/README.md`](../49-pq-keys/README.md).

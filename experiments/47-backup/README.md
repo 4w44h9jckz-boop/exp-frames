@@ -208,3 +208,8 @@ buyers, unpredictable timing, and no reuse of anything across versions answer li
      secp256k1 ECDH announcements in that run, and whose account checks secp256k1 signatures.
      Here the shares were handed over off the chain. And the ticket committee's BLS key, from
      which a quantum adversary could forge tickets: the paymaster's loss, not the backup's.
+
+## A post-quantum run
+
+Experiment 49 runs this experiment's paths again with leanSPHINCS keys, beside the records above,
+which stay as they are: [`../49-pq-keys/README.md`](../49-pq-keys/README.md).

@@ -253,3 +253,8 @@ and the ticket check exactly experiment 36's. Every transaction above is a fixtu
      HKDF-SHA256 labels here would need a SHA-256 HMAC circuit, which it does not list. A
      derivation chosen with such proofs in mind would keep every level hardened and stay on
      HMAC-SHA512.
+
+## A post-quantum run
+
+Experiment 49 runs this experiment's paths again with leanSPHINCS keys, beside the records above,
+which stay as they are: [`../49-pq-keys/README.md`](../49-pq-keys/README.md).

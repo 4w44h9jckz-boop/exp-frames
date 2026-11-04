@@ -184,3 +184,8 @@ A reading of the binding, recorded after the run, lists four cases. What this ru
    who sees the binder's public key in a pending transaction could sign a copy. The ticket's
    unlinkability is perfect, so it holds. The committee's BLS key does not hold. A hash-based
    one-time key would hold, at the cost of never signing a replacement.
+
+## A post-quantum run
+
+Experiment 49 runs this experiment's paths again with leanSPHINCS keys, beside the records above,
+which stay as they are: [`../49-pq-keys/README.md`](../49-pq-keys/README.md).
