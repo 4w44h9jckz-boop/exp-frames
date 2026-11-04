@@ -319,3 +319,57 @@ at a fresh sender whose label a stopped pass had used (`ae68097`). Their mined s
 - leanVM has no zero knowledge yet: no result here depends on hiding a signature, but anything
   said about what a party cannot learn holds only once it does.
 - EIP-8288 is a draft, and here it is modelled.
+
+## Running arms 2 to 6 on a chain with EIP-8288
+
+For the local chain: ethrex `64b8fc09` with `exp-e2e-frames` experiment 19's EIP-8288 patch, set
+as written (`X14_EIP8288=written`). Every leanSPHINCS dependency is valid as written, so nothing
+needs the extension. The example talks to ethrex directly; no skandha in front. It reads the
+chain id from the node. No secp256k1 key is used: with `PRIVATE_KEY` unset, the funder is a
+leanSPHINCS account that the genesis funds.
+
+From kohaku-rs `f80adbe`, in `crates/`, built once with
+`RUSTFLAGS="-C target-cpu=native" cargo build --release -p kohaku-frame-pq --example pq_wallet`.
+The binary is then `target/release/examples/pq_wallet`.
+
+**Common environment:**
+
+| Variable | Value |
+|---|---|
+| `RPC_URL` | the node's HTTP RPC |
+| `CARRIER` | `dependency`: accounts and the paymaster read their triples from a dependency frame only |
+| `WITNESS_DIR` | the node's `X14_WITNESS_DIR`; each signature is written there, as `w-<keccak256(0x10 \vert\vert sig hash \vert\vert key)>.json` (`publicKey`, `signature`, `message`), before its transaction is sent |
+| `SEED_FILE` | a file outside any repository, mode 0600; `MODE=new` writes a fresh mnemonic there |
+| `PRIVATE_KEY` | unset |
+| `BOARD`, `POOL` | the addresses of experiment 33's board and experiment 06's keyed pool on that chain, if not the test network's |
+
+**Before the first arm:**
+1. `MODE=new` writes the mnemonic.
+2. `MODE=addresses` prints, with `CARRIER=dependency`, the funder's address (`funder`) and account
+   0's.
+3. The genesis gives `funder` 1 ETH. That is all it must fund: every other account is funded by
+   it.
+
+**What the chain must already hold:**
+- the CREATE2 deployer at `0x4e59b44847b379578588920ca78fbf26c0b4956c`, which deploys every
+  account and the paymaster;
+- the board, for arms 2, 3, 4 and 6;
+- for arms 4, 5 and 6, experiment 06's keyed pool with its verifier, filing its roots with EIP-8272
+  (`0x8272`) under the salt `keccak256("exp-frames/06/pool-keyed")`. If the pool there was
+  deployed with another salt, those arms stop at the withdrawal's root.
+
+**One command per arm, in this order:**
+
+| Arm | Command | Reads | Writes | Expects |
+|---|---|---|---|---|
+| 2 | `MODE=account RECORD=2-account-local.json pq_wallet` | the seed | the record | account 0 deployed and funded, a transaction by owner 0 mined, one naming owner 1's key refused |
+| 4, 5 | `MODE=tickets RUN=0 RECORD=3-tickets-local.json pq_wallet` | the seed; account 0 from arm 2 | the record | the paymaster and a note; two tickets issued; a fresh sender's first transaction and the withdrawal mined; copies (b) and (c) refused; the recipient's spend mined |
+| 4, 5, prediction 4 | the same with `SEND_COPY_A=1 RUN=1` | as above | the record | copy (a) sent before the original, with no witness for its hash. What the node does with it is prediction 4: refused at admission, or never in a block whose proof the node accepts. **It may stall block production** if the builder keeps proposing it; run it last |
+| 3 | `MODE=recover STATE_DIR=<a 0700 directory> RECORD=4-recover-local.json pq_wallet` | the seed; account 0, still held by owner 0 | the record; `STATE_DIR/phrase.txt` | as on the test network; it waits out the account's 120 s delay |
+| 6 | `MODE=seal RECORD=5-seal-local.json pq_wallet` | the seed | the record | a note deposited and its opening sealed; a device with only the seed finds it |
+
+Arm 3 leaves account 0 held by owner 1, so it runs after arms 4 and 5. Each record names its
+transactions; capture them as fixtures if the chain is to be kept.
+
+**Not run here.** The dependency carrier is built but untested on any chain. The test network
+refuses mode 4, and the local chain is not built in this session.
