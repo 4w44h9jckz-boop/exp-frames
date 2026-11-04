@@ -173,3 +173,30 @@ and 48; and the passkey's section is answered.
 
 This is the post-quantum run of experiments 45 to 48. What stays classical, said above: the
 issuers' BLS signatures, the pool's Groth16 proof, the passkey's attestation.
+
+## Amendment 1, 2026-11-04, after the contracts were written and before any run
+
+**What changes.**
+1. **The carrier is fixed at deployment, not read from the transaction.** The plan said one bytecode
+   would take the triple from a dependency frame when there is one, and otherwise from its own
+   `VERIFY` data, as experiment 19's contracts do. On a chain with EIP-8288 that account would
+   accept a triple in its `VERIFY` data, which nothing proves: anyone could spend from it. So each
+   account takes a flag at deployment: a dependency frame only, or its own `VERIFY` data only (the
+   test network, modelled). The source is one; the two deployments differ by the flag, and so by
+   address.
+2. **Fresh senders and recipients get a smaller account.** A fresh sender deploys itself in its own
+   first transaction, ahead of its `VERIFY`, and that frame's state gas is capped at 500,000, which
+   leaves room for 206 bytes of code. `SphincsAccount` is 1,168 bytes. So paths 5 and 7 use
+   `SphincsSender`: one key, kept in its code, no storage, no recovery, 190 bytes with its key.
+   Path 1 and 2's account is deployed by another transaction, as experiment 45's was.
+3. **The local chain is not built yet.** Building the patched ethrex in this session's environment
+   was refused by the environment's permissions. Arms 2 to 6 stay planned on the local chain, and
+   the experiment is not done until they run there or are stopped with a measured reason. In the
+   meantime every arm also runs on the test network, modelled, arms 3 and 6 included.
+
+**What it does not change.** No claim, falsifier, prediction or "done when" is edited. A modelled
+run shows the wallet can build and send each path; only the local chain shows a chain checking it.
+
+**Contracts:** kohaku-rs `crates/frame-pq/contracts/`, `SphincsAccount.yul` and `SphincsSender.yul`,
+compiled by solc 0.8.37 (EVM version osaka, optimizer on, 200 runs): runtimes of 1,168 and 157
+bytes before their appended arguments.
