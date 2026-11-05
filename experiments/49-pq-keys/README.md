@@ -475,3 +475,24 @@ arms 2, 4 and 5 have their modelled gas beside experiments 45 and 48; the passke
 answered. What remains open is copy (a) through a checking node, which is a mempool question,
 not a wallet path.
 
+
+### Copy (a) through a node, local run 6 (2026-11-05)
+
+`exp-e2e-frames` `7dcf15f`, `experiments/22-q1-leansphincs-senders/results/49-local/6-sixth-run/`:
+kohaku-rs `04b4a0f`, with `COPY_A_RPC_URL` at one skandha node, `e9512aa`, under its
+`eip-8288-master` profile. All 24 block proofs checked valid. The second seed's arm ran to its
+end: the bound-ticket spend, copies (b) and (c), the withdrawal and the recipient's spend.
+
+The node refused copy (a) with `ErrFrameUnrecognizedPrefix`, before it asked for any proof. A
+sender's `VERIFY`, then a paymaster's, then a dependency frame, is a payer-paid prefix with a
+dependency, and that profile recognizes no such shape. So the node kept the copy out, and the chain
+kept moving. It did so by the transaction's shape, not by checking the binder's signature, and it
+would refuse the original for the same reason.
+
+For a node to check the binding it needs two things:
+- a profile that recognizes this prefix;
+- the binder's signature handed in as the dependency's proof, through `frames_sendWrapper` rather
+  than `eth_sendRawTransaction`.
+
+That is the mempool's next version of claim-gated admission, not the wallet's. Prediction 4 stands
+as answered above.
