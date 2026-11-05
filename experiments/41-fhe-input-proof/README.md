@@ -301,3 +301,88 @@ must (`1-v1-d64-noise.json`).
 digest and the key's rule are as written. The program is a new file, so it has a new key. Version
 1's records stand: they show the first program does not fit leanVM's bound at tfhe-rs's
 parameters.
+
+### Results, version 2 (2026-11-05)
+
+Program `crates/fhe-input-pq/programs/fhe_input_v2.py`, instantiated per $(d, k)$; the
+instantiated file is the program, and its key is keccak256 of that file. kohaku-rs
+`experiment/q8-fhe-input` `ceec4df` (proofs) and `a9ca8d3` (the request); built with
+`-C target-cpu=native`; this machine: 4 threads, 15 GiB. Records in `pq/2-v2-*.json` and
+`pq/3-request-testnet.json`; commands in the examples' headers.
+
+**The proof** (`examples/prove`):
+
+| $d$ | $k$ | cycles | prove | verify | proof | peak memory | committed |
+|---:|---:|---:|---:|---:|---:|---:|---:|
+| 64 | 1 | 46,174 | 0.25 s | 52 ms | 242,768 B | 0.09 GB | $2^{20.3}$ |
+| 256 | 1 | 220,911 | 0.57 s | 78 ms | 276,120 B | 0.34 GB | $2^{22.4}$ |
+| 1024 | 1 | 1,807,803 | 4.1 s | 76 ms | 322,576 B | 2.46 GB | $2^{25.3}$ |
+| **2048** | **1** | **5,974,185** | **14.6 s** | **77 ms** | **356,904 B** | **6.29 GB** | $2^{27.3}$ |
+| 2048 | 32 | 6,751,799 | 14.2 s | 77 ms | 357,640 B | 6.39 GB | $2^{27.3}$ |
+
+At tfhe-rs's parameters, one 2-bit block and a 64-bit integer (32 blocks) each prove within
+leanVM's bound and this machine's memory. The witness with one noise coefficient at $2^{17}$, one
+past its bound, does not prove (`2-v2-d2048-noise.json`: the noise's top byte fails its range
+check).
+
+**The request, on the test network, modelled** (`examples/request`; chain 8141). `FheRequest` was
+deployed for the key's hash and the program's key, and funded (`0x2786cac0...`, block 702,456,
+1,410,791 gas). The request, $d = 2048$, $k = 1$:
+
+| Tx | Block | `gasUsed` | `VERIFY` | request frame |
+|---|---|---|---|---|
+| `0xd2a2e8ee99dcb33ca29c186b76e2570adbdc6ad58e93b587474e533d69673417` | 702,460 | 1,168,854 | **7,940** | 20,821 + 97,920 |
+
+The `VERIFY` frame hashed the 16,400-byte ciphertext from the request frame, rebuilt $\mu$ and
+the digest, and found the triple. The transaction's remaining gas is its calldata. The proof
+(357,128 B, 5,974,185 cycles, 13.8 s) was checked here, off chain. On the test network nothing on
+chain checks it, and EIP-8288 would add the 30,000 this family models for a leanSTARK dependency.
+
+Refused before inclusion, each "validation prefix frame reverted":
+- the same request with one ciphertext coefficient changed and the triple kept;
+- after the request was mined, the same proof and triple at the next request number.
+
+**Predictions:**
+1. **Held:** 5,974,185 cycles at $d = 2048$, $k = 1$, within 5 to 20 million. Cycles grew about as
+   $d^2$ from $d = 256$ on.
+2. **Held for version 2; version 1 was refused** (amendment 1): 14.6 s and 6.29 GB.
+3. **Held:** 356,904 B, about 349 KiB.
+4. **Held, modelled:** 7,940 gas of `VERIFY`, against EIP-8141's 100,000 and experiment 41's floor
+   of 3,936,012 for the pairing-based proof.
+5. **Held:** the changed ciphertext and the next request number were refused by the digest, and
+   the out-of-bound witness did not prove.
+
+**Against "would show it wrong":** the statement proved within this machine's memory, and in one
+leanSTARK dependency. Neither falsifier is observed.
+
+**Not done yet:** the local chain, EIP-8288 extended to leanSTARK, where the block's validity
+checks the proof. The procedure is below.
+
+### Running the request on a chain with EIP-8288 extended
+
+For ethrex `64b8fc09` with `exp-e2e-frames` experiment 19's patch at `X14_EIP8288=extended`, from
+kohaku-rs `a9ca8d3` or later, in `crates/`. Build once:
+
+```bash
+RUSTFLAGS="-C target-cpu=native" cargo build --release -p kohaku-fhe-input-pq --example request
+```
+
+| Variable | Value |
+|---|---|
+| `RPC_URL` | the node's HTTP RPC: ethrex's own pool, since skandha's node path counts only leanSPHINCS proofs as checked |
+| `CARRIER` | `dependency`: `FheRequest` reads the triple from a dependency frame (mode 4) only |
+| `WITNESS_DIR` | the node's `X14_WITNESS_DIR`: the proof is written there as `w-<keccak256(0x11 \vert\vert D \vert\vert key)>.bin` (bare hex), before the request is sent |
+| `PROGRAMS_DIR` | the chain's program directory: the instantiated program is written there as `fhe_input_v2_d2048_k1.py`, before the request is sent |
+| `SEED_FILE` | a mnemonic file; with `PRIVATE_KEY` unset, the funder is its leanSPHINCS account `sphincs/funder` (experiment 49's `MODE=addresses` prints it), which the genesis funds |
+| `RECORD` | where the record goes |
+
+One command, `target/release/examples/request`:
+1. deploys and funds `FheRequest`;
+2. proves for this chain's request (about 15 s and 6.3 GB at $d = 2048$);
+3. sends the changed-ciphertext copy, which must be refused;
+4. sends the request, `[VERIFY, DEP_VERIFY, SENDER]`, which must be mined with its proof checked
+   by the block;
+5. sends the same proof at the next request number, which must be refused.
+
+The builder must find the program by its key in `PROGRAMS_DIR`, and the proof by its triple in
+`WITNESS_DIR`. The program directory must be the one the chain was started with.

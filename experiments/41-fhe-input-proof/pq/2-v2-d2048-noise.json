@@ -1,0 +1,19 @@
+{
+  "bytecodeLen": 32768,
+  "compileMs": 24.134743,
+  "ctBytes": 16400,
+  "d": 2048,
+  "digest": "0xdec68281163733ed189bf3643a22585a279b0d28865a9164d18f758ba0d1ac65",
+  "error": "Execution(ExecError { pc: 17145, site: \"check (line 78)\", fault: WildPointer { value: F192 { c0: 9223372036854775821, c1: 0, c2: 0 } } })",
+  "k": 1,
+  "peakRssBytes": 79593472,
+  "pkKeccak": "0xad4093b3f26c7da7fbb70504504179c534e3488ad4aa1b6d4e05c6a28c6818ce",
+  "programKey": "0x1afd035cef9447a121963b027e6018f2d7f1ab142d4f50414bfe2093bf484d07",
+  "proveMs": 147.031147,
+  "proved": false,
+  "seed": 1,
+  "spoil": "NoiseOutOfBound",
+  "threads": 4,
+  "version": 2,
+  "witnessMs": 9.511689
+}
