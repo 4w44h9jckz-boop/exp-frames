@@ -268,3 +268,36 @@ proof checked by the block; or a measured reason why it cannot be.
   knowledge, and no record publishes a proof's bytes beyond its hash.
 - EIP-8288 reserves `LEANSTARK_SCHEME`; the local chain extends it, and the test network models it.
 - It is a port: it measures the model, not tfhe-rs's own proof.
+
+### Amendment 1, 2026-11-05, after version 1 and before version 2's runs
+
+**Version 1, as planned** (kohaku-rs `experiment/q8-fhe-input` `9dd918b`, program
+`crates/fhe-input-pq/programs/fhe_input.py`; records in `pq/1-v1-*.json`). It used 32-bit halves
+held as powers of $g$, and the product eight slots at a time.
+
+| $d$ | cycles | prove | verify | proof | peak memory | committed |
+|---:|---:|---:|---:|---:|---:|---:|
+| 64 | 133,713 | 0.49 s | 22 ms | 299,976 B | 0.24 GB | |
+| 256 | 781,678 | 1.94 s | 28 ms | 301,536 B | 1.08 GB | |
+| 1024 | 7,040,380 | 15.9 s | 41 ms | 348,032 B | 5.60 GB | $2^{27.1}$ words |
+| 2048 | refused | | | | 6.07 GB | $2^{30}$ words |
+
+At $d = 2048$ leanVM refused the proof before proving: `WitnessOutOfRange { log_committed: 30 }`.
+leanVM at `3cbac04` accepts a committed witness of at most $2^{28}$ words (`MAX_MU`), the largest
+its verifiers and its recursion accept. The out-of-bound noise witness failed at $d = 64$, as it
+must (`1-v1-d64-noise.json`).
+
+**What changes, for version 2.** The same statement, more cheaply:
+- **A coefficient as one exponent of a primitive element $h$ of $\mathrm{GF}(2^{192})^\times$**
+  ($h = 7 + 8Y$, of order $2^{192} - 1$, pinned by `tests/generator.rs`), in place of two 32-bit
+  halves under $g$. A coefficient sum is below $2^{75}$, so it never wraps, and one table read and
+  one product replace two.
+- **Coefficients read a byte at a time**, through tables, in place of a bit at a time.
+- **The product tiled**, sixteen output coefficients by sixteen slots of $J$, so that each slot's
+  pointer serves sixteen products.
+- The carry check is then one equation per coefficient.
+
+**What it does not change.** No claim, falsifier, prediction or "done when". The statement, the
+digest and the key's rule are as written. The program is a new file, so it has a new key. Version
+1's records stand: they show the first program does not fit leanVM's bound at tfhe-rs's
+parameters.

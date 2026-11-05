@@ -1,0 +1,18 @@
+{
+  "bytecodeLen": 2048,
+  "compileMs": 4.795522,
+  "ctBytes": 528,
+  "d": 64,
+  "digest": "0xa3862cc63b795c55c99942493ecd35b3d5b81b74d1c3237a9d0cbc92522cbc7a",
+  "error": "Execution(ExecError { pc: 907, site: \"check_coef (line 108)\", fault: Conflict { cell: 107157, had: F192 { c0: 0, c1: 0, c2: 0 }, new: F192 { c0: 8706384889867503036, c1: 0, c2: 0 }, hint: None } })",
+  "k": 1,
+  "peakRssBytes": 15351808,
+  "pkKeccak": "0xdb6ef8e193377ca57932bbecac5f729dba0e8b3d06e28ffe2d511dbb4367ff8c",
+  "programKey": "0xbeaed0c399ec8ae188a93789f606bc8ab9b0b7a88ff1fd75380436f391e51c66",
+  "proveMs": 23.029341,
+  "proved": false,
+  "seed": 1,
+  "spoil": "NoiseOutOfBound",
+  "threads": 4,
+  "witnessMs": 0.096816
+}

@@ -1,0 +1,23 @@
+{
+  "bytecodeLen": 4096,
+  "compileMs": 5.362228,
+  "ctBytes": 2064,
+  "cycles": 781678,
+  "d": 256,
+  "details": "MUL 2^18.674 (53.5%)  DEREF 2^17.108 (18.1%)  XOR 2^16.712 (13.7%)  SET 2^16.689 (13.5%)  JUMP 2^13.178 (1.2%)  KECCAK 2^5.615 (0.0%)  MEMORY 2^19.598  BYTECODE 2^11.043  TOTAL_COMMITTED 2^24.201",
+  "digest": "0x09ec9a8cad263f5ace4a2544f1816352f29021ab5af5481245ef865a50506dba",
+  "k": 1,
+  "peakRssBytes": 1083265024,
+  "pkKeccak": "0xb315e1cb0fecb737180cb5c37171fc3d6980ef244fbb4cf699ea2e6267e6c60c",
+  "programKey": "0xbeaed0c399ec8ae188a93789f606bc8ab9b0b7a88ff1fd75380436f391e51c66",
+  "proofBytes": 301536,
+  "proofKeccak": "0x613e60d102d5840563f95c89ae432a77719196a5b0e37eb84ceea2c3b06af4c1",
+  "proveMs": 1939.271528,
+  "proved": true,
+  "seed": 1,
+  "spoil": "None",
+  "threads": 4,
+  "verified": true,
+  "verifyMs": 26.624156,
+  "witnessMs": 2.858541
+}

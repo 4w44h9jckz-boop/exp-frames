@@ -1,0 +1,18 @@
+{
+  "bytecodeLen": 8192,
+  "compileMs": 7.47308,
+  "ctBytes": 16400,
+  "d": 2048,
+  "digest": "0x5606d0083ecfedd9748c828db41d980538afc62ce9f16208f02efa0ea4c0a1ba",
+  "error": "WitnessOutOfRange { log_committed: 30 }",
+  "k": 1,
+  "peakRssBytes": 6072266752,
+  "pkKeccak": "0xad4093b3f26c7da7fbb70504504179c534e3488ad4aa1b6d4e05c6a28c6818ce",
+  "programKey": "0xbeaed0c399ec8ae188a93789f606bc8ab9b0b7a88ff1fd75380436f391e51c66",
+  "proveMs": 7098.3618369999995,
+  "proved": false,
+  "seed": 1,
+  "spoil": "None",
+  "threads": 4,
+  "witnessMs": 5.578044
+}
