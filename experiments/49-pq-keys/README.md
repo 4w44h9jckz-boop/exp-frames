@@ -314,6 +314,14 @@ self-deployment, whose state gas was reserved for the initcode and passed 500,00
 at a fresh sender whose label a stopped pass had used (`ae68097`). Their mined steps: blocks
 688,232 to 688,234, 688,244 to 688,251, and 688,261 to 688,263.
 
+### A defect in the records, 2026-11-05
+
+In `results/3-tickets-testnet.json`, `committeeKey`, each ticket's `point` and each issuer
+request's `blinded` begin `0x0x`: the example prefixed a string that already had its prefix. The
+bytes after it are right. The records stay as they are; kohaku-rs `1fe661e` fixes the example. The
+same defect named the witness files the local chain's builder reads, which is why the
+coordinator's first local run mined nothing (`exp-e2e-frames` `c80c2b3`).
+
 ### Conditions
 
 - leanVM has no zero knowledge yet: no result here depends on hiding a signature, but anything
