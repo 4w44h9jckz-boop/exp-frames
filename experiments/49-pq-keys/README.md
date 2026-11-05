@@ -409,3 +409,69 @@ transactions; capture them as fixtures if the chain is to be kept.
 
 **Not run here.** The dependency carrier is built but untested on any chain. The test network
 refuses mode 4, and the local chain is not built in this session.
+
+## Results, the local chain (2026-11-05)
+
+Run by the coordinator on ethrex `64b8fc09` with `exp-e2e-frames` experiment 19's EIP-8288
+patch, set as written. The node checked every block's aggregated leanSPHINCS proof, and no
+secp256k1 key was set: the funder was a leanSPHINCS account that the genesis funded. Records:
+`exp-e2e-frames`, `experiments/22-q1-leansphincs-senders/results/49-local/`, runs 1 to 5. The
+last, run 5, is at `49ecdc3`, from kohaku-rs `8688508` with `CARRIER=dependency` and a
+validation budget of 500,000. Unlike the test network's, these signatures were checked on chain.
+
+**Runs 1 to 4 stopped on the example, not on the claim.** Each stop is in amendment 2 and the
+coordinator's records:
+- run 1: witness files misnamed (fixed in `1fe661e`);
+- run 2: the dependency frame inside the validation prefix (fixed in `e6f1623`);
+- run 3: EIP-8141's own 100,000 budget, which the bound paymaster's 240,000 exceeds;
+- run 4: experiment 06's pool refusing the dependency frame (amendment 2, `8688508`).
+
+**Run 5.** All 22 block proofs checked valid.
+- **Arm 2:** account 0's transaction was mined at 26,225 gas (run 2's figure, unchanged in run 5).
+  A triple naming owner 1's key was refused.
+- **Arm 3**, end to end:
+  - the colluding start was mined at 144,942 and owner 0's cancel at 32,418;
+  - guardian 1's outside start was refused;
+  - each sealed share cost 404,568;
+  - `R`'s start cost 47,022, the finish 45,190, and owner 1's transaction 28,273.
+- **Arms 4 and 5**, end to end:
+  - the fresh sender's bound-ticket spend: 647,461;
+  - copies (a) to (c): refused;
+  - the withdrawal, the pool its own sender, paid by a bound ticket, from `DependencyFramePool`:
+    698,067;
+  - the leanSPHINCS recipient deploying itself and spending: 337,177.
+- **Arm 6:** the deposit and the sealed opening: 3,426,312, into the variant pool.
+
+On this chain each figure includes the dependency frame's 3,000 per signature, which the test
+network's figures had only as "declared".
+
+**Prediction 4, answered.** Copy (a) was sent with `SEND_COPY_A=1` from a second seed: fees
+raised, the binder's triple kept, no witness for its hash.
+- **Admission:** plain ethrex's pool admitted it. It does not check a dependency's signature at
+  admission, and the copy then held the sender's nonce, so the original and everything after it
+  in that arm were refused as an underpriced replacement.
+- **In a block:** no block included it before the run ended. The coordinator's experiment 22
+  (arm 3) shows what follows when one does: the builder keeps proposing the block, never proves
+  it, and the head stays put for 21 rebuilds.
+- So the binding holds, since the copy is never in a block the node accepts, but the price is the
+  chain's liveness, not the copy's refusal.
+- A node that checks each dependency's signature before admission refuses it instead.
+  `COPY_A_RPC_URL` (kohaku-rs `04b4a0f`) sends the copy to such a node, for a rerun of that step
+  alone.
+- Which of the two a chain does is the mempool's to settle (its next version of claim-gated
+  admission).
+
+**Against "would show it wrong", on a chain that checks:**
+- **Elliptic-curve keys:** no wallet path needed one. The funder too was leanSPHINCS. The issuers'
+  BLS and the pool's Groth16 remain, as said at the start.
+- **Recovery:** a leanSPHINCS recovery key replaced the owner with the seed's next leanSPHINCS key.
+- **Budget:** the bound paymaster's check fits the test network's 500,000 and not EIP-8141's
+  100,000. The falsifier names experiment 48's budget, the test network's, so it is not met. The
+  100,000 is recorded as the finding it is.
+- **The issuers:** the binder's key did not reach them.
+
+**Done when, met:** every path in the table is mined on a chain that checks the dependencies;
+arms 2, 4 and 5 have their modelled gas beside experiments 45 and 48; the passkey's section is
+answered. What remains open is copy (a) through a checking node, which is a mempool question,
+not a wallet path.
+
