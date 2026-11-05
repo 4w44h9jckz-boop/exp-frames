@@ -386,3 +386,34 @@ One command, `target/release/examples/request`:
 
 The builder must find the program by its key in `PROGRAMS_DIR`, and the proof by its triple in
 `WITNESS_DIR`. The program directory must be the one the chain was started with.
+
+### Results, the local chain (2026-11-05)
+
+Run by the coordinator by the procedure above: ethrex `64b8fc09` with `exp-e2e-frames` experiment
+19's EIP-8288 patch, `X14_EIP8288=extended`, on ethrex's own pool, from kohaku-rs `a9ca8d3`
+(`request`, `-C target-cpu=native`). No secp256k1 key was set. Records: `exp-e2e-frames`
+`d66cd3c`, `experiments/22-q1-leansphincs-senders/results/41-local/2-second-run/`, with the
+example's `request.json` beside the run's own record. Run 1 stopped on the runner: the genesis
+funded another address.
+
+| Step | Block | `gasUsed` | Frames |
+|---|---|---|---|
+| `FheRequest` deployed and funded by a leanSPHINCS funder, its dependency checked | 1 | 1,717,177 | |
+| the request, $d = 2048$, $k = 1$ | 16 | 1,169,329 | `VERIFY` 8,007 · dependency 30,000 · request 20,821 + 97,920 |
+
+- **The proof:** 5,974,185 cycles, 358,440 B, proved in 12.7 s.
+- **The block:** the builder checked the block's leanSTARK proof against $D$ and the program's key
+  in 115 ms, and found it valid. The node imported the block.
+- **Refused:** the changed ciphertext, and the same proof at the next request number.
+
+**It is done.** X5's input side, a request carrying one TFHE input, is mined on a chain whose
+block checks the input's leanVM proof. One leanSTARK dependency carried it. On this chain the
+validation step costs 8,007 gas, plus the 30,000 this family models for the dependency, against
+at least 3,936,012 for experiment 41's pairing-based proof. That proof is broken by a quantum
+computer anyway; this one is hash-based.
+
+**Conditions, again:**
+- leanVM has no zero knowledge yet: this proof hides nothing it was given, the plaintext
+  included.
+- The chain extends EIP-8288, which reserves leanSTARK.
+- It is a port: it measures the model, not tfhe-rs's own proof.
