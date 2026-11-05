@@ -328,6 +328,34 @@ coordinator's first local run mined nothing (`exp-e2e-frames` `c80c2b3`).
   said about what a party cannot learn holds only once it does.
 - EIP-8288 is a draft, and here it is modelled.
 
+## Amendment 2, 2026-11-05, after local runs 1 to 4 and before run 5
+
+The coordinator runs arms 2 to 6 on a local chain with EIP-8288 as written (`exp-e2e-frames`
+`4305f65`, experiment 22's `results/49-local/`). Run 4 mined the fresh sender's bound-ticket
+spend and refused copies (a) to (c). Then the withdrawal was refused: "validation prefix frame
+reverted".
+
+**Found.** Experiment 06's keyed pool accepts its frame layouts exactly: in its `VERIFY` the
+frame count must be the layout's, because every `SENDER` frame runs as the pool. A withdrawal
+that declares the binder in a dependency frame has one frame more, and the pool refuses it. So,
+where EIP-8288 runs, a pool built as experiment 06's cannot be paid for by a ticket bound with a
+leanSPHINCS key. The same holds for any dependency in its transaction.
+
+**What changes.** With the dependency carrier, arms 4 and 5 deposit into and withdraw from
+`DependencyFramePool.yul`. That is experiment 06's `FramePool.yul` with one change: dependency
+frames (mode 4) between the last `VERIFY` and the withdrawal frame are not counted. They execute
+nothing and move nothing. The example deploys it with the deployed pool's verifier, hasher,
+denomination, mode and history, under its own salt (kohaku-rs `8688508` or later). The test
+network's records, on experiment 06's pool, are unchanged.
+
+**What it does not change.** No claim, falsifier or prediction. The pool's change is the run's
+finding, and the variant is what lets the rest of arm 5 run.
+
+**Also from those runs:** run 3 used ethrex's default `VERIFY` budget, EIP-8141's 100,000. The
+ticket-paid transaction was refused: "prefix gas budget exceeded: 240000 > 100000". The bound
+paymaster's BLS check does not fit the EIP's own budget, as experiment 48's did not. Run 4 and
+later use the test network's 500,000.
+
 ## Running arms 2 to 6 on a chain with EIP-8288
 
 For the local chain: ethrex `64b8fc09` with `exp-e2e-frames` experiment 19's EIP-8288 patch, set
@@ -336,7 +364,7 @@ needs the extension. The example talks to ethrex directly; no skandha in front. 
 chain id from the node. No secp256k1 key is used: with `PRIVATE_KEY` unset, the funder is a
 leanSPHINCS account that the genesis funds.
 
-From kohaku-rs `f80adbe`, in `crates/`, built once with
+From kohaku-rs `8688508` or later, in `crates/`, built once with
 `RUSTFLAGS="-C target-cpu=native" cargo build --release -p kohaku-frame-pq --example pq_wallet`.
 The binary is then `target/release/examples/pq_wallet`.
 
