@@ -180,3 +180,91 @@ call itself, at block 490,853:
 - No EVM verifier was written: the floor already exceeds both budgets.
 - tfhe-rs's own ciphertexts were not proved on BLS12-381 (observation 3).
 - The format agreed with the committee's input side is not needed until a request can be checked.
+
+## A post-quantum run, written before any code (2026-11-05)
+
+The run above found that tfhe-zk-pok's proof, checked by the EVM, costs at least 3,936,012 gas,
+and that its pairings are broken by a quantum computer anyway. This run asks the same question of
+a hash-based proof: one leanVM proof of the ciphertext's well-formedness, checked as one EIP-8288
+leanSTARK dependency, in place of the pairing-based proof. The records above stay as they are.
+
+**It is a port.** It measures the model: the relation tfhe-rs's compact public-key encryption
+satisfies, written as a leanVM program. It does not measure tfhe-rs's or tfhe-zk-pok's own proof,
+and it is not their code.
+
+### The statement
+
+Public: the compact public key $(a, b)$, $d$ coefficients each, and the ciphertext $(c_1, c_2)$,
+$d$ and $k$ coefficients, all in $\mathbb{Z}_{2^{64}}$. Private: $r \in \{0,1\}^d$,
+$e_1 \in [-2^{17}, 2^{17})^d$, $e_2 \in [-2^{17}, 2^{17})^k$, $m \in [0, 16)^k$, such that, modulo
+$2^{64}$,
+
+$$c_1 = a \circledast r + e_1, \qquad c_{2,i} = \langle b, r \rangle_i + e_{2,i} + 2^{59} m_i,$$
+
+where $\circledast$ is the negacyclic product in $\mathbb{Z}_{2^{64}}[X]/(X^d + 1)$ and
+$\langle b, r \rangle_i$ the $i$-th rotated inner product, exactly as `kohaku-fhe-input`'s
+`encrypt` computes them (tfhe-zk-pok's test encryption, at tfhe-rs `0a43e3cd`, $d = 2048$,
+`TUniform(17)` noise, a 2-bit message with 2 carry bits and a padding bit). The bounds are exact,
+where tfhe-zk-pok's proof bounds the noise with slack, so the port proves no weaker a bound.
+
+### How, fixed now
+
+- **The program**, one file in leanVM's zkDSL at `3cbac04`, under the layout of `exp-e2e-frames`
+  `docs/leanvm-program-layout.md` (`72068fd`): the key is keccak256 of the file, and the public
+  input is one digest $D$.
+- **Integers in the exponent.** leanVM's words are elements of $\mathrm{GF}(2^{192})$ and it has no
+  integer arithmetic. Multiplying powers of its generator $g$ adds exponents exactly modulo
+  $2^{64} - 1$, so each 64-bit coefficient is split into two 32-bit halves, held as $g^{x}$. A sum
+  of at most $d$ halves stays below $2^{43}$ and so never wraps, and the carries between halves and
+  the final reduction modulo $2^{64}$ are hinted and checked. Each coefficient read from the
+  hashed bytes is decomposed into bits, which are checked binary and recomposed both ways.
+- **The binary $r$ as its support:** the prover gives the indices $j$ with $r_j = 1$, strictly
+  increasing, and the product sums only those columns.
+- **The digest:** $D = H(H(h_{pk}, h_{ct}), \mu)$, where $h_{pk}$ and $h_{ct}$ are keccak256 of
+  the key's and the ciphertext's bytes (little-endian 64-bit coefficients, the cell layout), and
+  $\mu$ is the request's message: keccak256 of a domain, the chain id, the request contract, its
+  request number and the requester. The contract holds $h_{pk}$, hashes the ciphertext from its
+  calldata, and rebuilds $\mu$ and $D$.
+- **A request contract** in kohaku-rs, `FheRequest.yul`: it accepts one TFHE input per
+  transaction when the transaction declares the triple `0x11 || D || key`, and records the
+  ciphertext's hash.
+- **Sizes:** first $k = 1$ at $d \in \{64, 256, 1024, 2048\}$, for the scaling, proved and verified
+  by experiment 19's prover built with `-C target-cpu=native`. Then $d = 2048$ with $k = 32$ (a
+  64-bit integer), if $k = 1$ fits.
+- **Chains:** the local chain, EIP-8288 extended (leanSTARK is reserved as written), run by the
+  coordinator, with the proof handed to the builder. The test network, modelled: the triple in
+  `VERIFY` data, the proof checked off chain, every figure saying so.
+- **Refusals:**
+  - a proof for a ciphertext with one coefficient changed;
+  - the same proof under another request number;
+  - a witness with one noise coefficient out of bound, which must fail to prove.
+
+### It would be shown wrong if any of these is observed
+
+- the statement cannot be proved within the wallet machine's memory (this machine: 15 GiB);
+- its proof needs more than one leanSTARK dependency.
+
+### It is done when
+
+X5's input side, a request carrying one TFHE input, is mined on the local chain with its leanVM
+proof checked by the block; or a measured reason why it cannot be.
+
+### Predictions, fixed now
+
+1. **Cycles grow as $d^2$:** the product dominates, about $2d^2$ multiplications for $d^2/2$
+   expected terms. At $d = 2048$, $k = 1$: between 5 and 20 million cycles.
+2. **$d = 2048$, $k = 1$ proves on this machine** (4 threads, 15 GiB), within 10 minutes, at a
+   peak memory under 15 GiB.
+3. **The proof is 200 to 400 KiB**, as experiment 19's are.
+4. **The request's `VERIFY` frame fits EIP-8141's 100,000 gas**, hashing the ciphertext included.
+   The ciphertext's 16 KiB of calldata is paid outside it.
+5. **Each refusal holds:** the changed ciphertext and the other request number are refused by the
+   contract's digest, and the out-of-bound witness does not prove.
+
+### Conditions, in every result
+
+- leanVM has no zero knowledge yet: the proof hides nothing it was given, here $r$, $e_1$, $e_2$
+  and $m$, the plaintext included. Every privacy statement is conditional on it gaining zero
+  knowledge, and no record publishes a proof's bytes beyond its hash.
+- EIP-8288 reserves `LEANSTARK_SCHEME`; the local chain extends it, and the test network models it.
+- It is a port: it measures the model, not tfhe-rs's own proof.
