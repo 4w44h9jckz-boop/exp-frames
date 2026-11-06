@@ -1,0 +1,3167 @@
+{
+ "notApplicable": {
+  "backup": "a wallet backup configuration, not a transaction",
+  "behaviour": "weeks of one user's activity, not one transaction",
+  "lending_portfolio": "a portfolio of lending positions, read from protocol state",
+  "governance": "a DAO proposal, not a transaction",
+  "l2_anonymity": "a layer-2 action with its batch and sequencer; the cases here are layer-1 frame transactions",
+  "bridge": "a sequence of bridge transfers across chains",
+  "sequencer": "a submission to a layer-2 sequencer",
+  "stealth": "a stealth-address deposit and spend pair",
+  "rpc": "a session of RPC queries, not a transaction"
+ },
+ "cases": {
+  "27/sponsored-transfer": {
+   "source": "experiment 27, cases-eip8250-f3079a0.txt",
+   "verdict": "valid",
+   "files": [
+    {
+     "file": "27_sponsored-transfer/transfer_destination.json",
+     "record": "transfer_destination",
+     "frame": 2,
+     "underivable": [
+      "intended_target_chain_id",
+      "intended_target_chain_name",
+      "recipient_tx_count_on_target_chain",
+      "recipient_tx_count_on_other_chains",
+      "recipient_is_contract",
+      "recipient_implements_receive",
+      "recipient_implements_erc20_receiver",
+      "user_expects_eoa",
+      "recipient_lookalike_in_history",
+      "recipient_address_distance",
+      "recent_dust_from_lookalike",
+      "ens_name_resolved",
+      "ens_typed_address",
+      "recipient_paused",
+      "recipient_migrated_to",
+      "recipient_last_activity_age_days",
+      "amount_value_usd",
+      "current_timestamp"
+     ]
+    },
+    {
+     "file": "27_sponsored-transfer/typed_signature.json",
+     "record": "typed_signature",
+     "frame": null,
+     "underivable": [
+      "dapp_origin",
+      "spender_address",
+      "approval_amount",
+      "expiry_seconds",
+      "spender_in_protocol_registry",
+      "token_address",
+      "batch_tokens",
+      "nft_collection_address",
+      "operator_address",
+      "operator_in_marketplace_registry",
+      "operator_creation_timestamp",
+      "seaport_offer_assets",
+      "seaport_consideration_eth",
+      "seaport_collection_floor_eth",
+      "seaport_total_offer_value_usd",
+      "ui_description",
+      "payload_semantic",
+      "domain_in_protocol_registry",
+      "domain_age_days",
+      "is_homoglyph_of_known",
+      "current_timestamp"
+     ]
+    },
+    {
+     "file": "27_sponsored-transfer/inclusion.json",
+     "record": "inclusion",
+     "frame": null,
+     "underivable": [
+      "selected_relays",
+      "has_private_mempool_configured",
+      "destination_chain",
+      "interacts_with_sanctioned_addresses",
+      "recent_block_builder_count",
+      "dominant_builder_share",
+      "wallet_exposes_l1_inbox_path",
+      "mev_boost_enabled"
+     ]
+    },
+    {
+     "file": "27_sponsored-transfer/account_readiness.json",
+     "record": "account_readiness",
+     "frame": null,
+     "underivable": [
+      "has_stealth_meta_address",
+      "meta_address_has_mlkem",
+      "stealth_protocol_version",
+      "smart_account_has_pq_module",
+      "smart_account_upgradeable",
+      "interacted_with_protocols",
+      "recent_ecdh_ephemeral_keys_seen",
+      "encrypted_blobs_without_pq_kem",
+      "bls_deposit_count",
+      "bls_committee_memberships",
+      "bls_attestations_count",
+      "first_tx_timestamp",
+      "latest_tx_timestamp",
+      "tx_count",
+      "total_value_usd",
+      "has_rotated_key",
+      "current_timestamp"
+     ]
+    }
+   ]
+  },
+  "27/with-expiry": {
+   "source": "experiment 27, cases-eip8250-f3079a0.txt",
+   "verdict": "valid",
+   "files": [
+    {
+     "file": "27_with-expiry/transfer_destination.json",
+     "record": "transfer_destination",
+     "frame": 3,
+     "underivable": [
+      "intended_target_chain_id",
+      "intended_target_chain_name",
+      "recipient_tx_count_on_target_chain",
+      "recipient_tx_count_on_other_chains",
+      "recipient_is_contract",
+      "recipient_implements_receive",
+      "recipient_implements_erc20_receiver",
+      "user_expects_eoa",
+      "recipient_lookalike_in_history",
+      "recipient_address_distance",
+      "recent_dust_from_lookalike",
+      "ens_name_resolved",
+      "ens_typed_address",
+      "recipient_paused",
+      "recipient_migrated_to",
+      "recipient_last_activity_age_days",
+      "amount_value_usd",
+      "current_timestamp"
+     ]
+    },
+    {
+     "file": "27_with-expiry/typed_signature.json",
+     "record": "typed_signature",
+     "frame": null,
+     "underivable": [
+      "dapp_origin",
+      "spender_address",
+      "approval_amount",
+      "expiry_seconds",
+      "spender_in_protocol_registry",
+      "token_address",
+      "batch_tokens",
+      "nft_collection_address",
+      "operator_address",
+      "operator_in_marketplace_registry",
+      "operator_creation_timestamp",
+      "seaport_offer_assets",
+      "seaport_consideration_eth",
+      "seaport_collection_floor_eth",
+      "seaport_total_offer_value_usd",
+      "ui_description",
+      "payload_semantic",
+      "domain_in_protocol_registry",
+      "domain_age_days",
+      "is_homoglyph_of_known",
+      "current_timestamp"
+     ]
+    },
+    {
+     "file": "27_with-expiry/inclusion.json",
+     "record": "inclusion",
+     "frame": null,
+     "underivable": [
+      "selected_relays",
+      "has_private_mempool_configured",
+      "destination_chain",
+      "interacts_with_sanctioned_addresses",
+      "recent_block_builder_count",
+      "dominant_builder_share",
+      "wallet_exposes_l1_inbox_path",
+      "mev_boost_enabled"
+     ]
+    },
+    {
+     "file": "27_with-expiry/account_readiness.json",
+     "record": "account_readiness",
+     "frame": null,
+     "underivable": [
+      "has_stealth_meta_address",
+      "meta_address_has_mlkem",
+      "stealth_protocol_version",
+      "smart_account_has_pq_module",
+      "smart_account_upgradeable",
+      "interacted_with_protocols",
+      "recent_ecdh_ephemeral_keys_seen",
+      "encrypted_blobs_without_pq_kem",
+      "bls_deposit_count",
+      "bls_committee_memberships",
+      "bls_attestations_count",
+      "first_tx_timestamp",
+      "latest_tx_timestamp",
+      "tx_count",
+      "total_value_usd",
+      "has_rotated_key",
+      "current_timestamp"
+     ]
+    }
+   ]
+  },
+  "27/atomic-approve-swap": {
+   "source": "experiment 27, cases-eip8250-f3079a0.txt",
+   "verdict": "valid",
+   "files": [
+    {
+     "file": "27_atomic-approve-swap/approval.json",
+     "record": "approval",
+     "frame": 2,
+     "underivable": [
+      "permit_expiry_seconds",
+      "spender_verified",
+      "spender_creation_timestamp",
+      "spender_in_scam_db",
+      "spender_in_protocol_registry",
+      "spender_bytecode_match_scam",
+      "last_interaction_with_spender_days",
+      "exposed_value_usd",
+      "current_timestamp"
+     ]
+    },
+    {
+     "file": "27_atomic-approve-swap/typed_signature.json",
+     "record": "typed_signature",
+     "frame": null,
+     "underivable": [
+      "dapp_origin",
+      "spender_address",
+      "approval_amount",
+      "expiry_seconds",
+      "spender_in_protocol_registry",
+      "token_address",
+      "batch_tokens",
+      "nft_collection_address",
+      "operator_address",
+      "operator_in_marketplace_registry",
+      "operator_creation_timestamp",
+      "seaport_offer_assets",
+      "seaport_consideration_eth",
+      "seaport_collection_floor_eth",
+      "seaport_total_offer_value_usd",
+      "ui_description",
+      "payload_semantic",
+      "domain_in_protocol_registry",
+      "domain_age_days",
+      "is_homoglyph_of_known",
+      "current_timestamp"
+     ]
+    },
+    {
+     "file": "27_atomic-approve-swap/inclusion.json",
+     "record": "inclusion",
+     "frame": null,
+     "underivable": [
+      "selected_relays",
+      "has_private_mempool_configured",
+      "destination_chain",
+      "interacts_with_sanctioned_addresses",
+      "recent_block_builder_count",
+      "dominant_builder_share",
+      "wallet_exposes_l1_inbox_path",
+      "mev_boost_enabled"
+     ]
+    },
+    {
+     "file": "27_atomic-approve-swap/account_readiness.json",
+     "record": "account_readiness",
+     "frame": null,
+     "underivable": [
+      "has_stealth_meta_address",
+      "meta_address_has_mlkem",
+      "stealth_protocol_version",
+      "smart_account_has_pq_module",
+      "smart_account_upgradeable",
+      "interacted_with_protocols",
+      "recent_ecdh_ephemeral_keys_seen",
+      "encrypted_blobs_without_pq_kem",
+      "bls_deposit_count",
+      "bls_committee_memberships",
+      "bls_attestations_count",
+      "first_tx_timestamp",
+      "latest_tx_timestamp",
+      "tx_count",
+      "total_value_usd",
+      "has_rotated_key",
+      "current_timestamp"
+     ]
+    }
+   ]
+  },
+  "27/deploy-first": {
+   "source": "experiment 27, cases-eip8250-f3079a0.txt",
+   "verdict": "valid",
+   "files": [
+    {
+     "file": "27_deploy-first/transfer_destination.json",
+     "record": "transfer_destination",
+     "frame": 3,
+     "underivable": [
+      "intended_target_chain_id",
+      "intended_target_chain_name",
+      "recipient_tx_count_on_target_chain",
+      "recipient_tx_count_on_other_chains",
+      "recipient_is_contract",
+      "recipient_implements_receive",
+      "recipient_implements_erc20_receiver",
+      "user_expects_eoa",
+      "recipient_lookalike_in_history",
+      "recipient_address_distance",
+      "recent_dust_from_lookalike",
+      "ens_name_resolved",
+      "ens_typed_address",
+      "recipient_paused",
+      "recipient_migrated_to",
+      "recipient_last_activity_age_days",
+      "amount_value_usd",
+      "current_timestamp"
+     ]
+    },
+    {
+     "file": "27_deploy-first/typed_signature.json",
+     "record": "typed_signature",
+     "frame": null,
+     "underivable": [
+      "dapp_origin",
+      "spender_address",
+      "approval_amount",
+      "expiry_seconds",
+      "spender_in_protocol_registry",
+      "token_address",
+      "batch_tokens",
+      "nft_collection_address",
+      "operator_address",
+      "operator_in_marketplace_registry",
+      "operator_creation_timestamp",
+      "seaport_offer_assets",
+      "seaport_consideration_eth",
+      "seaport_collection_floor_eth",
+      "seaport_total_offer_value_usd",
+      "ui_description",
+      "payload_semantic",
+      "domain_in_protocol_registry",
+      "domain_age_days",
+      "is_homoglyph_of_known",
+      "current_timestamp"
+     ]
+    },
+    {
+     "file": "27_deploy-first/inclusion.json",
+     "record": "inclusion",
+     "frame": null,
+     "underivable": [
+      "selected_relays",
+      "has_private_mempool_configured",
+      "destination_chain",
+      "interacts_with_sanctioned_addresses",
+      "recent_block_builder_count",
+      "dominant_builder_share",
+      "wallet_exposes_l1_inbox_path",
+      "mev_boost_enabled"
+     ]
+    },
+    {
+     "file": "27_deploy-first/account_readiness.json",
+     "record": "account_readiness",
+     "frame": null,
+     "underivable": [
+      "has_stealth_meta_address",
+      "meta_address_has_mlkem",
+      "stealth_protocol_version",
+      "smart_account_has_pq_module",
+      "smart_account_upgradeable",
+      "interacted_with_protocols",
+      "recent_ecdh_ephemeral_keys_seen",
+      "encrypted_blobs_without_pq_kem",
+      "bls_deposit_count",
+      "bls_committee_memberships",
+      "bls_attestations_count",
+      "first_tx_timestamp",
+      "latest_tx_timestamp",
+      "tx_count",
+      "total_value_usd",
+      "has_rotated_key",
+      "current_timestamp"
+     ]
+    }
+   ]
+  },
+  "27/keyed-nonces": {
+   "source": "experiment 27, cases-eip8250-f3079a0.txt",
+   "verdict": "valid",
+   "files": [
+    {
+     "file": "27_keyed-nonces/transfer_destination.json",
+     "record": "transfer_destination",
+     "frame": 2,
+     "underivable": [
+      "intended_target_chain_id",
+      "intended_target_chain_name",
+      "recipient_tx_count_on_target_chain",
+      "recipient_tx_count_on_other_chains",
+      "recipient_is_contract",
+      "recipient_implements_receive",
+      "recipient_implements_erc20_receiver",
+      "user_expects_eoa",
+      "recipient_lookalike_in_history",
+      "recipient_address_distance",
+      "recent_dust_from_lookalike",
+      "ens_name_resolved",
+      "ens_typed_address",
+      "recipient_paused",
+      "recipient_migrated_to",
+      "recipient_last_activity_age_days",
+      "amount_value_usd",
+      "current_timestamp"
+     ]
+    },
+    {
+     "file": "27_keyed-nonces/typed_signature.json",
+     "record": "typed_signature",
+     "frame": null,
+     "underivable": [
+      "dapp_origin",
+      "spender_address",
+      "approval_amount",
+      "expiry_seconds",
+      "spender_in_protocol_registry",
+      "token_address",
+      "batch_tokens",
+      "nft_collection_address",
+      "operator_address",
+      "operator_in_marketplace_registry",
+      "operator_creation_timestamp",
+      "seaport_offer_assets",
+      "seaport_consideration_eth",
+      "seaport_collection_floor_eth",
+      "seaport_total_offer_value_usd",
+      "ui_description",
+      "payload_semantic",
+      "domain_in_protocol_registry",
+      "domain_age_days",
+      "is_homoglyph_of_known",
+      "current_timestamp"
+     ]
+    },
+    {
+     "file": "27_keyed-nonces/inclusion.json",
+     "record": "inclusion",
+     "frame": null,
+     "underivable": [
+      "selected_relays",
+      "has_private_mempool_configured",
+      "destination_chain",
+      "interacts_with_sanctioned_addresses",
+      "recent_block_builder_count",
+      "dominant_builder_share",
+      "wallet_exposes_l1_inbox_path",
+      "mev_boost_enabled"
+     ]
+    },
+    {
+     "file": "27_keyed-nonces/account_readiness.json",
+     "record": "account_readiness",
+     "frame": null,
+     "underivable": [
+      "has_stealth_meta_address",
+      "meta_address_has_mlkem",
+      "stealth_protocol_version",
+      "smart_account_has_pq_module",
+      "smart_account_upgradeable",
+      "interacted_with_protocols",
+      "recent_ecdh_ephemeral_keys_seen",
+      "encrypted_blobs_without_pq_kem",
+      "bls_deposit_count",
+      "bls_committee_memberships",
+      "bls_attestations_count",
+      "first_tx_timestamp",
+      "latest_tx_timestamp",
+      "tx_count",
+      "total_value_usd",
+      "has_rotated_key",
+      "current_timestamp"
+     ]
+    }
+   ]
+  },
+  "27/legacy-nonce-7": {
+   "source": "experiment 27, cases-eip8250-f3079a0.txt",
+   "verdict": "valid",
+   "files": [
+    {
+     "file": "27_legacy-nonce-7/transfer_destination.json",
+     "record": "transfer_destination",
+     "frame": 2,
+     "underivable": [
+      "intended_target_chain_id",
+      "intended_target_chain_name",
+      "recipient_tx_count_on_target_chain",
+      "recipient_tx_count_on_other_chains",
+      "recipient_is_contract",
+      "recipient_implements_receive",
+      "recipient_implements_erc20_receiver",
+      "user_expects_eoa",
+      "recipient_lookalike_in_history",
+      "recipient_address_distance",
+      "recent_dust_from_lookalike",
+      "ens_name_resolved",
+      "ens_typed_address",
+      "recipient_paused",
+      "recipient_migrated_to",
+      "recipient_last_activity_age_days",
+      "amount_value_usd",
+      "current_timestamp"
+     ]
+    },
+    {
+     "file": "27_legacy-nonce-7/typed_signature.json",
+     "record": "typed_signature",
+     "frame": null,
+     "underivable": [
+      "dapp_origin",
+      "spender_address",
+      "approval_amount",
+      "expiry_seconds",
+      "spender_in_protocol_registry",
+      "token_address",
+      "batch_tokens",
+      "nft_collection_address",
+      "operator_address",
+      "operator_in_marketplace_registry",
+      "operator_creation_timestamp",
+      "seaport_offer_assets",
+      "seaport_consideration_eth",
+      "seaport_collection_floor_eth",
+      "seaport_total_offer_value_usd",
+      "ui_description",
+      "payload_semantic",
+      "domain_in_protocol_registry",
+      "domain_age_days",
+      "is_homoglyph_of_known",
+      "current_timestamp"
+     ]
+    },
+    {
+     "file": "27_legacy-nonce-7/inclusion.json",
+     "record": "inclusion",
+     "frame": null,
+     "underivable": [
+      "selected_relays",
+      "has_private_mempool_configured",
+      "destination_chain",
+      "interacts_with_sanctioned_addresses",
+      "recent_block_builder_count",
+      "dominant_builder_share",
+      "wallet_exposes_l1_inbox_path",
+      "mev_boost_enabled"
+     ]
+    },
+    {
+     "file": "27_legacy-nonce-7/account_readiness.json",
+     "record": "account_readiness",
+     "frame": null,
+     "underivable": [
+      "has_stealth_meta_address",
+      "meta_address_has_mlkem",
+      "stealth_protocol_version",
+      "smart_account_has_pq_module",
+      "smart_account_upgradeable",
+      "interacted_with_protocols",
+      "recent_ecdh_ephemeral_keys_seen",
+      "encrypted_blobs_without_pq_kem",
+      "bls_deposit_count",
+      "bls_committee_memberships",
+      "bls_attestations_count",
+      "first_tx_timestamp",
+      "latest_tx_timestamp",
+      "tx_count",
+      "total_value_usd",
+      "has_rotated_key",
+      "current_timestamp"
+     ]
+    }
+   ]
+  },
+  "27/value-and-default": {
+   "source": "experiment 27, cases-eip8250-f3079a0.txt",
+   "verdict": "valid",
+   "files": [
+    {
+     "file": "27_value-and-default/transfer_destination.json",
+     "record": "transfer_destination",
+     "frame": 2,
+     "underivable": [
+      "intended_target_chain_id",
+      "intended_target_chain_name",
+      "recipient_tx_count_on_target_chain",
+      "recipient_tx_count_on_other_chains",
+      "recipient_is_contract",
+      "recipient_implements_receive",
+      "recipient_implements_erc20_receiver",
+      "user_expects_eoa",
+      "recipient_lookalike_in_history",
+      "recipient_address_distance",
+      "recent_dust_from_lookalike",
+      "ens_name_resolved",
+      "ens_typed_address",
+      "recipient_paused",
+      "recipient_migrated_to",
+      "recipient_last_activity_age_days",
+      "amount_value_usd",
+      "current_timestamp"
+     ]
+    },
+    {
+     "file": "27_value-and-default/typed_signature.json",
+     "record": "typed_signature",
+     "frame": null,
+     "underivable": [
+      "dapp_origin",
+      "spender_address",
+      "approval_amount",
+      "expiry_seconds",
+      "spender_in_protocol_registry",
+      "token_address",
+      "batch_tokens",
+      "nft_collection_address",
+      "operator_address",
+      "operator_in_marketplace_registry",
+      "operator_creation_timestamp",
+      "seaport_offer_assets",
+      "seaport_consideration_eth",
+      "seaport_collection_floor_eth",
+      "seaport_total_offer_value_usd",
+      "ui_description",
+      "payload_semantic",
+      "domain_in_protocol_registry",
+      "domain_age_days",
+      "is_homoglyph_of_known",
+      "current_timestamp"
+     ]
+    },
+    {
+     "file": "27_value-and-default/inclusion.json",
+     "record": "inclusion",
+     "frame": null,
+     "underivable": [
+      "selected_relays",
+      "has_private_mempool_configured",
+      "destination_chain",
+      "interacts_with_sanctioned_addresses",
+      "recent_block_builder_count",
+      "dominant_builder_share",
+      "wallet_exposes_l1_inbox_path",
+      "mev_boost_enabled"
+     ]
+    },
+    {
+     "file": "27_value-and-default/account_readiness.json",
+     "record": "account_readiness",
+     "frame": null,
+     "underivable": [
+      "has_stealth_meta_address",
+      "meta_address_has_mlkem",
+      "stealth_protocol_version",
+      "smart_account_has_pq_module",
+      "smart_account_upgradeable",
+      "interacted_with_protocols",
+      "recent_ecdh_ephemeral_keys_seen",
+      "encrypted_blobs_without_pq_kem",
+      "bls_deposit_count",
+      "bls_committee_memberships",
+      "bls_attestations_count",
+      "first_tx_timestamp",
+      "latest_tx_timestamp",
+      "tx_count",
+      "total_value_usd",
+      "has_rotated_key",
+      "current_timestamp"
+     ]
+    }
+   ]
+  },
+  "27/blobs": {
+   "source": "experiment 27, cases-eip8250-f3079a0.txt",
+   "verdict": "valid",
+   "files": [
+    {
+     "file": "27_blobs/typed_signature.json",
+     "record": "typed_signature",
+     "frame": null,
+     "underivable": [
+      "dapp_origin",
+      "spender_address",
+      "approval_amount",
+      "expiry_seconds",
+      "spender_in_protocol_registry",
+      "token_address",
+      "batch_tokens",
+      "nft_collection_address",
+      "operator_address",
+      "operator_in_marketplace_registry",
+      "operator_creation_timestamp",
+      "seaport_offer_assets",
+      "seaport_consideration_eth",
+      "seaport_collection_floor_eth",
+      "seaport_total_offer_value_usd",
+      "ui_description",
+      "payload_semantic",
+      "domain_in_protocol_registry",
+      "domain_age_days",
+      "is_homoglyph_of_known",
+      "current_timestamp"
+     ]
+    },
+    {
+     "file": "27_blobs/inclusion.json",
+     "record": "inclusion",
+     "frame": null,
+     "underivable": [
+      "selected_relays",
+      "has_private_mempool_configured",
+      "destination_chain",
+      "interacts_with_sanctioned_addresses",
+      "recent_block_builder_count",
+      "dominant_builder_share",
+      "wallet_exposes_l1_inbox_path",
+      "mev_boost_enabled"
+     ]
+    },
+    {
+     "file": "27_blobs/account_readiness.json",
+     "record": "account_readiness",
+     "frame": null,
+     "underivable": [
+      "has_stealth_meta_address",
+      "meta_address_has_mlkem",
+      "stealth_protocol_version",
+      "smart_account_has_pq_module",
+      "smart_account_upgradeable",
+      "interacted_with_protocols",
+      "recent_ecdh_ephemeral_keys_seen",
+      "encrypted_blobs_without_pq_kem",
+      "bls_deposit_count",
+      "bls_committee_memberships",
+      "bls_attestations_count",
+      "first_tx_timestamp",
+      "latest_tx_timestamp",
+      "tx_count",
+      "total_value_usd",
+      "has_rotated_key",
+      "current_timestamp"
+     ]
+    }
+   ]
+  },
+  "27/many-frames": {
+   "source": "experiment 27, cases-eip8250-f3079a0.txt",
+   "verdict": "valid",
+   "files": [
+    {
+     "file": "27_many-frames/typed_signature.json",
+     "record": "typed_signature",
+     "frame": null,
+     "underivable": [
+      "dapp_origin",
+      "spender_address",
+      "approval_amount",
+      "expiry_seconds",
+      "spender_in_protocol_registry",
+      "token_address",
+      "batch_tokens",
+      "nft_collection_address",
+      "operator_address",
+      "operator_in_marketplace_registry",
+      "operator_creation_timestamp",
+      "seaport_offer_assets",
+      "seaport_consideration_eth",
+      "seaport_collection_floor_eth",
+      "seaport_total_offer_value_usd",
+      "ui_description",
+      "payload_semantic",
+      "domain_in_protocol_registry",
+      "domain_age_days",
+      "is_homoglyph_of_known",
+      "current_timestamp"
+     ]
+    },
+    {
+     "file": "27_many-frames/inclusion.json",
+     "record": "inclusion",
+     "frame": null,
+     "underivable": [
+      "selected_relays",
+      "has_private_mempool_configured",
+      "destination_chain",
+      "interacts_with_sanctioned_addresses",
+      "recent_block_builder_count",
+      "dominant_builder_share",
+      "wallet_exposes_l1_inbox_path",
+      "mev_boost_enabled"
+     ]
+    },
+    {
+     "file": "27_many-frames/account_readiness.json",
+     "record": "account_readiness",
+     "frame": null,
+     "underivable": [
+      "has_stealth_meta_address",
+      "meta_address_has_mlkem",
+      "stealth_protocol_version",
+      "smart_account_has_pq_module",
+      "smart_account_upgradeable",
+      "interacted_with_protocols",
+      "recent_ecdh_ephemeral_keys_seen",
+      "encrypted_blobs_without_pq_kem",
+      "bls_deposit_count",
+      "bls_committee_memberships",
+      "bls_attestations_count",
+      "first_tx_timestamp",
+      "latest_tx_timestamp",
+      "tx_count",
+      "total_value_usd",
+      "has_rotated_key",
+      "current_timestamp"
+     ]
+    }
+   ]
+  },
+  "27/self-paying": {
+   "source": "experiment 27, cases-eip8250-f3079a0.txt",
+   "verdict": "refused",
+   "files": [
+    {
+     "file": "27_self-paying/transfer_destination.json",
+     "record": "transfer_destination",
+     "frame": 1,
+     "underivable": [
+      "intended_target_chain_id",
+      "intended_target_chain_name",
+      "recipient_tx_count_on_target_chain",
+      "recipient_tx_count_on_other_chains",
+      "recipient_is_contract",
+      "recipient_implements_receive",
+      "recipient_implements_erc20_receiver",
+      "user_expects_eoa",
+      "recipient_lookalike_in_history",
+      "recipient_address_distance",
+      "recent_dust_from_lookalike",
+      "ens_name_resolved",
+      "ens_typed_address",
+      "recipient_paused",
+      "recipient_migrated_to",
+      "recipient_last_activity_age_days",
+      "amount_value_usd",
+      "current_timestamp"
+     ]
+    },
+    {
+     "file": "27_self-paying/typed_signature.json",
+     "record": "typed_signature",
+     "frame": null,
+     "underivable": [
+      "dapp_origin",
+      "spender_address",
+      "approval_amount",
+      "expiry_seconds",
+      "spender_in_protocol_registry",
+      "token_address",
+      "batch_tokens",
+      "nft_collection_address",
+      "operator_address",
+      "operator_in_marketplace_registry",
+      "operator_creation_timestamp",
+      "seaport_offer_assets",
+      "seaport_consideration_eth",
+      "seaport_collection_floor_eth",
+      "seaport_total_offer_value_usd",
+      "ui_description",
+      "payload_semantic",
+      "domain_in_protocol_registry",
+      "domain_age_days",
+      "is_homoglyph_of_known",
+      "current_timestamp"
+     ]
+    },
+    {
+     "file": "27_self-paying/inclusion.json",
+     "record": "inclusion",
+     "frame": null,
+     "underivable": [
+      "selected_relays",
+      "has_private_mempool_configured",
+      "destination_chain",
+      "interacts_with_sanctioned_addresses",
+      "recent_block_builder_count",
+      "dominant_builder_share",
+      "wallet_exposes_l1_inbox_path",
+      "mev_boost_enabled"
+     ]
+    },
+    {
+     "file": "27_self-paying/account_readiness.json",
+     "record": "account_readiness",
+     "frame": null,
+     "underivable": [
+      "has_stealth_meta_address",
+      "meta_address_has_mlkem",
+      "stealth_protocol_version",
+      "smart_account_has_pq_module",
+      "smart_account_upgradeable",
+      "interacted_with_protocols",
+      "recent_ecdh_ephemeral_keys_seen",
+      "encrypted_blobs_without_pq_kem",
+      "bls_deposit_count",
+      "bls_committee_memberships",
+      "bls_attestations_count",
+      "first_tx_timestamp",
+      "latest_tx_timestamp",
+      "tx_count",
+      "total_value_usd",
+      "has_rotated_key",
+      "current_timestamp"
+     ]
+    }
+   ]
+  },
+  "27/payer-replaced": {
+   "source": "experiment 27, cases-eip8250-f3079a0.txt",
+   "verdict": "valid",
+   "files": [
+    {
+     "file": "27_payer-replaced/transfer_destination.json",
+     "record": "transfer_destination",
+     "frame": 2,
+     "underivable": [
+      "intended_target_chain_id",
+      "intended_target_chain_name",
+      "recipient_tx_count_on_target_chain",
+      "recipient_tx_count_on_other_chains",
+      "recipient_is_contract",
+      "recipient_implements_receive",
+      "recipient_implements_erc20_receiver",
+      "user_expects_eoa",
+      "recipient_lookalike_in_history",
+      "recipient_address_distance",
+      "recent_dust_from_lookalike",
+      "ens_name_resolved",
+      "ens_typed_address",
+      "recipient_paused",
+      "recipient_migrated_to",
+      "recipient_last_activity_age_days",
+      "amount_value_usd",
+      "current_timestamp"
+     ]
+    },
+    {
+     "file": "27_payer-replaced/typed_signature.json",
+     "record": "typed_signature",
+     "frame": null,
+     "underivable": [
+      "dapp_origin",
+      "spender_address",
+      "approval_amount",
+      "expiry_seconds",
+      "spender_in_protocol_registry",
+      "token_address",
+      "batch_tokens",
+      "nft_collection_address",
+      "operator_address",
+      "operator_in_marketplace_registry",
+      "operator_creation_timestamp",
+      "seaport_offer_assets",
+      "seaport_consideration_eth",
+      "seaport_collection_floor_eth",
+      "seaport_total_offer_value_usd",
+      "ui_description",
+      "payload_semantic",
+      "domain_in_protocol_registry",
+      "domain_age_days",
+      "is_homoglyph_of_known",
+      "current_timestamp"
+     ]
+    },
+    {
+     "file": "27_payer-replaced/inclusion.json",
+     "record": "inclusion",
+     "frame": null,
+     "underivable": [
+      "selected_relays",
+      "has_private_mempool_configured",
+      "destination_chain",
+      "interacts_with_sanctioned_addresses",
+      "recent_block_builder_count",
+      "dominant_builder_share",
+      "wallet_exposes_l1_inbox_path",
+      "mev_boost_enabled"
+     ]
+    },
+    {
+     "file": "27_payer-replaced/account_readiness.json",
+     "record": "account_readiness",
+     "frame": null,
+     "underivable": [
+      "has_stealth_meta_address",
+      "meta_address_has_mlkem",
+      "stealth_protocol_version",
+      "smart_account_has_pq_module",
+      "smart_account_upgradeable",
+      "interacted_with_protocols",
+      "recent_ecdh_ephemeral_keys_seen",
+      "encrypted_blobs_without_pq_kem",
+      "bls_deposit_count",
+      "bls_committee_memberships",
+      "bls_attestations_count",
+      "first_tx_timestamp",
+      "latest_tx_timestamp",
+      "tx_count",
+      "total_value_usd",
+      "has_rotated_key",
+      "current_timestamp"
+     ]
+    }
+   ]
+  },
+  "27/target-written-out": {
+   "source": "experiment 27, cases-eip8250-f3079a0.txt",
+   "verdict": "valid",
+   "files": [
+    {
+     "file": "27_target-written-out/transfer_destination.json",
+     "record": "transfer_destination",
+     "frame": 2,
+     "underivable": [
+      "intended_target_chain_id",
+      "intended_target_chain_name",
+      "recipient_tx_count_on_target_chain",
+      "recipient_tx_count_on_other_chains",
+      "recipient_is_contract",
+      "recipient_implements_receive",
+      "recipient_implements_erc20_receiver",
+      "user_expects_eoa",
+      "recipient_lookalike_in_history",
+      "recipient_address_distance",
+      "recent_dust_from_lookalike",
+      "ens_name_resolved",
+      "ens_typed_address",
+      "recipient_paused",
+      "recipient_migrated_to",
+      "recipient_last_activity_age_days",
+      "amount_value_usd",
+      "current_timestamp"
+     ]
+    },
+    {
+     "file": "27_target-written-out/typed_signature.json",
+     "record": "typed_signature",
+     "frame": null,
+     "underivable": [
+      "dapp_origin",
+      "spender_address",
+      "approval_amount",
+      "expiry_seconds",
+      "spender_in_protocol_registry",
+      "token_address",
+      "batch_tokens",
+      "nft_collection_address",
+      "operator_address",
+      "operator_in_marketplace_registry",
+      "operator_creation_timestamp",
+      "seaport_offer_assets",
+      "seaport_consideration_eth",
+      "seaport_collection_floor_eth",
+      "seaport_total_offer_value_usd",
+      "ui_description",
+      "payload_semantic",
+      "domain_in_protocol_registry",
+      "domain_age_days",
+      "is_homoglyph_of_known",
+      "current_timestamp"
+     ]
+    },
+    {
+     "file": "27_target-written-out/inclusion.json",
+     "record": "inclusion",
+     "frame": null,
+     "underivable": [
+      "selected_relays",
+      "has_private_mempool_configured",
+      "destination_chain",
+      "interacts_with_sanctioned_addresses",
+      "recent_block_builder_count",
+      "dominant_builder_share",
+      "wallet_exposes_l1_inbox_path",
+      "mev_boost_enabled"
+     ]
+    },
+    {
+     "file": "27_target-written-out/account_readiness.json",
+     "record": "account_readiness",
+     "frame": null,
+     "underivable": [
+      "has_stealth_meta_address",
+      "meta_address_has_mlkem",
+      "stealth_protocol_version",
+      "smart_account_has_pq_module",
+      "smart_account_upgradeable",
+      "interacted_with_protocols",
+      "recent_ecdh_ephemeral_keys_seen",
+      "encrypted_blobs_without_pq_kem",
+      "bls_deposit_count",
+      "bls_committee_memberships",
+      "bls_attestations_count",
+      "first_tx_timestamp",
+      "latest_tx_timestamp",
+      "tx_count",
+      "total_value_usd",
+      "has_rotated_key",
+      "current_timestamp"
+     ]
+    }
+   ]
+  },
+  "27/inserted-default": {
+   "source": "experiment 27, cases-eip8250-f3079a0.txt",
+   "verdict": "refused",
+   "files": [
+    {
+     "file": "27_inserted-default/transfer_destination.json",
+     "record": "transfer_destination",
+     "frame": 3,
+     "underivable": [
+      "intended_target_chain_id",
+      "intended_target_chain_name",
+      "recipient_tx_count_on_target_chain",
+      "recipient_tx_count_on_other_chains",
+      "recipient_is_contract",
+      "recipient_implements_receive",
+      "recipient_implements_erc20_receiver",
+      "user_expects_eoa",
+      "recipient_lookalike_in_history",
+      "recipient_address_distance",
+      "recent_dust_from_lookalike",
+      "ens_name_resolved",
+      "ens_typed_address",
+      "recipient_paused",
+      "recipient_migrated_to",
+      "recipient_last_activity_age_days",
+      "amount_value_usd",
+      "current_timestamp"
+     ]
+    },
+    {
+     "file": "27_inserted-default/typed_signature.json",
+     "record": "typed_signature",
+     "frame": null,
+     "underivable": [
+      "dapp_origin",
+      "primary_type",
+      "typed_data",
+      "eip712_domain_separator",
+      "spender_address",
+      "approval_amount",
+      "expiry_seconds",
+      "spender_in_protocol_registry",
+      "token_address",
+      "batch_tokens",
+      "nft_collection_address",
+      "operator_address",
+      "operator_in_marketplace_registry",
+      "operator_creation_timestamp",
+      "seaport_offer_assets",
+      "seaport_consideration_eth",
+      "seaport_collection_floor_eth",
+      "seaport_total_offer_value_usd",
+      "ui_description",
+      "payload_semantic",
+      "domain_in_protocol_registry",
+      "domain_age_days",
+      "is_homoglyph_of_known",
+      "current_timestamp"
+     ]
+    },
+    {
+     "file": "27_inserted-default/inclusion.json",
+     "record": "inclusion",
+     "frame": null,
+     "underivable": [
+      "selected_relays",
+      "has_private_mempool_configured",
+      "destination_chain",
+      "interacts_with_sanctioned_addresses",
+      "recent_block_builder_count",
+      "dominant_builder_share",
+      "wallet_exposes_l1_inbox_path",
+      "mev_boost_enabled"
+     ]
+    },
+    {
+     "file": "27_inserted-default/account_readiness.json",
+     "record": "account_readiness",
+     "frame": null,
+     "underivable": [
+      "has_stealth_meta_address",
+      "meta_address_has_mlkem",
+      "stealth_protocol_version",
+      "smart_account_has_pq_module",
+      "smart_account_upgradeable",
+      "interacted_with_protocols",
+      "recent_ecdh_ephemeral_keys_seen",
+      "encrypted_blobs_without_pq_kem",
+      "bls_deposit_count",
+      "bls_committee_memberships",
+      "bls_attestations_count",
+      "first_tx_timestamp",
+      "latest_tx_timestamp",
+      "tx_count",
+      "total_value_usd",
+      "has_rotated_key",
+      "current_timestamp"
+     ]
+    }
+   ]
+  },
+  "27/appended-default": {
+   "source": "experiment 27, cases-eip8250-f3079a0.txt",
+   "verdict": "refused",
+   "files": [
+    {
+     "file": "27_appended-default/transfer_destination.json",
+     "record": "transfer_destination",
+     "frame": 2,
+     "underivable": [
+      "intended_target_chain_id",
+      "intended_target_chain_name",
+      "recipient_tx_count_on_target_chain",
+      "recipient_tx_count_on_other_chains",
+      "recipient_is_contract",
+      "recipient_implements_receive",
+      "recipient_implements_erc20_receiver",
+      "user_expects_eoa",
+      "recipient_lookalike_in_history",
+      "recipient_address_distance",
+      "recent_dust_from_lookalike",
+      "ens_name_resolved",
+      "ens_typed_address",
+      "recipient_paused",
+      "recipient_migrated_to",
+      "recipient_last_activity_age_days",
+      "amount_value_usd",
+      "current_timestamp"
+     ]
+    },
+    {
+     "file": "27_appended-default/typed_signature.json",
+     "record": "typed_signature",
+     "frame": null,
+     "underivable": [
+      "dapp_origin",
+      "primary_type",
+      "typed_data",
+      "eip712_domain_separator",
+      "spender_address",
+      "approval_amount",
+      "expiry_seconds",
+      "spender_in_protocol_registry",
+      "token_address",
+      "batch_tokens",
+      "nft_collection_address",
+      "operator_address",
+      "operator_in_marketplace_registry",
+      "operator_creation_timestamp",
+      "seaport_offer_assets",
+      "seaport_consideration_eth",
+      "seaport_collection_floor_eth",
+      "seaport_total_offer_value_usd",
+      "ui_description",
+      "payload_semantic",
+      "domain_in_protocol_registry",
+      "domain_age_days",
+      "is_homoglyph_of_known",
+      "current_timestamp"
+     ]
+    },
+    {
+     "file": "27_appended-default/inclusion.json",
+     "record": "inclusion",
+     "frame": null,
+     "underivable": [
+      "selected_relays",
+      "has_private_mempool_configured",
+      "destination_chain",
+      "interacts_with_sanctioned_addresses",
+      "recent_block_builder_count",
+      "dominant_builder_share",
+      "wallet_exposes_l1_inbox_path",
+      "mev_boost_enabled"
+     ]
+    },
+    {
+     "file": "27_appended-default/account_readiness.json",
+     "record": "account_readiness",
+     "frame": null,
+     "underivable": [
+      "has_stealth_meta_address",
+      "meta_address_has_mlkem",
+      "stealth_protocol_version",
+      "smart_account_has_pq_module",
+      "smart_account_upgradeable",
+      "interacted_with_protocols",
+      "recent_ecdh_ephemeral_keys_seen",
+      "encrypted_blobs_without_pq_kem",
+      "bls_deposit_count",
+      "bls_committee_memberships",
+      "bls_attestations_count",
+      "first_tx_timestamp",
+      "latest_tx_timestamp",
+      "tx_count",
+      "total_value_usd",
+      "has_rotated_key",
+      "current_timestamp"
+     ]
+    }
+   ]
+  },
+  "27/state-limit-lowered": {
+   "source": "experiment 27, cases-eip8250-f3079a0.txt",
+   "verdict": "refused",
+   "files": [
+    {
+     "file": "27_state-limit-lowered/transfer_destination.json",
+     "record": "transfer_destination",
+     "frame": 2,
+     "underivable": [
+      "intended_target_chain_id",
+      "intended_target_chain_name",
+      "recipient_tx_count_on_target_chain",
+      "recipient_tx_count_on_other_chains",
+      "recipient_is_contract",
+      "recipient_implements_receive",
+      "recipient_implements_erc20_receiver",
+      "user_expects_eoa",
+      "recipient_lookalike_in_history",
+      "recipient_address_distance",
+      "recent_dust_from_lookalike",
+      "ens_name_resolved",
+      "ens_typed_address",
+      "recipient_paused",
+      "recipient_migrated_to",
+      "recipient_last_activity_age_days",
+      "amount_value_usd",
+      "current_timestamp"
+     ]
+    },
+    {
+     "file": "27_state-limit-lowered/typed_signature.json",
+     "record": "typed_signature",
+     "frame": null,
+     "underivable": [
+      "dapp_origin",
+      "primary_type",
+      "typed_data",
+      "eip712_domain_separator",
+      "spender_address",
+      "approval_amount",
+      "expiry_seconds",
+      "spender_in_protocol_registry",
+      "token_address",
+      "batch_tokens",
+      "nft_collection_address",
+      "operator_address",
+      "operator_in_marketplace_registry",
+      "operator_creation_timestamp",
+      "seaport_offer_assets",
+      "seaport_consideration_eth",
+      "seaport_collection_floor_eth",
+      "seaport_total_offer_value_usd",
+      "ui_description",
+      "payload_semantic",
+      "domain_in_protocol_registry",
+      "domain_age_days",
+      "is_homoglyph_of_known",
+      "current_timestamp"
+     ]
+    },
+    {
+     "file": "27_state-limit-lowered/inclusion.json",
+     "record": "inclusion",
+     "frame": null,
+     "underivable": [
+      "selected_relays",
+      "has_private_mempool_configured",
+      "destination_chain",
+      "interacts_with_sanctioned_addresses",
+      "recent_block_builder_count",
+      "dominant_builder_share",
+      "wallet_exposes_l1_inbox_path",
+      "mev_boost_enabled"
+     ]
+    },
+    {
+     "file": "27_state-limit-lowered/account_readiness.json",
+     "record": "account_readiness",
+     "frame": null,
+     "underivable": [
+      "has_stealth_meta_address",
+      "meta_address_has_mlkem",
+      "stealth_protocol_version",
+      "smart_account_has_pq_module",
+      "smart_account_upgradeable",
+      "interacted_with_protocols",
+      "recent_ecdh_ephemeral_keys_seen",
+      "encrypted_blobs_without_pq_kem",
+      "bls_deposit_count",
+      "bls_committee_memberships",
+      "bls_attestations_count",
+      "first_tx_timestamp",
+      "latest_tx_timestamp",
+      "tx_count",
+      "total_value_usd",
+      "has_rotated_key",
+      "current_timestamp"
+     ]
+    }
+   ]
+  },
+  "27/transfer-retargeted": {
+   "source": "experiment 27, cases-eip8250-f3079a0.txt",
+   "verdict": "refused",
+   "files": [
+    {
+     "file": "27_transfer-retargeted/transfer_destination.json",
+     "record": "transfer_destination",
+     "frame": 2,
+     "underivable": [
+      "intended_target_chain_id",
+      "intended_target_chain_name",
+      "recipient_tx_count_on_target_chain",
+      "recipient_tx_count_on_other_chains",
+      "recipient_is_contract",
+      "recipient_implements_receive",
+      "recipient_implements_erc20_receiver",
+      "user_expects_eoa",
+      "recipient_lookalike_in_history",
+      "recipient_address_distance",
+      "recent_dust_from_lookalike",
+      "ens_name_resolved",
+      "ens_typed_address",
+      "recipient_paused",
+      "recipient_migrated_to",
+      "recipient_last_activity_age_days",
+      "amount_value_usd",
+      "current_timestamp"
+     ]
+    },
+    {
+     "file": "27_transfer-retargeted/typed_signature.json",
+     "record": "typed_signature",
+     "frame": null,
+     "underivable": [
+      "dapp_origin",
+      "primary_type",
+      "typed_data",
+      "eip712_domain_separator",
+      "spender_address",
+      "approval_amount",
+      "expiry_seconds",
+      "spender_in_protocol_registry",
+      "token_address",
+      "batch_tokens",
+      "nft_collection_address",
+      "operator_address",
+      "operator_in_marketplace_registry",
+      "operator_creation_timestamp",
+      "seaport_offer_assets",
+      "seaport_consideration_eth",
+      "seaport_collection_floor_eth",
+      "seaport_total_offer_value_usd",
+      "ui_description",
+      "payload_semantic",
+      "domain_in_protocol_registry",
+      "domain_age_days",
+      "is_homoglyph_of_known",
+      "current_timestamp"
+     ]
+    },
+    {
+     "file": "27_transfer-retargeted/inclusion.json",
+     "record": "inclusion",
+     "frame": null,
+     "underivable": [
+      "selected_relays",
+      "has_private_mempool_configured",
+      "destination_chain",
+      "interacts_with_sanctioned_addresses",
+      "recent_block_builder_count",
+      "dominant_builder_share",
+      "wallet_exposes_l1_inbox_path",
+      "mev_boost_enabled"
+     ]
+    },
+    {
+     "file": "27_transfer-retargeted/account_readiness.json",
+     "record": "account_readiness",
+     "frame": null,
+     "underivable": [
+      "has_stealth_meta_address",
+      "meta_address_has_mlkem",
+      "stealth_protocol_version",
+      "smart_account_has_pq_module",
+      "smart_account_upgradeable",
+      "interacted_with_protocols",
+      "recent_ecdh_ephemeral_keys_seen",
+      "encrypted_blobs_without_pq_kem",
+      "bls_deposit_count",
+      "bls_committee_memberships",
+      "bls_attestations_count",
+      "first_tx_timestamp",
+      "latest_tx_timestamp",
+      "tx_count",
+      "total_value_usd",
+      "has_rotated_key",
+      "current_timestamp"
+     ]
+    }
+   ]
+  },
+  "27/payer-is-sender": {
+   "source": "experiment 27, cases-eip8250-f3079a0.txt",
+   "verdict": "refused",
+   "files": [
+    {
+     "file": "27_payer-is-sender/transfer_destination.json",
+     "record": "transfer_destination",
+     "frame": 2,
+     "underivable": [
+      "intended_target_chain_id",
+      "intended_target_chain_name",
+      "recipient_tx_count_on_target_chain",
+      "recipient_tx_count_on_other_chains",
+      "recipient_is_contract",
+      "recipient_implements_receive",
+      "recipient_implements_erc20_receiver",
+      "user_expects_eoa",
+      "recipient_lookalike_in_history",
+      "recipient_address_distance",
+      "recent_dust_from_lookalike",
+      "ens_name_resolved",
+      "ens_typed_address",
+      "recipient_paused",
+      "recipient_migrated_to",
+      "recipient_last_activity_age_days",
+      "amount_value_usd",
+      "current_timestamp"
+     ]
+    },
+    {
+     "file": "27_payer-is-sender/typed_signature.json",
+     "record": "typed_signature",
+     "frame": null,
+     "underivable": [
+      "dapp_origin",
+      "spender_address",
+      "approval_amount",
+      "expiry_seconds",
+      "spender_in_protocol_registry",
+      "token_address",
+      "batch_tokens",
+      "nft_collection_address",
+      "operator_address",
+      "operator_in_marketplace_registry",
+      "operator_creation_timestamp",
+      "seaport_offer_assets",
+      "seaport_consideration_eth",
+      "seaport_collection_floor_eth",
+      "seaport_total_offer_value_usd",
+      "ui_description",
+      "payload_semantic",
+      "domain_in_protocol_registry",
+      "domain_age_days",
+      "is_homoglyph_of_known",
+      "current_timestamp"
+     ]
+    },
+    {
+     "file": "27_payer-is-sender/inclusion.json",
+     "record": "inclusion",
+     "frame": null,
+     "underivable": [
+      "selected_relays",
+      "has_private_mempool_configured",
+      "destination_chain",
+      "interacts_with_sanctioned_addresses",
+      "recent_block_builder_count",
+      "dominant_builder_share",
+      "wallet_exposes_l1_inbox_path",
+      "mev_boost_enabled"
+     ]
+    },
+    {
+     "file": "27_payer-is-sender/account_readiness.json",
+     "record": "account_readiness",
+     "frame": null,
+     "underivable": [
+      "has_stealth_meta_address",
+      "meta_address_has_mlkem",
+      "stealth_protocol_version",
+      "smart_account_has_pq_module",
+      "smart_account_upgradeable",
+      "interacted_with_protocols",
+      "recent_ecdh_ephemeral_keys_seen",
+      "encrypted_blobs_without_pq_kem",
+      "bls_deposit_count",
+      "bls_committee_memberships",
+      "bls_attestations_count",
+      "first_tx_timestamp",
+      "latest_tx_timestamp",
+      "tx_count",
+      "total_value_usd",
+      "has_rotated_key",
+      "current_timestamp"
+     ]
+    }
+   ]
+  },
+  "27/other-account": {
+   "source": "experiment 27, cases-eip8250-f3079a0.txt",
+   "verdict": "refused",
+   "files": [
+    {
+     "file": "27_other-account/transfer_destination.json",
+     "record": "transfer_destination",
+     "frame": 2,
+     "underivable": [
+      "intended_target_chain_id",
+      "intended_target_chain_name",
+      "recipient_tx_count_on_target_chain",
+      "recipient_tx_count_on_other_chains",
+      "recipient_is_contract",
+      "recipient_implements_receive",
+      "recipient_implements_erc20_receiver",
+      "user_expects_eoa",
+      "recipient_lookalike_in_history",
+      "recipient_address_distance",
+      "recent_dust_from_lookalike",
+      "ens_name_resolved",
+      "ens_typed_address",
+      "recipient_paused",
+      "recipient_migrated_to",
+      "recipient_last_activity_age_days",
+      "amount_value_usd",
+      "current_timestamp"
+     ]
+    },
+    {
+     "file": "27_other-account/typed_signature.json",
+     "record": "typed_signature",
+     "frame": null,
+     "underivable": [
+      "dapp_origin",
+      "primary_type",
+      "typed_data",
+      "eip712_domain_separator",
+      "spender_address",
+      "approval_amount",
+      "expiry_seconds",
+      "spender_in_protocol_registry",
+      "token_address",
+      "batch_tokens",
+      "nft_collection_address",
+      "operator_address",
+      "operator_in_marketplace_registry",
+      "operator_creation_timestamp",
+      "seaport_offer_assets",
+      "seaport_consideration_eth",
+      "seaport_collection_floor_eth",
+      "seaport_total_offer_value_usd",
+      "ui_description",
+      "payload_semantic",
+      "domain_in_protocol_registry",
+      "domain_age_days",
+      "is_homoglyph_of_known",
+      "current_timestamp"
+     ]
+    },
+    {
+     "file": "27_other-account/inclusion.json",
+     "record": "inclusion",
+     "frame": null,
+     "underivable": [
+      "selected_relays",
+      "has_private_mempool_configured",
+      "destination_chain",
+      "interacts_with_sanctioned_addresses",
+      "recent_block_builder_count",
+      "dominant_builder_share",
+      "wallet_exposes_l1_inbox_path",
+      "mev_boost_enabled"
+     ]
+    },
+    {
+     "file": "27_other-account/account_readiness.json",
+     "record": "account_readiness",
+     "frame": null,
+     "underivable": [
+      "has_stealth_meta_address",
+      "meta_address_has_mlkem",
+      "stealth_protocol_version",
+      "smart_account_has_pq_module",
+      "smart_account_upgradeable",
+      "interacted_with_protocols",
+      "recent_ecdh_ephemeral_keys_seen",
+      "encrypted_blobs_without_pq_kem",
+      "bls_deposit_count",
+      "bls_committee_memberships",
+      "bls_attestations_count",
+      "first_tx_timestamp",
+      "latest_tx_timestamp",
+      "tx_count",
+      "total_value_usd",
+      "has_rotated_key",
+      "current_timestamp"
+     ]
+    }
+   ]
+  },
+  "27/blob-swapped": {
+   "source": "experiment 27, cases-eip8250-f3079a0.txt",
+   "verdict": "refused",
+   "files": [
+    {
+     "file": "27_blob-swapped/typed_signature.json",
+     "record": "typed_signature",
+     "frame": null,
+     "underivable": [
+      "dapp_origin",
+      "primary_type",
+      "typed_data",
+      "eip712_domain_separator",
+      "spender_address",
+      "approval_amount",
+      "expiry_seconds",
+      "spender_in_protocol_registry",
+      "token_address",
+      "batch_tokens",
+      "nft_collection_address",
+      "operator_address",
+      "operator_in_marketplace_registry",
+      "operator_creation_timestamp",
+      "seaport_offer_assets",
+      "seaport_consideration_eth",
+      "seaport_collection_floor_eth",
+      "seaport_total_offer_value_usd",
+      "ui_description",
+      "payload_semantic",
+      "domain_in_protocol_registry",
+      "domain_age_days",
+      "is_homoglyph_of_known",
+      "current_timestamp"
+     ]
+    },
+    {
+     "file": "27_blob-swapped/inclusion.json",
+     "record": "inclusion",
+     "frame": null,
+     "underivable": [
+      "selected_relays",
+      "has_private_mempool_configured",
+      "destination_chain",
+      "interacts_with_sanctioned_addresses",
+      "recent_block_builder_count",
+      "dominant_builder_share",
+      "wallet_exposes_l1_inbox_path",
+      "mev_boost_enabled"
+     ]
+    },
+    {
+     "file": "27_blob-swapped/account_readiness.json",
+     "record": "account_readiness",
+     "frame": null,
+     "underivable": [
+      "has_stealth_meta_address",
+      "meta_address_has_mlkem",
+      "stealth_protocol_version",
+      "smart_account_has_pq_module",
+      "smart_account_upgradeable",
+      "interacted_with_protocols",
+      "recent_ecdh_ephemeral_keys_seen",
+      "encrypted_blobs_without_pq_kem",
+      "bls_deposit_count",
+      "bls_committee_memberships",
+      "bls_attestations_count",
+      "first_tx_timestamp",
+      "latest_tx_timestamp",
+      "tx_count",
+      "total_value_usd",
+      "has_rotated_key",
+      "current_timestamp"
+     ]
+    }
+   ]
+  },
+  "28/wallet.ts, B": {
+   "source": "experiment 28, mined on the Hegota testnet",
+   "verdict": "mined",
+   "files": [
+    {
+     "file": "28_wallet.ts_B/approval.json",
+     "record": "approval",
+     "frame": 1,
+     "underivable": [
+      "permit_expiry_seconds",
+      "spender_verified",
+      "spender_creation_timestamp",
+      "spender_in_scam_db",
+      "spender_in_protocol_registry",
+      "spender_bytecode_match_scam",
+      "last_interaction_with_spender_days",
+      "exposed_value_usd",
+      "current_timestamp"
+     ]
+    },
+    {
+     "file": "28_wallet.ts_B/swap.json",
+     "record": "swap",
+     "frame": 2,
+     "underivable": [
+      "submission_method",
+      "dex_name",
+      "pool_address",
+      "pool_reserves_usd",
+      "swap_amount_usd",
+      "slippage_pct",
+      "estimated_gas_cost_usd",
+      "pool_recent_sandwich_rate",
+      "wallet_uses_private_relay",
+      "lending_protocol",
+      "health_factor",
+      "collateral_price_volatility_30d",
+      "bot_monitoring_detected",
+      "liquidation_amount_usd"
+     ]
+    },
+    {
+     "file": "28_wallet.ts_B/inclusion.json",
+     "record": "inclusion",
+     "frame": null,
+     "underivable": [
+      "selected_relays",
+      "has_private_mempool_configured",
+      "destination_chain",
+      "interacts_with_sanctioned_addresses",
+      "recent_block_builder_count",
+      "dominant_builder_share",
+      "wallet_exposes_l1_inbox_path",
+      "mev_boost_enabled"
+     ]
+    },
+    {
+     "file": "28_wallet.ts_B/account_readiness.json",
+     "record": "account_readiness",
+     "frame": null,
+     "underivable": [
+      "has_stealth_meta_address",
+      "meta_address_has_mlkem",
+      "stealth_protocol_version",
+      "smart_account_has_pq_module",
+      "smart_account_upgradeable",
+      "interacted_with_protocols",
+      "recent_ecdh_ephemeral_keys_seen",
+      "encrypted_blobs_without_pq_kem",
+      "bls_deposit_count",
+      "bls_committee_memberships",
+      "bls_attestations_count",
+      "first_tx_timestamp",
+      "latest_tx_timestamp",
+      "tx_count",
+      "total_value_usd",
+      "has_rotated_key",
+      "current_timestamp"
+     ]
+    }
+   ]
+  },
+  "28/wallet.ts, C": {
+   "source": "experiment 28, mined on the Hegota testnet",
+   "verdict": "mined",
+   "files": [
+    {
+     "file": "28_wallet.ts_C/approval.json",
+     "record": "approval",
+     "frame": 2,
+     "underivable": [
+      "permit_expiry_seconds",
+      "spender_verified",
+      "spender_creation_timestamp",
+      "spender_in_scam_db",
+      "spender_in_protocol_registry",
+      "spender_bytecode_match_scam",
+      "last_interaction_with_spender_days",
+      "exposed_value_usd",
+      "current_timestamp"
+     ]
+    },
+    {
+     "file": "28_wallet.ts_C/swap.json",
+     "record": "swap",
+     "frame": 3,
+     "underivable": [
+      "submission_method",
+      "dex_name",
+      "pool_address",
+      "pool_reserves_usd",
+      "swap_amount_usd",
+      "slippage_pct",
+      "estimated_gas_cost_usd",
+      "pool_recent_sandwich_rate",
+      "wallet_uses_private_relay",
+      "lending_protocol",
+      "health_factor",
+      "collateral_price_volatility_30d",
+      "bot_monitoring_detected",
+      "liquidation_amount_usd"
+     ]
+    },
+    {
+     "file": "28_wallet.ts_C/inclusion.json",
+     "record": "inclusion",
+     "frame": null,
+     "underivable": [
+      "selected_relays",
+      "has_private_mempool_configured",
+      "destination_chain",
+      "interacts_with_sanctioned_addresses",
+      "recent_block_builder_count",
+      "dominant_builder_share",
+      "wallet_exposes_l1_inbox_path",
+      "mev_boost_enabled"
+     ]
+    },
+    {
+     "file": "28_wallet.ts_C/account_readiness.json",
+     "record": "account_readiness",
+     "frame": null,
+     "underivable": [
+      "has_stealth_meta_address",
+      "meta_address_has_mlkem",
+      "stealth_protocol_version",
+      "smart_account_has_pq_module",
+      "smart_account_upgradeable",
+      "interacted_with_protocols",
+      "recent_ecdh_ephemeral_keys_seen",
+      "encrypted_blobs_without_pq_kem",
+      "bls_deposit_count",
+      "bls_committee_memberships",
+      "bls_attestations_count",
+      "first_tx_timestamp",
+      "latest_tx_timestamp",
+      "tx_count",
+      "total_value_usd",
+      "has_rotated_key",
+      "current_timestamp"
+     ]
+    }
+   ]
+  },
+  "28/wallet.ts, D": {
+   "source": "experiment 28, mined on the Hegota testnet",
+   "verdict": "mined",
+   "files": [
+    {
+     "file": "28_wallet.ts_D/approval-1.json",
+     "record": "approval",
+     "frame": 1,
+     "underivable": [
+      "permit_expiry_seconds",
+      "spender_verified",
+      "spender_creation_timestamp",
+      "spender_in_scam_db",
+      "spender_in_protocol_registry",
+      "spender_bytecode_match_scam",
+      "last_interaction_with_spender_days",
+      "exposed_value_usd",
+      "current_timestamp"
+     ]
+    },
+    {
+     "file": "28_wallet.ts_D/swap.json",
+     "record": "swap",
+     "frame": 2,
+     "underivable": [
+      "submission_method",
+      "dex_name",
+      "pool_address",
+      "pool_reserves_usd",
+      "swap_amount_usd",
+      "slippage_pct",
+      "estimated_gas_cost_usd",
+      "pool_recent_sandwich_rate",
+      "wallet_uses_private_relay",
+      "lending_protocol",
+      "health_factor",
+      "collateral_price_volatility_30d",
+      "bot_monitoring_detected",
+      "liquidation_amount_usd"
+     ]
+    },
+    {
+     "file": "28_wallet.ts_D/approval-2.json",
+     "record": "approval",
+     "frame": 3,
+     "underivable": [
+      "permit_expiry_seconds",
+      "spender_verified",
+      "spender_creation_timestamp",
+      "spender_in_scam_db",
+      "spender_in_protocol_registry",
+      "spender_bytecode_match_scam",
+      "last_interaction_with_spender_days",
+      "exposed_value_usd",
+      "current_timestamp"
+     ]
+    },
+    {
+     "file": "28_wallet.ts_D/inclusion.json",
+     "record": "inclusion",
+     "frame": null,
+     "underivable": [
+      "selected_relays",
+      "has_private_mempool_configured",
+      "destination_chain",
+      "interacts_with_sanctioned_addresses",
+      "recent_block_builder_count",
+      "dominant_builder_share",
+      "wallet_exposes_l1_inbox_path",
+      "mev_boost_enabled"
+     ]
+    },
+    {
+     "file": "28_wallet.ts_D/account_readiness.json",
+     "record": "account_readiness",
+     "frame": null,
+     "underivable": [
+      "has_stealth_meta_address",
+      "meta_address_has_mlkem",
+      "stealth_protocol_version",
+      "smart_account_has_pq_module",
+      "smart_account_upgradeable",
+      "interacted_with_protocols",
+      "recent_ecdh_ephemeral_keys_seen",
+      "encrypted_blobs_without_pq_kem",
+      "bls_deposit_count",
+      "bls_committee_memberships",
+      "bls_attestations_count",
+      "first_tx_timestamp",
+      "latest_tx_timestamp",
+      "tx_count",
+      "total_value_usd",
+      "has_rotated_key",
+      "current_timestamp"
+     ]
+    }
+   ]
+  },
+  "28/wallet.ts, E": {
+   "source": "experiment 28, mined on the Hegota testnet",
+   "verdict": "mined",
+   "files": [
+    {
+     "file": "28_wallet.ts_E/approval.json",
+     "record": "approval",
+     "frame": 1,
+     "underivable": [
+      "permit_expiry_seconds",
+      "spender_verified",
+      "spender_creation_timestamp",
+      "spender_in_scam_db",
+      "spender_in_protocol_registry",
+      "spender_bytecode_match_scam",
+      "last_interaction_with_spender_days",
+      "exposed_value_usd",
+      "current_timestamp"
+     ]
+    },
+    {
+     "file": "28_wallet.ts_E/swap.json",
+     "record": "swap",
+     "frame": 2,
+     "underivable": [
+      "submission_method",
+      "dex_name",
+      "pool_address",
+      "pool_reserves_usd",
+      "swap_amount_usd",
+      "slippage_pct",
+      "estimated_gas_cost_usd",
+      "pool_recent_sandwich_rate",
+      "wallet_uses_private_relay",
+      "lending_protocol",
+      "health_factor",
+      "collateral_price_volatility_30d",
+      "bot_monitoring_detected",
+      "liquidation_amount_usd"
+     ]
+    },
+    {
+     "file": "28_wallet.ts_E/inclusion.json",
+     "record": "inclusion",
+     "frame": null,
+     "underivable": [
+      "selected_relays",
+      "has_private_mempool_configured",
+      "destination_chain",
+      "interacts_with_sanctioned_addresses",
+      "recent_block_builder_count",
+      "dominant_builder_share",
+      "wallet_exposes_l1_inbox_path",
+      "mev_boost_enabled"
+     ]
+    },
+    {
+     "file": "28_wallet.ts_E/account_readiness.json",
+     "record": "account_readiness",
+     "frame": null,
+     "underivable": [
+      "has_stealth_meta_address",
+      "meta_address_has_mlkem",
+      "stealth_protocol_version",
+      "smart_account_has_pq_module",
+      "smart_account_upgradeable",
+      "interacted_with_protocols",
+      "recent_ecdh_ephemeral_keys_seen",
+      "encrypted_blobs_without_pq_kem",
+      "bls_deposit_count",
+      "bls_committee_memberships",
+      "bls_attestations_count",
+      "first_tx_timestamp",
+      "latest_tx_timestamp",
+      "tx_count",
+      "total_value_usd",
+      "has_rotated_key",
+      "current_timestamp"
+     ]
+    }
+   ]
+  },
+  "28/wallet.ts, rails r1 self-paid": {
+   "source": "experiment 28, mined on the Hegota testnet",
+   "verdict": "mined",
+   "files": [
+    {
+     "file": "28_wallet.ts_rails_r1_self-paid/approval.json",
+     "record": "approval",
+     "frame": 1,
+     "underivable": [
+      "permit_expiry_seconds",
+      "spender_verified",
+      "spender_creation_timestamp",
+      "spender_in_scam_db",
+      "spender_in_protocol_registry",
+      "spender_bytecode_match_scam",
+      "last_interaction_with_spender_days",
+      "exposed_value_usd",
+      "current_timestamp"
+     ]
+    },
+    {
+     "file": "28_wallet.ts_rails_r1_self-paid/swap.json",
+     "record": "swap",
+     "frame": 2,
+     "underivable": [
+      "submission_method",
+      "dex_name",
+      "pool_address",
+      "pool_reserves_usd",
+      "swap_amount_usd",
+      "slippage_pct",
+      "estimated_gas_cost_usd",
+      "pool_recent_sandwich_rate",
+      "wallet_uses_private_relay",
+      "lending_protocol",
+      "health_factor",
+      "collateral_price_volatility_30d",
+      "bot_monitoring_detected",
+      "liquidation_amount_usd"
+     ]
+    },
+    {
+     "file": "28_wallet.ts_rails_r1_self-paid/inclusion.json",
+     "record": "inclusion",
+     "frame": null,
+     "underivable": [
+      "selected_relays",
+      "has_private_mempool_configured",
+      "destination_chain",
+      "interacts_with_sanctioned_addresses",
+      "recent_block_builder_count",
+      "dominant_builder_share",
+      "wallet_exposes_l1_inbox_path",
+      "mev_boost_enabled"
+     ]
+    },
+    {
+     "file": "28_wallet.ts_rails_r1_self-paid/account_readiness.json",
+     "record": "account_readiness",
+     "frame": null,
+     "underivable": [
+      "has_stealth_meta_address",
+      "meta_address_has_mlkem",
+      "stealth_protocol_version",
+      "smart_account_has_pq_module",
+      "smart_account_upgradeable",
+      "interacted_with_protocols",
+      "recent_ecdh_ephemeral_keys_seen",
+      "encrypted_blobs_without_pq_kem",
+      "bls_deposit_count",
+      "bls_committee_memberships",
+      "bls_attestations_count",
+      "first_tx_timestamp",
+      "latest_tx_timestamp",
+      "tx_count",
+      "total_value_usd",
+      "has_rotated_key",
+      "current_timestamp"
+     ]
+    }
+   ]
+  },
+  "28/wallet.ts, rails r1 sponsored": {
+   "source": "experiment 28, mined on the Hegota testnet",
+   "verdict": "mined",
+   "files": [
+    {
+     "file": "28_wallet.ts_rails_r1_sponsored/approval.json",
+     "record": "approval",
+     "frame": 2,
+     "underivable": [
+      "permit_expiry_seconds",
+      "spender_verified",
+      "spender_creation_timestamp",
+      "spender_in_scam_db",
+      "spender_in_protocol_registry",
+      "spender_bytecode_match_scam",
+      "last_interaction_with_spender_days",
+      "exposed_value_usd",
+      "current_timestamp"
+     ]
+    },
+    {
+     "file": "28_wallet.ts_rails_r1_sponsored/swap.json",
+     "record": "swap",
+     "frame": 3,
+     "underivable": [
+      "submission_method",
+      "dex_name",
+      "pool_address",
+      "pool_reserves_usd",
+      "swap_amount_usd",
+      "slippage_pct",
+      "estimated_gas_cost_usd",
+      "pool_recent_sandwich_rate",
+      "wallet_uses_private_relay",
+      "lending_protocol",
+      "health_factor",
+      "collateral_price_volatility_30d",
+      "bot_monitoring_detected",
+      "liquidation_amount_usd"
+     ]
+    },
+    {
+     "file": "28_wallet.ts_rails_r1_sponsored/inclusion.json",
+     "record": "inclusion",
+     "frame": null,
+     "underivable": [
+      "selected_relays",
+      "has_private_mempool_configured",
+      "destination_chain",
+      "interacts_with_sanctioned_addresses",
+      "recent_block_builder_count",
+      "dominant_builder_share",
+      "wallet_exposes_l1_inbox_path",
+      "mev_boost_enabled"
+     ]
+    },
+    {
+     "file": "28_wallet.ts_rails_r1_sponsored/account_readiness.json",
+     "record": "account_readiness",
+     "frame": null,
+     "underivable": [
+      "has_stealth_meta_address",
+      "meta_address_has_mlkem",
+      "stealth_protocol_version",
+      "smart_account_has_pq_module",
+      "smart_account_upgradeable",
+      "interacted_with_protocols",
+      "recent_ecdh_ephemeral_keys_seen",
+      "encrypted_blobs_without_pq_kem",
+      "bls_deposit_count",
+      "bls_committee_memberships",
+      "bls_attestations_count",
+      "first_tx_timestamp",
+      "latest_tx_timestamp",
+      "tx_count",
+      "total_value_usd",
+      "has_rotated_key",
+      "current_timestamp"
+     ]
+    }
+   ]
+  },
+  "28/wallet.ts, rails r2 self-paid": {
+   "source": "experiment 28, mined on the Hegota testnet",
+   "verdict": "mined",
+   "files": [
+    {
+     "file": "28_wallet.ts_rails_r2_self-paid/approval.json",
+     "record": "approval",
+     "frame": 1,
+     "underivable": [
+      "permit_expiry_seconds",
+      "spender_verified",
+      "spender_creation_timestamp",
+      "spender_in_scam_db",
+      "spender_in_protocol_registry",
+      "spender_bytecode_match_scam",
+      "last_interaction_with_spender_days",
+      "exposed_value_usd",
+      "current_timestamp"
+     ]
+    },
+    {
+     "file": "28_wallet.ts_rails_r2_self-paid/swap.json",
+     "record": "swap",
+     "frame": 2,
+     "underivable": [
+      "submission_method",
+      "dex_name",
+      "pool_address",
+      "pool_reserves_usd",
+      "swap_amount_usd",
+      "slippage_pct",
+      "estimated_gas_cost_usd",
+      "pool_recent_sandwich_rate",
+      "wallet_uses_private_relay",
+      "lending_protocol",
+      "health_factor",
+      "collateral_price_volatility_30d",
+      "bot_monitoring_detected",
+      "liquidation_amount_usd"
+     ]
+    },
+    {
+     "file": "28_wallet.ts_rails_r2_self-paid/inclusion.json",
+     "record": "inclusion",
+     "frame": null,
+     "underivable": [
+      "selected_relays",
+      "has_private_mempool_configured",
+      "destination_chain",
+      "interacts_with_sanctioned_addresses",
+      "recent_block_builder_count",
+      "dominant_builder_share",
+      "wallet_exposes_l1_inbox_path",
+      "mev_boost_enabled"
+     ]
+    },
+    {
+     "file": "28_wallet.ts_rails_r2_self-paid/account_readiness.json",
+     "record": "account_readiness",
+     "frame": null,
+     "underivable": [
+      "has_stealth_meta_address",
+      "meta_address_has_mlkem",
+      "stealth_protocol_version",
+      "smart_account_has_pq_module",
+      "smart_account_upgradeable",
+      "interacted_with_protocols",
+      "recent_ecdh_ephemeral_keys_seen",
+      "encrypted_blobs_without_pq_kem",
+      "bls_deposit_count",
+      "bls_committee_memberships",
+      "bls_attestations_count",
+      "first_tx_timestamp",
+      "latest_tx_timestamp",
+      "tx_count",
+      "total_value_usd",
+      "has_rotated_key",
+      "current_timestamp"
+     ]
+    }
+   ]
+  },
+  "28/wallet.ts, rails r2 sponsored": {
+   "source": "experiment 28, mined on the Hegota testnet",
+   "verdict": "mined",
+   "files": [
+    {
+     "file": "28_wallet.ts_rails_r2_sponsored/approval.json",
+     "record": "approval",
+     "frame": 2,
+     "underivable": [
+      "permit_expiry_seconds",
+      "spender_verified",
+      "spender_creation_timestamp",
+      "spender_in_scam_db",
+      "spender_in_protocol_registry",
+      "spender_bytecode_match_scam",
+      "last_interaction_with_spender_days",
+      "exposed_value_usd",
+      "current_timestamp"
+     ]
+    },
+    {
+     "file": "28_wallet.ts_rails_r2_sponsored/swap.json",
+     "record": "swap",
+     "frame": 3,
+     "underivable": [
+      "submission_method",
+      "dex_name",
+      "pool_address",
+      "pool_reserves_usd",
+      "swap_amount_usd",
+      "slippage_pct",
+      "estimated_gas_cost_usd",
+      "pool_recent_sandwich_rate",
+      "wallet_uses_private_relay",
+      "lending_protocol",
+      "health_factor",
+      "collateral_price_volatility_30d",
+      "bot_monitoring_detected",
+      "liquidation_amount_usd"
+     ]
+    },
+    {
+     "file": "28_wallet.ts_rails_r2_sponsored/inclusion.json",
+     "record": "inclusion",
+     "frame": null,
+     "underivable": [
+      "selected_relays",
+      "has_private_mempool_configured",
+      "destination_chain",
+      "interacts_with_sanctioned_addresses",
+      "recent_block_builder_count",
+      "dominant_builder_share",
+      "wallet_exposes_l1_inbox_path",
+      "mev_boost_enabled"
+     ]
+    },
+    {
+     "file": "28_wallet.ts_rails_r2_sponsored/account_readiness.json",
+     "record": "account_readiness",
+     "frame": null,
+     "underivable": [
+      "has_stealth_meta_address",
+      "meta_address_has_mlkem",
+      "stealth_protocol_version",
+      "smart_account_has_pq_module",
+      "smart_account_upgradeable",
+      "interacted_with_protocols",
+      "recent_ecdh_ephemeral_keys_seen",
+      "encrypted_blobs_without_pq_kem",
+      "bls_deposit_count",
+      "bls_committee_memberships",
+      "bls_attestations_count",
+      "first_tx_timestamp",
+      "latest_tx_timestamp",
+      "tx_count",
+      "total_value_usd",
+      "has_rotated_key",
+      "current_timestamp"
+     ]
+    }
+   ]
+  },
+  "28/kohaku-rs, B": {
+   "source": "experiment 28, mined on the Hegota testnet",
+   "verdict": "mined",
+   "files": [
+    {
+     "file": "28_kohaku-rs_B/approval.json",
+     "record": "approval",
+     "frame": 1,
+     "underivable": [
+      "permit_expiry_seconds",
+      "spender_verified",
+      "spender_creation_timestamp",
+      "spender_in_scam_db",
+      "spender_in_protocol_registry",
+      "spender_bytecode_match_scam",
+      "last_interaction_with_spender_days",
+      "exposed_value_usd",
+      "current_timestamp"
+     ]
+    },
+    {
+     "file": "28_kohaku-rs_B/swap.json",
+     "record": "swap",
+     "frame": 2,
+     "underivable": [
+      "submission_method",
+      "dex_name",
+      "pool_address",
+      "pool_reserves_usd",
+      "swap_amount_usd",
+      "slippage_pct",
+      "estimated_gas_cost_usd",
+      "pool_recent_sandwich_rate",
+      "wallet_uses_private_relay",
+      "lending_protocol",
+      "health_factor",
+      "collateral_price_volatility_30d",
+      "bot_monitoring_detected",
+      "liquidation_amount_usd"
+     ]
+    },
+    {
+     "file": "28_kohaku-rs_B/inclusion.json",
+     "record": "inclusion",
+     "frame": null,
+     "underivable": [
+      "selected_relays",
+      "has_private_mempool_configured",
+      "destination_chain",
+      "interacts_with_sanctioned_addresses",
+      "recent_block_builder_count",
+      "dominant_builder_share",
+      "wallet_exposes_l1_inbox_path",
+      "mev_boost_enabled"
+     ]
+    },
+    {
+     "file": "28_kohaku-rs_B/account_readiness.json",
+     "record": "account_readiness",
+     "frame": null,
+     "underivable": [
+      "has_stealth_meta_address",
+      "meta_address_has_mlkem",
+      "stealth_protocol_version",
+      "smart_account_has_pq_module",
+      "smart_account_upgradeable",
+      "interacted_with_protocols",
+      "recent_ecdh_ephemeral_keys_seen",
+      "encrypted_blobs_without_pq_kem",
+      "bls_deposit_count",
+      "bls_committee_memberships",
+      "bls_attestations_count",
+      "first_tx_timestamp",
+      "latest_tx_timestamp",
+      "tx_count",
+      "total_value_usd",
+      "has_rotated_key",
+      "current_timestamp"
+     ]
+    }
+   ]
+  },
+  "28/kohaku-rs, C": {
+   "source": "experiment 28, mined on the Hegota testnet",
+   "verdict": "mined",
+   "files": [
+    {
+     "file": "28_kohaku-rs_C/approval.json",
+     "record": "approval",
+     "frame": 2,
+     "underivable": [
+      "permit_expiry_seconds",
+      "spender_verified",
+      "spender_creation_timestamp",
+      "spender_in_scam_db",
+      "spender_in_protocol_registry",
+      "spender_bytecode_match_scam",
+      "last_interaction_with_spender_days",
+      "exposed_value_usd",
+      "current_timestamp"
+     ]
+    },
+    {
+     "file": "28_kohaku-rs_C/swap.json",
+     "record": "swap",
+     "frame": 3,
+     "underivable": [
+      "submission_method",
+      "dex_name",
+      "pool_address",
+      "pool_reserves_usd",
+      "swap_amount_usd",
+      "slippage_pct",
+      "estimated_gas_cost_usd",
+      "pool_recent_sandwich_rate",
+      "wallet_uses_private_relay",
+      "lending_protocol",
+      "health_factor",
+      "collateral_price_volatility_30d",
+      "bot_monitoring_detected",
+      "liquidation_amount_usd"
+     ]
+    },
+    {
+     "file": "28_kohaku-rs_C/inclusion.json",
+     "record": "inclusion",
+     "frame": null,
+     "underivable": [
+      "selected_relays",
+      "has_private_mempool_configured",
+      "destination_chain",
+      "interacts_with_sanctioned_addresses",
+      "recent_block_builder_count",
+      "dominant_builder_share",
+      "wallet_exposes_l1_inbox_path",
+      "mev_boost_enabled"
+     ]
+    },
+    {
+     "file": "28_kohaku-rs_C/account_readiness.json",
+     "record": "account_readiness",
+     "frame": null,
+     "underivable": [
+      "has_stealth_meta_address",
+      "meta_address_has_mlkem",
+      "stealth_protocol_version",
+      "smart_account_has_pq_module",
+      "smart_account_upgradeable",
+      "interacted_with_protocols",
+      "recent_ecdh_ephemeral_keys_seen",
+      "encrypted_blobs_without_pq_kem",
+      "bls_deposit_count",
+      "bls_committee_memberships",
+      "bls_attestations_count",
+      "first_tx_timestamp",
+      "latest_tx_timestamp",
+      "tx_count",
+      "total_value_usd",
+      "has_rotated_key",
+      "current_timestamp"
+     ]
+    }
+   ]
+  },
+  "28/kohaku-rs, D": {
+   "source": "experiment 28, mined on the Hegota testnet",
+   "verdict": "mined",
+   "files": [
+    {
+     "file": "28_kohaku-rs_D/approval-1.json",
+     "record": "approval",
+     "frame": 1,
+     "underivable": [
+      "permit_expiry_seconds",
+      "spender_verified",
+      "spender_creation_timestamp",
+      "spender_in_scam_db",
+      "spender_in_protocol_registry",
+      "spender_bytecode_match_scam",
+      "last_interaction_with_spender_days",
+      "exposed_value_usd",
+      "current_timestamp"
+     ]
+    },
+    {
+     "file": "28_kohaku-rs_D/swap.json",
+     "record": "swap",
+     "frame": 2,
+     "underivable": [
+      "submission_method",
+      "dex_name",
+      "pool_address",
+      "pool_reserves_usd",
+      "swap_amount_usd",
+      "slippage_pct",
+      "estimated_gas_cost_usd",
+      "pool_recent_sandwich_rate",
+      "wallet_uses_private_relay",
+      "lending_protocol",
+      "health_factor",
+      "collateral_price_volatility_30d",
+      "bot_monitoring_detected",
+      "liquidation_amount_usd"
+     ]
+    },
+    {
+     "file": "28_kohaku-rs_D/approval-2.json",
+     "record": "approval",
+     "frame": 3,
+     "underivable": [
+      "permit_expiry_seconds",
+      "spender_verified",
+      "spender_creation_timestamp",
+      "spender_in_scam_db",
+      "spender_in_protocol_registry",
+      "spender_bytecode_match_scam",
+      "last_interaction_with_spender_days",
+      "exposed_value_usd",
+      "current_timestamp"
+     ]
+    },
+    {
+     "file": "28_kohaku-rs_D/inclusion.json",
+     "record": "inclusion",
+     "frame": null,
+     "underivable": [
+      "selected_relays",
+      "has_private_mempool_configured",
+      "destination_chain",
+      "interacts_with_sanctioned_addresses",
+      "recent_block_builder_count",
+      "dominant_builder_share",
+      "wallet_exposes_l1_inbox_path",
+      "mev_boost_enabled"
+     ]
+    },
+    {
+     "file": "28_kohaku-rs_D/account_readiness.json",
+     "record": "account_readiness",
+     "frame": null,
+     "underivable": [
+      "has_stealth_meta_address",
+      "meta_address_has_mlkem",
+      "stealth_protocol_version",
+      "smart_account_has_pq_module",
+      "smart_account_upgradeable",
+      "interacted_with_protocols",
+      "recent_ecdh_ephemeral_keys_seen",
+      "encrypted_blobs_without_pq_kem",
+      "bls_deposit_count",
+      "bls_committee_memberships",
+      "bls_attestations_count",
+      "first_tx_timestamp",
+      "latest_tx_timestamp",
+      "tx_count",
+      "total_value_usd",
+      "has_rotated_key",
+      "current_timestamp"
+     ]
+    }
+   ]
+  },
+  "28/kohaku-rs, E": {
+   "source": "experiment 28, mined on the Hegota testnet",
+   "verdict": "mined",
+   "files": [
+    {
+     "file": "28_kohaku-rs_E/approval.json",
+     "record": "approval",
+     "frame": 1,
+     "underivable": [
+      "permit_expiry_seconds",
+      "spender_verified",
+      "spender_creation_timestamp",
+      "spender_in_scam_db",
+      "spender_in_protocol_registry",
+      "spender_bytecode_match_scam",
+      "last_interaction_with_spender_days",
+      "exposed_value_usd",
+      "current_timestamp"
+     ]
+    },
+    {
+     "file": "28_kohaku-rs_E/swap.json",
+     "record": "swap",
+     "frame": 2,
+     "underivable": [
+      "submission_method",
+      "dex_name",
+      "pool_address",
+      "pool_reserves_usd",
+      "swap_amount_usd",
+      "slippage_pct",
+      "estimated_gas_cost_usd",
+      "pool_recent_sandwich_rate",
+      "wallet_uses_private_relay",
+      "lending_protocol",
+      "health_factor",
+      "collateral_price_volatility_30d",
+      "bot_monitoring_detected",
+      "liquidation_amount_usd"
+     ]
+    },
+    {
+     "file": "28_kohaku-rs_E/inclusion.json",
+     "record": "inclusion",
+     "frame": null,
+     "underivable": [
+      "selected_relays",
+      "has_private_mempool_configured",
+      "destination_chain",
+      "interacts_with_sanctioned_addresses",
+      "recent_block_builder_count",
+      "dominant_builder_share",
+      "wallet_exposes_l1_inbox_path",
+      "mev_boost_enabled"
+     ]
+    },
+    {
+     "file": "28_kohaku-rs_E/account_readiness.json",
+     "record": "account_readiness",
+     "frame": null,
+     "underivable": [
+      "has_stealth_meta_address",
+      "meta_address_has_mlkem",
+      "stealth_protocol_version",
+      "smart_account_has_pq_module",
+      "smart_account_upgradeable",
+      "interacted_with_protocols",
+      "recent_ecdh_ephemeral_keys_seen",
+      "encrypted_blobs_without_pq_kem",
+      "bls_deposit_count",
+      "bls_committee_memberships",
+      "bls_attestations_count",
+      "first_tx_timestamp",
+      "latest_tx_timestamp",
+      "tx_count",
+      "total_value_usd",
+      "has_rotated_key",
+      "current_timestamp"
+     ]
+    }
+   ]
+  },
+  "34/withdrawal-1": {
+   "source": "experiment 34, record.json",
+   "verdict": "mined, block 479761",
+   "files": [
+    {
+     "file": "34_withdrawal-1/pool_withdrawal.json",
+     "record": "pool_withdrawal",
+     "frame": 2,
+     "underivable": [
+      "user_address",
+      "pool_denomination",
+      "deposit_timestamp",
+      "withdrawal_timestamp",
+      "pool_deposit_count_in_24h_window",
+      "pool_concurrent_deposits_in_window",
+      "deposit_amount",
+      "pool_amount_distribution",
+      "is_variable_denom_pool",
+      "user_recent_deposits_across_pools",
+      "user_recent_withdrawals_across_pools",
+      "withdrawal_address_prior_defi_interactions",
+      "expected_post_withdrawal_action",
+      "expected_post_withdrawal_delay_blocks",
+      "withdrawal_address_known_cluster_match",
+      "relayer_market_share_pct",
+      "withdrawal_address_prior_mixer_uses",
+      "block_gas_median_gwei",
+      "block_gas_stddev_gwei",
+      "user_typical_gas_price_gwei"
+     ]
+    },
+    {
+     "file": "34_withdrawal-1/inclusion.json",
+     "record": "inclusion",
+     "frame": null,
+     "underivable": [
+      "selected_relays",
+      "has_private_mempool_configured",
+      "destination_chain",
+      "interacts_with_sanctioned_addresses",
+      "recent_block_builder_count",
+      "dominant_builder_share",
+      "wallet_exposes_l1_inbox_path",
+      "mev_boost_enabled"
+     ]
+    },
+    {
+     "file": "34_withdrawal-1/account_readiness.json",
+     "record": "account_readiness",
+     "frame": null,
+     "underivable": [
+      "has_stealth_meta_address",
+      "meta_address_has_mlkem",
+      "stealth_protocol_version",
+      "smart_account_has_pq_module",
+      "smart_account_upgradeable",
+      "interacted_with_protocols",
+      "recent_ecdh_ephemeral_keys_seen",
+      "encrypted_blobs_without_pq_kem",
+      "bls_deposit_count",
+      "bls_committee_memberships",
+      "bls_attestations_count",
+      "first_tx_timestamp",
+      "latest_tx_timestamp",
+      "tx_count",
+      "total_value_usd",
+      "has_rotated_key",
+      "current_timestamp"
+     ]
+    }
+   ]
+  },
+  "34/withdrawal-2": {
+   "source": "experiment 34, record.json",
+   "verdict": "mined, block 479761",
+   "files": [
+    {
+     "file": "34_withdrawal-2/pool_withdrawal.json",
+     "record": "pool_withdrawal",
+     "frame": 2,
+     "underivable": [
+      "user_address",
+      "pool_denomination",
+      "deposit_timestamp",
+      "withdrawal_timestamp",
+      "pool_deposit_count_in_24h_window",
+      "pool_concurrent_deposits_in_window",
+      "deposit_amount",
+      "pool_amount_distribution",
+      "is_variable_denom_pool",
+      "user_recent_deposits_across_pools",
+      "user_recent_withdrawals_across_pools",
+      "withdrawal_address_prior_defi_interactions",
+      "expected_post_withdrawal_action",
+      "expected_post_withdrawal_delay_blocks",
+      "withdrawal_address_known_cluster_match",
+      "relayer_market_share_pct",
+      "withdrawal_address_prior_mixer_uses",
+      "block_gas_median_gwei",
+      "block_gas_stddev_gwei",
+      "user_typical_gas_price_gwei"
+     ]
+    },
+    {
+     "file": "34_withdrawal-2/inclusion.json",
+     "record": "inclusion",
+     "frame": null,
+     "underivable": [
+      "selected_relays",
+      "has_private_mempool_configured",
+      "destination_chain",
+      "interacts_with_sanctioned_addresses",
+      "recent_block_builder_count",
+      "dominant_builder_share",
+      "wallet_exposes_l1_inbox_path",
+      "mev_boost_enabled"
+     ]
+    },
+    {
+     "file": "34_withdrawal-2/account_readiness.json",
+     "record": "account_readiness",
+     "frame": null,
+     "underivable": [
+      "has_stealth_meta_address",
+      "meta_address_has_mlkem",
+      "stealth_protocol_version",
+      "smart_account_has_pq_module",
+      "smart_account_upgradeable",
+      "interacted_with_protocols",
+      "recent_ecdh_ephemeral_keys_seen",
+      "encrypted_blobs_without_pq_kem",
+      "bls_deposit_count",
+      "bls_committee_memberships",
+      "bls_attestations_count",
+      "first_tx_timestamp",
+      "latest_tx_timestamp",
+      "tx_count",
+      "total_value_usd",
+      "has_rotated_key",
+      "current_timestamp"
+     ]
+    }
+   ]
+  },
+  "8250/key-zero@f3079a0": {
+   "source": "experiment 27, cases.txt (key-zero)",
+   "verdict": "nonce_keys [0] selects the legacy nonce",
+   "files": [
+    {
+     "file": "8250_key-zero@f3079a0/transfer_destination.json",
+     "record": "transfer_destination",
+     "frame": 2,
+     "underivable": [
+      "intended_target_chain_id",
+      "intended_target_chain_name",
+      "recipient_tx_count_on_target_chain",
+      "recipient_tx_count_on_other_chains",
+      "recipient_is_contract",
+      "recipient_implements_receive",
+      "recipient_implements_erc20_receiver",
+      "user_expects_eoa",
+      "recipient_lookalike_in_history",
+      "recipient_address_distance",
+      "recent_dust_from_lookalike",
+      "ens_name_resolved",
+      "ens_typed_address",
+      "recipient_paused",
+      "recipient_migrated_to",
+      "recipient_last_activity_age_days",
+      "amount_value_usd",
+      "current_timestamp"
+     ]
+    },
+    {
+     "file": "8250_key-zero@f3079a0/typed_signature.json",
+     "record": "typed_signature",
+     "frame": null,
+     "underivable": [
+      "dapp_origin",
+      "spender_address",
+      "approval_amount",
+      "expiry_seconds",
+      "spender_in_protocol_registry",
+      "token_address",
+      "batch_tokens",
+      "nft_collection_address",
+      "operator_address",
+      "operator_in_marketplace_registry",
+      "operator_creation_timestamp",
+      "seaport_offer_assets",
+      "seaport_consideration_eth",
+      "seaport_collection_floor_eth",
+      "seaport_total_offer_value_usd",
+      "ui_description",
+      "payload_semantic",
+      "domain_in_protocol_registry",
+      "domain_age_days",
+      "is_homoglyph_of_known",
+      "current_timestamp"
+     ]
+    },
+    {
+     "file": "8250_key-zero@f3079a0/inclusion.json",
+     "record": "inclusion",
+     "frame": null,
+     "underivable": [
+      "selected_relays",
+      "has_private_mempool_configured",
+      "destination_chain",
+      "interacts_with_sanctioned_addresses",
+      "recent_block_builder_count",
+      "dominant_builder_share",
+      "wallet_exposes_l1_inbox_path",
+      "mev_boost_enabled"
+     ]
+    },
+    {
+     "file": "8250_key-zero@f3079a0/account_readiness.json",
+     "record": "account_readiness",
+     "frame": null,
+     "underivable": [
+      "has_stealth_meta_address",
+      "meta_address_has_mlkem",
+      "stealth_protocol_version",
+      "smart_account_has_pq_module",
+      "smart_account_upgradeable",
+      "interacted_with_protocols",
+      "recent_ecdh_ephemeral_keys_seen",
+      "encrypted_blobs_without_pq_kem",
+      "bls_deposit_count",
+      "bls_committee_memberships",
+      "bls_attestations_count",
+      "first_tx_timestamp",
+      "latest_tx_timestamp",
+      "tx_count",
+      "total_value_usd",
+      "has_rotated_key",
+      "current_timestamp"
+     ]
+    }
+   ]
+  },
+  "8250/key-zero@master": {
+   "source": "experiment 27, cases.txt (key-zero)",
+   "verdict": "nonce_keys [0] is an ordinary key",
+   "files": [
+    {
+     "file": "8250_key-zero@master/transfer_destination.json",
+     "record": "transfer_destination",
+     "frame": 2,
+     "underivable": [
+      "intended_target_chain_id",
+      "intended_target_chain_name",
+      "recipient_tx_count_on_target_chain",
+      "recipient_tx_count_on_other_chains",
+      "recipient_is_contract",
+      "recipient_implements_receive",
+      "recipient_implements_erc20_receiver",
+      "user_expects_eoa",
+      "recipient_lookalike_in_history",
+      "recipient_address_distance",
+      "recent_dust_from_lookalike",
+      "ens_name_resolved",
+      "ens_typed_address",
+      "recipient_paused",
+      "recipient_migrated_to",
+      "recipient_last_activity_age_days",
+      "amount_value_usd",
+      "current_timestamp"
+     ]
+    },
+    {
+     "file": "8250_key-zero@master/typed_signature.json",
+     "record": "typed_signature",
+     "frame": null,
+     "underivable": [
+      "dapp_origin",
+      "spender_address",
+      "approval_amount",
+      "expiry_seconds",
+      "spender_in_protocol_registry",
+      "token_address",
+      "batch_tokens",
+      "nft_collection_address",
+      "operator_address",
+      "operator_in_marketplace_registry",
+      "operator_creation_timestamp",
+      "seaport_offer_assets",
+      "seaport_consideration_eth",
+      "seaport_collection_floor_eth",
+      "seaport_total_offer_value_usd",
+      "ui_description",
+      "payload_semantic",
+      "domain_in_protocol_registry",
+      "domain_age_days",
+      "is_homoglyph_of_known",
+      "current_timestamp"
+     ]
+    },
+    {
+     "file": "8250_key-zero@master/inclusion.json",
+     "record": "inclusion",
+     "frame": null,
+     "underivable": [
+      "selected_relays",
+      "has_private_mempool_configured",
+      "destination_chain",
+      "interacts_with_sanctioned_addresses",
+      "recent_block_builder_count",
+      "dominant_builder_share",
+      "wallet_exposes_l1_inbox_path",
+      "mev_boost_enabled"
+     ]
+    },
+    {
+     "file": "8250_key-zero@master/account_readiness.json",
+     "record": "account_readiness",
+     "frame": null,
+     "underivable": [
+      "has_stealth_meta_address",
+      "meta_address_has_mlkem",
+      "stealth_protocol_version",
+      "smart_account_has_pq_module",
+      "smart_account_upgradeable",
+      "interacted_with_protocols",
+      "recent_ecdh_ephemeral_keys_seen",
+      "encrypted_blobs_without_pq_kem",
+      "bls_deposit_count",
+      "bls_committee_memberships",
+      "bls_attestations_count",
+      "first_tx_timestamp",
+      "latest_tx_timestamp",
+      "tx_count",
+      "total_value_usd",
+      "has_rotated_key",
+      "current_timestamp"
+     ]
+    }
+   ]
+  }
+ }
+}

@@ -2,7 +2,7 @@
 //
 // usage: npx tsx experiments/57-frame-records/records.ts
 // writes results/records.json and results/comparison.md. Reads only files in this repository.
-import { readFileSync, writeFileSync, mkdirSync } from 'node:fs'
+import { mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import type { Hex } from 'viem'
 import { type FrameTxJson, frameTxFromJson, parseFrameTx } from '../../src/frametx/index.js'
 import type { Eip8250 } from '../27-execution-digest/digest.js'
@@ -159,5 +159,31 @@ writeFileSync(
   `${JSON.stringify({ notApplicable: NOT_APPLICABLE, cases }, (_, v) => (typeof v === 'bigint' ? v.toString() : v), 1)}\n`,
 )
 writeFileSync(`${DIR}/results/comparison.md`, `${lines.join('\n')}\n`)
+// One file per case and record: the record's fields alone, under the check's own field names, as
+// the check reads them. Integers that do not fit a double (amounts) are written as JSON integers.
+const BIG = new Set(['approval_amount'])
+const toJson = (fields: Record<string, unknown>) =>
+  JSON.stringify(fields, (k, v) => (BIG.has(k) && typeof v === 'string' ? `@@int:${v}` : v), 1).replace(/"@@int:(\d+)"/g, '$1')
+const slug = (id: string) => id.replace(/[^A-Za-z0-9.@-]+/g, '_')
+rmSync(`${DIR}/results/records`, { recursive: true, force: true })
+const index: Record<string, { source: string; verdict: string; files: { file: string; record: string; frame: number | null; underivable: string[] }[] }> = {}
+for (const c of cases) {
+  const dir = `${DIR}/results/records/${slug(c.id)}`
+  mkdirSync(dir, { recursive: true })
+  const seen = new Map<string, number>()
+  const files = []
+  for (const r of c.out.records) {
+    const n = seen.get(r.type) ?? 0
+    seen.set(r.type, n + 1)
+    const total = c.out.records.filter((x) => x.type === r.type).length
+    const file = `${slug(c.id)}/${r.type}${total > 1 ? `-${n + 1}` : ''}.json`
+    writeFileSync(`${DIR}/results/records/${file}`, `${toJson(r.fields)}\n`)
+    files.push({ file, record: r.type, frame: r.frame ?? null, underivable: r.underivable })
+  }
+  writeFileSync(`${dir}/frame-facts.json`, `${JSON.stringify(c.out.frameFacts, null, 1)}\n`)
+  index[c.id] = { source: c.source, verdict: c.verdict, files }
+}
+writeFileSync(`${DIR}/results/records/index.json`, `${JSON.stringify({ notApplicable: NOT_APPLICABLE, cases: index }, null, 1)}\n`)
+
 const counts = cases.map((c) => `${c.id}: ${c.out.records.map((r) => r.type).join(', ')}`)
 console.log(`${cases.length} cases\n${counts.join('\n')}`)

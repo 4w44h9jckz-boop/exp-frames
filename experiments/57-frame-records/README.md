@@ -107,6 +107,18 @@ check that reads it.
   cases, and [`results/comparison.md`](results/comparison.md), the refused cases against their
   twins.
 
+**The files a check reads.**
+- `results/records/<case>/<record>.json` holds one record per file. It carries the record's fields
+  under the check's own field names, and nothing else.
+- When a case has two records of one kind, they are numbered `-1` and `-2`, in frame order.
+- Amounts are JSON integers.
+- `results/records/<case>/frame-facts.json` holds the case's frame facts.
+- `results/records/index.json` maps each case to its files, each file's frame, and the fields that
+  file leaves out. It also lists the nine record types that apply to no case.
+- There are 35 cases and 137 record files.
+- Regenerate with `npx tsx experiments/57-frame-records/records.ts` at this directory's commit.
+  The output is deterministic.
+
 **What the converter fills:**
 
 | Source | Cases | Records per case |

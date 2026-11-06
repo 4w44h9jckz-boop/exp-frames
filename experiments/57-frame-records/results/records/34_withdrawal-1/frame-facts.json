@@ -1,0 +1,65 @@
+{
+ "hash": "0x5ce6a700497946b229178ad77233febfb473584531f58c3ddab93664405d2e52",
+ "sigHash": "0x5ce6a700497946b229178ad77233febfb473584531f58c3ddab93664405d2e52",
+ "chainId": 8141,
+ "sender": "0x73e47a8DA2C83Beb802708Fc473B5B7D094f3eE6",
+ "nonceKeys": [
+  "0x6b1865da018345432ba5499e4fbc5de4618e0d46a3d3872e7cffacd9e108120"
+ ],
+ "nonceSeq": "0",
+ "frames": [
+  {
+   "i": 0,
+   "mode": "VERIFY",
+   "flags": 0,
+   "scope": 0,
+   "atomic": false,
+   "target": "0x0000000000000000000000000000000000008272",
+   "targetNull": false,
+   "execution": "11973",
+   "state": "0",
+   "value": "0",
+   "selector": "0x602d9dce",
+   "dataBytes": 72
+  },
+  {
+   "i": 1,
+   "mode": "VERIFY",
+   "flags": 3,
+   "scope": 3,
+   "atomic": false,
+   "target": "0x73e47a8DA2C83Beb802708Fc473B5B7D094f3eE6",
+   "targetNull": true,
+   "execution": "311010",
+   "state": "97920",
+   "value": "0",
+   "selector": null,
+   "dataBytes": 0
+  },
+  {
+   "i": 2,
+   "mode": "SENDER",
+   "flags": 0,
+   "scope": null,
+   "atomic": false,
+   "target": "0x73e47a8DA2C83Beb802708Fc473B5B7D094f3eE6",
+   "targetNull": false,
+   "execution": "100000",
+   "state": "183600",
+   "value": "0",
+   "selector": "0x21a0adb6",
+   "dataBytes": 516
+  }
+ ],
+ "payer": "0x73e47a8DA2C83Beb802708Fc473B5B7D094f3eE6",
+ "payerIsSender": null,
+ "signatures": [],
+ "senderSignsE": false,
+ "eUnder": "master",
+ "e": "0x9d752e01ac9d70282f0bba931b504995068d2d784c72fdb8a90c10c6b92da3b2",
+ "blobVersionedHashes": [],
+ "feeCaps": {
+  "maxFeePerGas": "100",
+  "maxPriorityFeePerGas": "1"
+ }
+}

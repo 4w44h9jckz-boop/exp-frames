@@ -1,0 +1,103 @@
+{
+ "request_id": "27/blobs#sig0",
+ "user_address": "0xCA17f5f5Ac896C0591899ab457eB57310682757c",
+ "signature_type": "eip712",
+ "primary_type": "FrameExecution",
+ "typed_data": {
+  "domain": {
+   "name": "FrameExecution",
+   "version": "1",
+   "chainId": "8141",
+   "verifyingContract": "0x2700000000000000000000000000000000000001"
+  },
+  "types": {
+   "FrameExecution": [
+    {
+     "name": "nonceKeysHash",
+     "type": "bytes32"
+    },
+    {
+     "name": "nonceSeq",
+     "type": "uint64"
+    },
+    {
+     "name": "frames",
+     "type": "Frame[]"
+    },
+    {
+     "name": "blobVersionedHashes",
+     "type": "bytes32[]"
+    }
+   ],
+   "Frame": [
+    {
+     "name": "mode",
+     "type": "uint8"
+    },
+    {
+     "name": "flags",
+     "type": "uint8"
+    },
+    {
+     "name": "target",
+     "type": "address"
+    },
+    {
+     "name": "executionLimit",
+     "type": "uint64"
+    },
+    {
+     "name": "stateLimit",
+     "type": "uint64"
+    },
+    {
+     "name": "value",
+     "type": "uint256"
+    },
+    {
+     "name": "data",
+     "type": "bytes"
+    }
+   ]
+  },
+  "primaryType": "FrameExecution",
+  "message": {
+   "nonceKeysHash": "0xada5013122d395ba3c54772283fb069b10426056ef8ca54750cb9bb552a59e7d",
+   "nonceSeq": "0",
+   "frames": [
+    {
+     "mode": 1,
+     "flags": 2,
+     "target": "0x2700000000000000000000000000000000000001",
+     "executionLimit": "30000",
+     "stateLimit": "0",
+     "value": "0",
+     "data": "0x"
+    },
+    {
+     "mode": 1,
+     "flags": 1,
+     "target": "0x0000000000000000000000000000000000000000",
+     "executionLimit": "0",
+     "stateLimit": "0",
+     "value": "0",
+     "data": "0x"
+    },
+    {
+     "mode": 2,
+     "flags": 0,
+     "target": "0x2700000000000000000000000000000000000011",
+     "executionLimit": "80000",
+     "stateLimit": "0",
+     "value": "0",
+     "data": "0xaabbccdd"
+    }
+   ],
+   "blobVersionedHashes": [
+    "0x0111111111111111111111111111111111111111111111111111111111111111",
+    "0x0122222222222222222222222222222222222222222222222222222222222222"
+   ]
+  }
+ },
+ "eip712_domain_separator": "0x3ce3fa3da5265276d6c270e7741986da0b8d82666d4b2a6f3d3412d4de015215"
+}

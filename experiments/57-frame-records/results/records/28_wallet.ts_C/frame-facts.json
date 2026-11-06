@@ -1,0 +1,90 @@
+{
+ "hash": "0x9688c1f8e5ea5f0a3fe6b8c3416d45488e06c7433e763332b18db2ede10710d7",
+ "sigHash": "0x818c50e02fda7b537319605ea3f66dffed91f755c495807e42317c1ae4624830",
+ "chainId": 8141,
+ "sender": "0x83D00Dd052eb3a8181E4C08C7E8062645A7Bc098",
+ "nonceKeys": [
+  "0x0"
+ ],
+ "nonceSeq": "1",
+ "frames": [
+  {
+   "i": 0,
+   "mode": "VERIFY",
+   "flags": 2,
+   "scope": 2,
+   "atomic": false,
+   "target": "0x83D00Dd052eb3a8181E4C08C7E8062645A7Bc098",
+   "targetNull": true,
+   "execution": "20000",
+   "state": "0",
+   "value": "0",
+   "selector": null,
+   "dataBytes": 0
+  },
+  {
+   "i": 1,
+   "mode": "VERIFY",
+   "flags": 1,
+   "scope": 1,
+   "atomic": false,
+   "target": "0xC925Ee6cb70CFd7B97bBb93B5b070C185e43159E",
+   "targetNull": false,
+   "execution": "15000",
+   "state": "0",
+   "value": "0",
+   "selector": null,
+   "dataBytes": 0
+  },
+  {
+   "i": 2,
+   "mode": "SENDER",
+   "flags": 4,
+   "scope": null,
+   "atomic": true,
+   "target": "0x8C2c146c8C13c4436B20d7880C07fbeEae304B2a",
+   "targetNull": false,
+   "execution": "26898",
+   "state": "379440",
+   "value": "0",
+   "selector": "0x095ea7b3",
+   "dataBytes": 68
+  },
+  {
+   "i": 3,
+   "mode": "SENDER",
+   "flags": 0,
+   "scope": null,
+   "atomic": false,
+   "target": "0x773df329eB6E70A52A4adE970D0C34B17cA367f7",
+   "targetNull": false,
+   "execution": "85381",
+   "state": "379440",
+   "value": "0",
+   "selector": "0xd96073cf",
+   "dataBytes": 68
+  }
+ ],
+ "payer": "0xC925Ee6cb70CFd7B97bBb93B5b070C185e43159E",
+ "payerIsSender": false,
+ "signatures": [
+  {
+   "scheme": "SECP256K1",
+   "signer": null,
+   "signs": "canonical signature hash"
+  },
+  {
+   "scheme": "SECP256K1",
+   "signer": "0x9D29Ff745f5306ccd52A066D11Ce0F964B3d13E6",
+   "signs": "canonical signature hash"
+  }
+ ],
+ "senderSignsE": false,
+ "eUnder": "f3079a0",
+ "e": "0x6d2abc307164a97bc8d1a895f1c9667c93cc8f1a7cda50010e9af6e76ab64b31",
+ "blobVersionedHashes": [],
+ "feeCaps": {
+  "maxFeePerGas": "1000000014",
+  "maxPriorityFeePerGas": "1000000000"
+ }
+}
