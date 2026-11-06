@@ -299,8 +299,8 @@ depend on the scheme: the check frame is pinned by whatever signature covers the
   only: one claim of 1 ETH.
 - **Setup.** The first try put all four deploys in one transaction. It passed simulation and was
   accepted by `eth_sendRawTransaction`, then left the pool without a receipt. Its frame limits
-  summed past the devnet's cap of $2^{24}$. One deploy per transaction mined, in blocks 1,321,749
-  to 1,321,752; the minting in 1,321,753.
+  summed past the devnet's cap of $2^{24}$. One deploy per transaction mined, the last in block
+  1,321,752; the minting in 1,321,753.
 - **Layouts.** Setup checked both storage layouts against the chain before any case.
 - **The probe** (simulation only) required the diff's storage count to be exactly 2 after (a)'s
   body. It passed at 2 and failed at 3, so the devnet numbers `TXTRACE` as the demo does, with
