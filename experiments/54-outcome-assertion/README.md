@@ -109,6 +109,81 @@ of `Q`. The account's `VERIFY` cost, about 1,000 more than experiment 27's for t
 - Predictions: both new (f) transactions are refused before inclusion. The EOA's mode-3
   transaction is refused as the account's is.
 
+**Amendment 2, 2026-11-06, before any run on that chain: the `TXTRACE` arm on the public Hegota
+devnet.**
+
+- **Why there.** The test network (chain 8141) refuses mode 3 as reserved, and `0xb6` is an
+  invalid opcode there (the results below). The public Hegota devnet implements EIP-7906 beside
+  EIP-8141:
+  - chain ID 3151908;
+  - `https://rpc1.hegota.ethrex.xyz`, which reports `ethrex/v23.0.0`;
+  - EIP-7906's mode is named `POST_TX` there, mode 3;
+  - `TXTRACE` is `0xb6`, and `EVENTDATACOPY` is `0xb7`.
+
+  Its parameters and the opcode's operand order are read from the demo by EIP-7906's first
+  author, [`forshtat/hegota-demo`](https://github.com/forshtat/hegota-demo) at `8095b894`,
+  `contracts/shared/TxTraceLib.sol`. Nothing from that repository is copied here. The demo's
+  numbering:
+
+  | Table | Parameters |
+  |---|---|
+  | balances | count `0x00`; address, before and after `0x03` to `0x05` |
+  | storage | count `0x01`; address, slot, before and after `0x06` to `0x09` |
+  | code | count `0x02`; address and hash `0x0a` and `0x0b` |
+  | events | from `0x0c` |
+
+  The demo has no nonce table, and the index is on top of the stack. EIP-7906's master text
+  numbers the parameters differently, so the probe below checks the devnet's numbering before the
+  cases run.
+- **The envelope.** The devnet's type `0x06` transaction lays out its fee fields flat, not as a
+  list, and ends with EIP-8272's `recent_root_references`. Frames and signatures are as on chain
+  8141. [`devnet.ts`](devnet.ts) encodes it. Nonce key `[0]` is the legacy nonce there: its nonce
+  manager is at `0x...8250`, as in EIP-8250 at `f3079a0`.
+- **The account, `PostTxAccount.yul`.**
+  - `VERIFY` checks the owner's signature over the canonical hash, as `SimpleAccount` does. It
+    then requires the last frame to be a mode-3 frame whose target is the account, with one of
+    the two checks' selectors.
+  - The body's frames are ordinary `SENDER` frames, with no atomic flag. A failed mode-3 frame
+    reverts the whole execution body.
+  - In the mode-3 frame the caller is the entry point and the call is static. The account runs
+    one of two checks over $Q$ in the frame's data:
+    - **The strong rule.** Every storage write in the diff must be listed in $Q$, with its
+      address, its slot and its value after. Every balance change must be listed with its value
+      after, or as the payer's, whose balance moves by the gas charged. There must be no code
+      change. Anything else reverts. $Q$ is computed by the runner from each contract's storage
+      layout, as a wallet would from its simulation.
+    - **The baseline**, in the shape of the demo's `ApprovalCapAssertion` and written here:
+      - the named reads of the test-network arm, each call's word against its expected value;
+      - every `Approval` event from the token naming the account as owner and the listed spender
+        as spender must carry a value no larger than the cap, 0.
+
+      An approval to any other spender, or a lie in `balanceOf`, passes it.
+- **The cases.** (a) to (e) as above, each run once under each check, ten transactions in all.
+  - The same token, collection and lying token are deployed on the devnet.
+  - The funder is a key derived for this chain, funded from the devnet's faucet only.
+  - Every contract is far below the devnet's deploy limit of about 10 to 11 KB.
+  - Every record carries the chain ID.
+- **The probe first.** A single transaction whose mode-3 frame requires the storage count to be
+  exactly the number expected for (a). It is simulated before the cases run. If the devnet's
+  numbering or operand order differs from the demo's, the probe says so, and this amendment gets a
+  dated note before any case runs.
+- **Predictions:**
+
+  | Case | Strong rule | Baseline |
+  |---|---|---|
+  | (a) honest transfer | mined, status 1 | mined, status 1 |
+  | (b) approval to the listed spender | reverted | reverted |
+  | (c) approval to an unlisted spender | reverted: the unlisted allowance slot | mined, status 1 |
+  | (d) operator grant | reverted | reverted |
+  | (e) lying token | reverted: the sink's and the "told" slots | mined, status 1 |
+
+  "Reverted" means mined, with the mode-3 frame failed and the body undone. The demo's notes say
+  a failed `POST_TX` still mines and uses the nonce.
+- **What would show the rule wrong on this chain:**
+  - the strong rule passes (c) or (e);
+  - it reverts (a);
+  - the baseline catches (c) or (e).
+
 **Post-quantum status.** None. The owner and the payers sign with secp256k1. Nothing here depends
 on the signature scheme: the check frame is pinned by whatever signature covers the frames, so the
 same layout works under EIP-8288's leanSPHINCS dependencies (experiment 49).
