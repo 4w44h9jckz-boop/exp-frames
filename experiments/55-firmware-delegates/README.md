@@ -95,18 +95,18 @@ This part is a reading of the source, not a run. It came before this README was 
 
 ### The template's history
 
-From `git log -- core/src/apps/ethereum/sc_constants.py.mako` at the pinned commit. The log has 12
+From `git log -- core/src/apps/ethereum/sc_constants.py.mako` at the pinned commit. Dates are git's author date and committer date; a release contains a commit by its committed state. The log has 12
 commits; these are the ones that touch the delegate list or its lookup.
 
-| Commit | Date | What changed |
-|---|---|---|
-| `0cd72f033` | 2026-07-21 | The list appears with two delegates and no chain: Ambire (`0x5a7fc113...6f6d`) and MetaMask (`0x63c0c19a...e32b`). Signing is by the standalone message |
-| `afd4279ca` | 2026-08-05 | The list is keyed by chain ID: Ethereum, Gnosis, Base and Arbitrum, each with both delegates. "Unknown chains are now disallowed" |
-| `bd6186c4a` | 2026-08-11 | The standalone message is dropped. (This commit does not touch the template) |
-| `9a044adb3` | 2026-08-12 | Authorization moves into `EthereumSignTxEIP1559`, at most one tuple per transaction. The template gains its refusal of chain ID 0. The commit says "The feature is still experimental" |
-| `255787a94` | 2026-08-22 | Simple7702Account (`0x4Cd241E8...66c9`) is added on Ethereum |
-| `b1d65d51d` | 2026-08-24 | Simple7702Account is added on Optimism, BNB, Polygon, Base and Arbitrum |
-| `1528e6ea1` | 2026-10-30 | MetaMask is removed from every chain: "drop MetaMask EIP-7702 support". The commit gives no reason |
+| Commit | Authored | Committed | What changed |
+|---|---|---|---|
+| `0cd72f033` | 2026-07-21 | 2026-07-27 | The list appears with two delegates and no chain: Ambire (`0x5a7fc113...6f6d`) and MetaMask (`0x63c0c19a...e32b`). Signing is by the standalone message |
+| `afd4279ca` | 2026-08-05 | 2026-08-07 | The list is keyed by chain ID: Ethereum, Gnosis, Base and Arbitrum, each with both delegates. "Unknown chains are now disallowed" |
+| `bd6186c4a` | 2026-08-11 | 2026-08-18 | The standalone message is dropped. (This commit does not touch the template) |
+| `9a044adb3` | 2026-08-12 | 2026-08-18 | Authorization moves into `EthereumSignTxEIP1559`, at most one tuple per transaction. The template gains its refusal of chain ID 0. The commit says "The feature is still experimental" |
+| `255787a94` | 2026-08-22 | 2026-08-25 | Simple7702Account (`0x4Cd241E8...66c9`) is added on Ethereum |
+| `b1d65d51d` | 2026-08-24 | 2026-08-25 | Simple7702Account is added on Optimism, BNB, Polygon, Base and Arbitrum |
+| `1528e6ea1` | 2026-10-30 | 2026-10-31 | MetaMask is removed from every chain: "drop MetaMask EIP-7702 support". The commit gives no reason |
 
 The releases, from the tags that contain each commit:
 
