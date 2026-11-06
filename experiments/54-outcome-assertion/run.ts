@@ -13,6 +13,7 @@ import {
   decodeFunctionResult,
   encodeAbiParameters,
   encodeFunctionData,
+  formatEther,
   keccak256,
   maxUint256,
   pad,
@@ -30,6 +31,7 @@ import {
   type Frame,
   type FrameTx,
   type FrameTxReceiptJson,
+  NEW_ACCOUNT_STATE_GAS,
   STORAGE_SET_STATE_GAS,
   frameReceiptGas,
   frameReceiptStatus,
@@ -51,8 +53,11 @@ const DIR = 'experiments/54-outcome-assertion'
 const { privateKey, address: funder } = loadKey()
 const client = makeClient()
 
+/** EXP54_RUN names a fresh run: every derived key, and so the account, the sponsor and the lying
+ * token's sink, is new. Unset, the labels are the first run's. */
+const RUN = process.env.EXP54_RUN ? `${process.env.EXP54_RUN}/` : ''
 const derive = (label: string) => {
-  const key = keccak256(concatHex([privateKey, toHex(`exp-frames/54/${label}`)]))
+  const key = keccak256(concatHex([privateKey, toHex(`exp-frames/54/${RUN}${label}`)]))
   return { key, address: privateKeyToAddress(key) }
 }
 const owner = derive('owner')
@@ -78,7 +83,7 @@ const TOKEN = deployFrame(
 )
 const COLLECTION = deployFrame(collection.bytecode, saltOf('exp-frames/54/collection'))
 const LIAR = deployFrame(concatHex([liar.bytecode, encodeAbiParameters([{ type: 'address' }], [sink])]), saltOf('exp-frames/54/liar'))
-const ACCOUNT = deployFrame(concatHex([ACCOUNT_CODE, pad(owner.address)]), saltOf('exp-frames/54/account'))
+const ACCOUNT = deployFrame(concatHex([ACCOUNT_CODE, pad(owner.address)]), saltOf(`exp-frames/54/${RUN}account`))
 
 // TXTRACE probe: runtime `PUSH1 0 PUSH1 0 TXTRACE PUSH1 0 MSTORE PUSH1 32 PUSH1 0 RETURN`, i.e.
 // TXTRACE(param 0x00, in2 0): the count of the diff's first table, returned as one word.
@@ -246,21 +251,51 @@ async function runCase(id: string, label: string, body: Frame[], q: Entry[], ext
 
 // ---- setup ----
 
+function requireAllOk(what: string, r: Awaited<ReturnType<typeof sendFrames>>) {
+  if (!r?.receipt) throw new Error(`${what}: no receipt`)
+  const failed = r.receipt.frameReceipts.map((f, i) => [i, frameReceiptStatus(f)] as const).filter(([, st]) => st !== 1)
+  if (failed.length) throw new Error(`${what}: frame(s) ${failed.map(([i]) => i).join(', ')} failed in ${r.hash}; setup stops`)
+}
+
 async function setup() {
   const mint = (t: Address, abi: Abi, to: Address, amount: bigint) =>
     senderFrame({ target: t, data: enc(abi, 'mint', [to, amount]), execution: 100_000n, state: 2n * STORAGE_SET_STATE_GAS })
-  await sendFrames(client, privateKey, [TOKEN.frame, COLLECTION.frame, LIAR.frame, ACCOUNT.frame, PROBE.frame], {
-    label: 'setup: deploy the token, the collection, the lying token, the account and the TXTRACE probe',
-    expectCode: [TOKEN.address, COLLECTION.address, LIAR.address, ACCOUNT.address, PROBE.address],
-  })
+  // Deploy only what is missing: a CREATE2 deploy of existing code fails its frame.
+  const contracts = [TOKEN, COLLECTION, LIAR, ACCOUNT, PROBE]
+  const missing = []
+  for (const c of contracts) {
+    const code = await client.getCode({ address: c.address })
+    if (!code || code === '0x') missing.push(c)
+  }
+  if (missing.length) {
+    const r = await sendFrames(client, privateKey, missing.map((c) => c.frame), { label: `setup: deploy ${missing.length} missing contract(s)` })
+    requireAllOk('deploy', r)
+  }
   const ethOf = (a: Address) => client.getBalance({ address: a })
   const fund: Frame[] = []
-  if ((await ethOf(ACCOUNT.address)) < parseEther('0.05')) fund.push(senderFrame({ target: ACCOUNT.address, value: parseEther('0.1'), execution: 30_000n }))
-  if ((await ethOf(sponsor.address)) < parseEther('0.02'))
-    fund.push(senderFrame({ target: sponsor.address, value: parseEther('0.05'), execution: 30_000n, state: STORAGE_SET_STATE_GAS * 2n }))
+  let needed = 0n
+  if ((await ethOf(ACCOUNT.address)) < parseEther('0.05')) {
+    fund.push(senderFrame({ target: ACCOUNT.address, value: parseEther('0.1'), execution: 30_000n }))
+    needed += parseEther('0.1')
+  }
+  if ((await ethOf(sponsor.address)) < parseEther('0.02')) {
+    // A new EOA: EIP-8037 charges NEW_ACCOUNT_STATE_GAS for it.
+    fund.push(senderFrame({ target: sponsor.address, value: parseEther('0.05'), execution: 30_000n, state: NEW_ACCOUNT_STATE_GAS }))
+    needed += parseEther('0.05')
+  }
   if (word(await read(token.abi, TOKEN.address, 'balanceOf', [ACCOUNT.address])) < 100n * AMOUNT) fund.push(mint(TOKEN.address, token.abi, ACCOUNT.address, 1_000n * AMOUNT))
   if (word(await read(liar.abi, LIAR.address, 'held', [ACCOUNT.address])) < 100n * AMOUNT) fund.push(mint(LIAR.address, liar.abi, ACCOUNT.address, 1_000n * AMOUNT))
-  if (fund.length) await sendFrames(client, privateKey, fund, { label: 'setup: fund the account and the sponsor, mint to the account' })
+  // A value frame the funder cannot cover fails on its own while the others succeed: check first.
+  const have = await ethOf(funder)
+  const margin = parseEther('0.01')
+  if (have < needed + margin) {
+    throw new Error(`the funder holds ${formatEther(have)} ETH; setup sends ${formatEther(needed)} and needs about ${formatEther(margin)} more for gas`)
+  }
+  if (fund.length) {
+    const r = await sendFrames(client, privateKey, fund, { label: 'setup: fund the account and the sponsor, mint to the account' })
+    requireAllOk('funding', r)
+  }
+  if ((await ethOf(sponsor.address)) === 0n) throw new Error('the sponsor holds no ETH after setup')
   console.log(`account ${ACCOUNT.address}  token ${TOKEN.address}  collection ${COLLECTION.address}  liar ${LIAR.address}  probe ${PROBE.address}`)
   console.log(`funder ${funder}  owner ${owner.address}  sponsor ${sponsor.address}`)
   record({ case: 'setup', account: ACCOUNT.address, token: TOKEN.address, collection: COLLECTION.address, liar: LIAR.address, probe: PROBE.address, owner: owner.address, sponsor: sponsor.address, recipient, listedSpender, operator, sink, accountCodeBytes: size(ACCOUNT_CODE) })
@@ -322,6 +357,9 @@ async function caseF() {
     ['the payer moves the check frame into a separate batch', [v, p, unflag(t), c]],
     ['the payer inserts a body frame into the batch, ahead of the check', [v, p, t, approve(unlistedSpender), c]],
   ]
+  // The altered copies' refusals mean something only if the honest completion would be admitted.
+  const honest = await simulateFrameTx(client, await complete(signed.frames))
+  if (!honest.valid) throw new Error(`(f): the honest completion is refused (${honest.violation}); check that the sponsor is funded. (f) stops`)
   const results = []
   for (const [label, frames] of copies) {
     const r = await submit(`(f) ${label}`, await complete(frames))

@@ -144,6 +144,25 @@ same layout works under EIP-8288's leanSPHINCS dependencies (experiment 49).
 The refused transactions have no receipts. Their hashes are the ones they would have had, and
 the node's refusal is in the record.
 
+**Setup fix, 2026-11-06, after the coordinator's rerun under another key.**
+- Under a new key, setup's funding frame to the new sponsor failed while the other frames
+  succeeded. The sponsor had no ETH, so (f)'s honest completion was refused with the altered
+  copies, and (f) proved nothing. A value frame the funder cannot cover fails on its own, and
+  frame [1] had already sent 0.1 ETH. The same layout funds a new sponsor when the funder holds
+  enough: block 713,346.
+- Setup now:
+  - checks the funder's balance first;
+  - deploys only missing contracts;
+  - funds a new EOA with `NEW_ACCOUNT_STATE_GAS`;
+  - stops on any failed frame.
+- (f) stops if its honest completion would be refused.
+- `EXP54_RUN=<name>` derives a fresh set of keys, account and sponsor. The key comes from
+  `PRIVATE_KEY`.
+- Rerun `EXP54_RUN=fresh-2 run.ts setup,f`, blocks 713,351 to 713,353:
+  - the four altered copies and the control were refused;
+  - the honest completion was mined in block 713,353, VERIFY over $E$ 3,059.
+  The same outcome as the first run.
+
 ## Short answers
 
 1. **Done when: met.**
