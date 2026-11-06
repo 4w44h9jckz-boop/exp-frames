@@ -289,3 +289,65 @@ the node's refusal is in the record.
 
 **Post-quantum status.** None. The owner and the sponsor sign with secp256k1. The layout does not
 depend on the scheme: the check frame is pinned by whatever signature covers the frames.
+
+## Results of amendment 2: the `TXTRACE` arm on the Hegota devnet, 2026-11-06
+
+- Chain 3151908, `https://rpc1.hegota.ethrex.xyz`, `ethrex/v23.0.0`.
+- `npx tsx experiments/54-outcome-assertion/run-devnet.ts setup`, then `probe`, then `cases`.
+- Records, each with its chain ID: [`results/devnet-2026-11-06.jsonl`](results/devnet-2026-11-06.jsonl).
+- **Funding.** The funder, a key derived for this chain, was funded from the devnet's faucet
+  only: one claim of 1 ETH.
+- **Setup.** The first try put all four deploys in one transaction. It passed simulation and was
+  accepted by `eth_sendRawTransaction`, then left the pool without a receipt. Its frame limits
+  summed past the devnet's cap of $2^{24}$. One deploy per transaction mined, in blocks 1,321,749
+  to 1,321,752; the minting in 1,321,753.
+- **Layouts.** Setup checked both storage layouts against the chain before any case.
+- **The probe** (simulation only) required the diff's storage count to be exactly 2 after (a)'s
+  body. It passed at 2 and failed at 3, so the devnet numbers `TXTRACE` as the demo does, with
+  the index on top.
+
+| Case | Rule | Transaction | Outcome | The check's execution gas | After |
+|---|---|---|---|---:|---|
+| (a) honest transfer | strong | [`0x09aa7e52…`](https://dora.hegota.ethrex.xyz/tx/0x09aa7e523b22d7d97f585050689dec138b76dadcb25fc292c5a816f03a48b044) | **mined**, block 1,321,757, status 1 | 2,069 | the recipient has 10 more |
+| (a) | baseline | [`0xfb48d242…`](https://dora.hegota.ethrex.xyz/tx/0xfb48d24278075a2169ccaa6c3ba275bdcc519fe4bb0d50d12fcaaf1cbaeb6919) | **mined**, 1,321,758, status 1 | 16,375 | the recipient has 10 more |
+| (b) approval, listed spender | strong | [`0xc9d6d5cd…`](https://dora.hegota.ethrex.xyz/tx/0xc9d6d5cd0895fce120b98aedf0b75e888996ffeee5fdff55dfa08ee0659c790b) | **mined, reverted**, 1,321,759, status 0 | 938, FAILED | nothing changed |
+| (b) | baseline | [`0x31de9460…`](https://dora.hegota.ethrex.xyz/tx/0x31de9460303def1a9aba718ae8cfa308585fe7521356409d4edc65111b73e17a) | **mined, reverted**, 1,321,760, status 0 | 5,963, FAILED | nothing changed |
+| (c) approval, unlisted spender | strong | [`0xffd8540a…`](https://dora.hegota.ethrex.xyz/tx/0xffd8540a0bc1ba8e6f9ff6cc381677c11a36f26be328df9aa475babdc598a848) | **mined, reverted**, 1,321,761, status 0 | 938, FAILED | nothing changed |
+| (c) | baseline | [`0xfa46a5d5…`](https://dora.hegota.ethrex.xyz/tx/0xfa46a5d597f081f6be3b8284f5eed88013e3e8198edb3f6eb62ceb32cdb0feb4) | **mined**, 1,321,762, status 1 | 17,048 | the unlisted spender's allowance is $2^{256}-1$ |
+| (d) operator grant | strong | [`0x2bb799de…`](https://dora.hegota.ethrex.xyz/tx/0x2bb799de070e6662fc24ff7a33437b49b3214d47a70938054787817adf02c33c) | **mined, reverted**, 1,321,763, status 0 | 938, FAILED | nothing changed |
+| (d) | baseline | [`0xff6dff6e…`](https://dora.hegota.ethrex.xyz/tx/0xff6dff6e33de690b06714f8a3e56f2d298eb59f9129dd991aa289ed4c9366b45) | **mined, reverted**, 1,321,764, status 0 | 12,882, FAILED | nothing changed |
+| (e) lying token | strong | [`0x84e157e2…`](https://dora.hegota.ethrex.xyz/tx/0x84e157e2db579a555cc6e30e6cbe7b312942d6b9f442a2e68607c0f518700e55) | **mined, reverted**, 1,321,765, status 0 | 1,603, FAILED | nothing changed |
+| (e) | baseline | [`0xbfcbb81a…`](https://dora.hegota.ethrex.xyz/tx/0xbfcbb81a4de78eb68e1666ea114cfb27aad4cc2f04d5b7ef0998eeab706f0e3c) | **mined**, 1,321,766, status 1 | 11,468 | `balanceOf(recipient)` reads 10, and the sink holds the 10 |
+
+**Short answers for amendment 2:**
+
+1. **Every prediction held.**
+   - The strong rule passed (a) and reverted (b) to (e).
+   - The baseline passed (a), (c) and (e), and reverted (b) and (d).
+   - So the rule that denies every write the signed $Q$ does not list catches the two cases that
+     reads of named state let through, on a chain that runs EIP-7906.
+   - Nothing that would show the rule wrong was observed.
+2. **A failed mode-3 check undoes the whole body.**
+   - Every reverted case left balances, allowances and grants unchanged.
+   - The transaction was still mined with status 0, and the account paid for its gas.
+   - The body frames' receipts say `ok`, as in the batch arm. Only the check frame's receipt and
+     the transaction's status show the failure.
+3. **The strong rule is the cheaper check here.**
+   - It reads the diff, which is small: two storage writes for a transfer.
+   - It costs 2,069 gas when it passes, and 938 to 1,603 when it fails at the first unlisted
+     write.
+   - The baseline costs 11,468 to 17,048 when it passes. It pays for a `STATICCALL` per named
+     value and a scan of every event.
+   - The cost of the strong rule grows with the number of writes, and the baseline's with the
+     number of events, which a dapp can pad.
+4. **What the strong rule needed from the wallet.**
+   - $Q$ names exact storage slots and their values after: the two balance slots of the token
+     transferred. The runner computed them from the contracts' declared layouts and checked those
+     against the chain first. A wallet would take them from its own simulation, which is
+     R-AI3's job.
+   - The payer's balance change is allowed whatever its value, since the gas charged is not known
+     at signing.
+   - No other balance changed in these cases: the coinbase is paid after the check.
+5. **The devnet's EIP-7906 differs from the master text** in its mode's name (`POST_TX`), its
+   parameter numbering and its operand order, and it has no nonce table. A check written for one
+   does not run on the other unchanged.
