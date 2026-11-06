@@ -112,3 +112,86 @@ of `Q`. The account's `VERIFY` cost, about 1,000 more than experiment 27's for t
 **Post-quantum status.** None. The owner and the payers sign with secp256k1. Nothing here depends
 on the signature scheme: the check frame is pinned by whatever signature covers the frames, so the
 same layout works under EIP-8288's leanSPHINCS dependencies (experiment 49).
+
+## Results, 2026-11-06
+
+- Network: the Hegota testnet, `ethrex/v23.0.0-hegota-testnet-hotfix-64b8fc09`.
+- Runner at commit `489aebe`, `npx tsx experiments/54-outcome-assertion/run.ts setup`, then
+  `a`, `b,c,d,e`, and `f,assert`.
+- Every record is in [`results/2026-11-06.jsonl`](results/2026-11-06.jsonl): the transaction,
+  the simulation, the frames' receipts, `Q`, and every value read before and after.
+- The account is 893 bytes of runtime, then the owner: 925 bytes on chain. Setup ran in blocks
+  713,213 and 713,214.
+
+| Case | Transaction | Outcome | Frames: status, execution gas | After |
+|---|---|---|---|---|
+| (a) honest transfer | [`0x63ac6170…`](https://dora.privacy.ethrex.xyz/tx/0x63ac61701302ea8d98e93cb1e7416dc76608eb526858274d4d3a0b846007c2ff) | **mined**, block 713,215, status 1 | VERIFY 714 · transfer 30,357 · check 11,179 | the recipient has 10 more |
+| (b) hidden approval, listed spender | [`0xab2e9b88…`](https://dora.privacy.ethrex.xyz/tx/0xab2e9b8803bd51d32a4bc5ee2e84a2521d5a837c882d8c95484a9c5ef89d7f21) | **mined, reverted**, block 713,217, status 0 | VERIFY 811 · transfer 30,357 · approve 14,619 · check FAILED 3,103 | allowance still 0, both balances unchanged |
+| (c) approval, unlisted spender | [`0x2350b4cd…`](https://dora.privacy.ethrex.xyz/tx/0x2350b4cdc60e355110fee39b609a21b2da3e76a17101de998f97030b106ac92b) | **mined**, block 713,218, status 1 | VERIFY 811 · transfer 30,357 · approve 14,619 · check 11,179 | the unlisted spender's allowance is $2^{256}-1$ |
+| (d) operator grant, listed collection | [`0xafcb3fcf…`](https://dora.privacy.ethrex.xyz/tx/0xafcb3fcf5830b3e2c5a163f151511ddfa2869b97c6664fa147f30c00296b79ca) | **mined, reverted**, block 713,219, status 0 | VERIFY 811 · transfer 30,357 · grant 17,625 · check FAILED 6,230 | grant still false, both balances unchanged |
+| (e) lying token | [`0x019ec079…`](https://dora.privacy.ethrex.xyz/tx/0x019ec079280aa1015a49e60fb80adc0088aae54d61bda5c6d0a76e7db57972ee) | **mined**, block 713,220, status 1 | VERIFY 714 · transfer 42,613 · check 6,508 | `balanceOf(recipient)` reads 10. The recipient holds 0, and the sink holds the 10 |
+| (f) payer drops the check | `0x39feabfc…` | **refused** before inclusion | VERIFY reverted | - |
+| (f) payer moves the check ahead of the body | `0x18d55d88…` | **refused** | VERIFY reverted | - |
+| (f) payer moves the check into a separate batch | `0x51cace80…` | **refused** | VERIFY reverted | - |
+| (f) payer inserts a body frame ahead of the check (amendment) | `0xbbae3bd2…` | **refused** | VERIFY reverted | - |
+| (f) honest completion | [`0xa3cd3131…`](https://dora.privacy.ethrex.xyz/tx/0xa3cd31315b373289023041f62cd316a5b7070743dd407dde1b99a9c6f3bfe7f2) | **mined**, block 713,223, payer the sponsor | VERIFY over $E$ 3,059 · pay 3,000 · transfer 30,357 · check 11,179 | the recipient has 10 more |
+| (f, control) owner signs a body with no check (amendment) | `0x8b9ef267…` | **refused** | VERIFY reverted | - |
+| `ASSERT`: final frame of mode 3, from the account | `0x759eeadb…` | **refused**: "Invalid frame transaction: Frame 2: reserved execution mode 3" | - | - |
+| `ASSERT`: final frame of mode 3, from an EOA (amendment) | `0x8f60821a…` | **refused**, the same words | - | - |
+| `TXTRACE` (`0xb6`), `eth_call` to the probe | - | "execution halted: reason=Invalid Opcode" | - | - |
+| `TXTRACE` (`0xb6`) in a body frame | [`0x452ce7a2…`](https://dora.privacy.ethrex.xyz/tx/0x452ce7a26117553785054e0d54b4343cabbe436980591c7b0b5c95c5eeddb093) | **mined, reverted**, block 713,224 | probe FAILED, all of its 30,000 · check SKIPPED | - |
+
+The refused transactions have no receipts. Their hashes are the ones they would have had, and
+the node's refusal is in the record.
+
+## Short answers
+
+1. **Done when: met.**
+   - Cases (a) to (e) and (f)'s honest completion were mined, with receipts.
+   - (f)'s four altered copies and its control were refused before inclusion.
+   - `ASSERT` was tried and is not implemented on this network: mode 3 is refused as reserved, and
+     `0xb6` is an invalid opcode. So the run under `TXTRACE` with the stricter rule could not run.
+     It waits for a client with EIP-7906.
+2. **The claim holds, and nothing that would show it wrong was observed.**
+   - (b) and (d) left nothing behind: the approval stayed 0, the grant stayed false, and the
+     transfer in the same batch was undone.
+   - (c) and (e) passed the check. The unlisted spender holds an unlimited allowance. The lying
+     token's sink holds the 10 that `balanceOf` says the recipient got.
+   - Reads of named state caught neither, so the stricter rule is needed: deny every write the
+     signed `Q` does not list.
+3. **Why (c) and (e) pass is the same reason.**
+   - The check reads only the values `Q` names. Each read goes through code the transaction
+     touched.
+   - In (c) the harmful write is to a slot no entry names.
+   - In (e) the entries are named, but the contract answering them is the one that lies.
+   - A check that lists writes, as `TXTRACE` would, sees both: a write to the allowance slot of an
+     address `Q` does not list, and a write to `held[sink]`. EIP-7906 reports a changed slot by its
+     key, a hash. So a checker under the stricter rule needs no mapping from slot to resource: any
+     changed slot that `Q` does not list fails.
+4. **A failed check is visible only in the transaction's status and in the gas.**
+   - In (b) and (d) the body frames' receipts say SUCCESS, with 0 state gas, although they were
+     undone. This is experiment 03's observation 2, again.
+   - A wallet that reads frame receipts sees a successful approve. It must read the transaction's
+     status and the check frame's.
+5. **`E` pins the check frame, and the account's frame rule pins it too. Each refused a copy the
+   other let through.**
+   - The inserted body frame keeps a valid layout, and only `E` refused it.
+   - The owner's own transaction with no check frame is signed over the canonical hash, and only
+     the frame rule refused it.
+   - The first three copies break both. The node's refusal names no cause, so the record cannot
+     tell which defence fired first.
+6. **Cost against the predictions.**
+   - The check costs about 2,800 execution gas per entry: 11,179 for four entries, 6,508 for two.
+     The prediction was about 3,000.
+   - The frame rule adds 363 to 460 gas to `VERIFY` over the canonical hash: 714 and 811, against
+     experiment 27's 351. The prediction was about 1,000, so it was high.
+   - Over $E$ with four frames, `VERIFY` is 3,059, against experiment 27's 1,974 for three frames.
+     The fourth frame and $Q$'s 708 bytes of data account for the difference.
+7. **What the batch cannot do, that `ASSERT` would.**
+   - The check here is a frame of the batch, so it can only undo the batch. A validation-prefix
+     write survives it, as EIP-7906 notes.
+   - Everything before the batch is outside it. In these runs nothing ran there but `VERIFY`.
+   - The account has to require the check itself. Here it does so in `VERIFY`: the frame rule.
+
+**Post-quantum status.** None. The owner and the sponsor sign with secp256k1. The layout does not
+depend on the scheme: the check frame is pinned by whatever signature covers the frames.
