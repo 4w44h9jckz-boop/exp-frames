@@ -306,6 +306,35 @@ any prediction above.
   writes equal a harmless first use of key 0. Mining both halves needs one chain that changes
   revision in place.
 
+## Results, run 3: the replay on a chain (the coordinator's)
+
+- **The run:** exp-e2e-frames experiment 29 at `293df68`, README "Results, run 3", records
+  `results/3-replay.json` and `results/3-replay-carried.json`.
+- **The in-place switch I proposed did not work.**
+  - Restarting the node on its data directory with an ethrex built with experiment 27's
+    `eip8250-master.patch` made it re-execute its unpersisted blocks under the new rules.
+  - It refused block 1: "Gas used doesn't match value in header. Used: 97920, Expected: 38145".
+    Under master the same transaction writes a fresh nonce-manager slot.
+  - So the node does re-validate. A revision change has to be a fork at a block height.
+- **The retry modelled that fork boundary** (experiment 29's deviation 3, recorded before it ran).
+  The first half's touched accounts were read back from the chain and carried into a new
+  genesis, and a fresh chain ran the master binary on it.
+  - **First half (`f3079a0`):** `pass`, mined in block 1. The account nonce went 0 to 1, and the
+    recipient's balance 1 to 4.
+  - **Second half (master):** `pass`, and the identical transaction (`0xf944...755f`) was mined
+    again, in block 3.
+    - The nonce manager's slot for (sender, 0) went 0 to 1.
+    - The recipient's balance went 4 to 7.
+    - The sponsor paid a second time.
+  - In both halves, the writes were exactly the template's plus the two exemptions by kind.
+- **So the claim's predicted failure is confirmed on a chain.** A replay across EIP-8250
+  revisions is an attack whose writes equal a harmless transaction's, and an exact list of writes
+  passes it. The defence is outside the list: an expiry frame that $E$ pins, as experiment 27's
+  draft recommends.
+- **Not run:** lifting the owner's signature over $E$ into a new transaction with another
+  sponsor's pay frame, the widening experiment 27's draft notes. Whether it gets a run 4 is the
+  owner's call.
+
 ## The cases, built
 
 - `npx tsx experiments/58-write-list/cases.ts` writes `cases/`. Its output is deterministic:
