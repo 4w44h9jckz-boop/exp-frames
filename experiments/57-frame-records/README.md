@@ -95,3 +95,76 @@ records, whatever the checks' rules.
 **Post-quantum status.** Not applicable to the converter. The account-readiness record carries the
 signature schemes the transaction uses, so a post-quantum sender (experiment 49) is visible to the
 check that reads it.
+
+## Results, 2026-11-06
+
+- `npx tsx experiments/57-frame-records/records.ts` reads only files in this repository:
+  - experiment 27's two case files;
+  - the testnet fixtures in `test/fixtures/chain/` for experiment 28's twelve mined batches;
+  - experiment 34's `record.json`.
+- The converter is [`convert.ts`](convert.ts).
+- It writes [`results/records.json`](results/records.json), the records and frame facts of all 35
+  cases, and [`results/comparison.md`](results/comparison.md), the refused cases against their
+  twins.
+
+**What the converter fills:**
+
+| Source | Cases | Records per case |
+|---|---|---|
+| experiment 27, `f3079a0` | 19 | a transfer's destination (17, two have no transfer); a typed-data signature (19); inclusion and account readiness (all). The one approval is `atomic-approve-swap`'s. Its swap uses a placeholder selector, so no swap record |
+| experiment 28 | 12 | an approval and a swap each; D has a second approval, back to 0; inclusion and account readiness |
+| experiment 34 (W3) | 2 | a pool withdrawal; inclusion and account readiness |
+| EIP-8250 pair | 2 | as experiment 27's `key-zero` |
+
+Nine of the sixteen record types apply to no case, for the reasons in `NOT_APPLICABLE`. Every
+record names the fields it leaves out. Most are outside knowledge: a scam list, a price, a
+history, the user's intent.
+
+**The refused cases against their twins.** The table is in
+[`results/comparison.md`](results/comparison.md).
+
+- **At signing, six of the eight cannot be seen.**
+  - `inserted-default`, `appended-default`, `state-limit-lowered`, `transfer-retargeted`,
+    `other-account` and `blob-swapped` each carry their twin's signature: a relay made them after
+    the user signed. A check that runs before signing sees the twin, and passes it.
+  - `payer-is-sender` is signed over the same $E$ as its twin, so its typed data is the same.
+    Only the pay frame's target, which $E$ leaves open, differs.
+  - `self-paying` is the one the user signs as such. Its records look like any self-paid transfer's
+    with an $E$ signature. No field says that payment was approved on $E$.
+- **In transit, the prediction was wrong in detail.**
+  - In the six relay copies, the typed-signature record loses its typed data. The transaction
+    carries only the digest entry 0 signed, and that digest is not this transaction's $E$. A check
+    sees an empty field, not a reason.
+  - `inserted-default` changes the inclusion record's `to_address`: the first call is now the
+    inserted `DEFAULT` frame. The prediction said no record would change.
+  - `transfer-retargeted` changes the token, and `other-account` the sender, as predicted.
+  - `state-limit-lowered`, `appended-default` and `blob-swapped` change nothing but the lost typed
+    data. `payer-is-sender` changes nothing.
+  - So in transit, three cases change a field a check reads beyond the typed data. None of the
+    three changes says what was wrong without the user's intent: the token they meant, the
+    account they meant, or the frames they signed.
+- **The claim, for the records: it holds.**
+  - No record has a field for any of the following:
+    - frame modes and order;
+    - the payer;
+    - the approval scope;
+    - limits;
+    - blob hashes;
+    - whether a signature covers this transaction.
+  - So no check that reads these records can refuse a case for the reason the account refused it.
+  - Whether the checks flag any case for another reason is for the run of the checks themselves.
+    That run is not in this repository.
+- **The EIP-8250 pair.**
+  - The records are identical under both revisions.
+  - So is $E$: `0x06ffc79e...abdacb` under both, since $E$ commits to the nonce keys and not to
+    what the chain makes of them.
+  - A replay across revisions is invisible to both the records and the signature.
+- **W3's pair.**
+  - The two withdrawals' records differ only in the recipient.
+  - Experiment 34 found them linkable by their identical shape in one block. The records carry no
+    shape, and the withdrawal record has nothing tying one withdrawal to another, so a check reading
+    them one at a time cannot see the link.
+
+**Post-quantum status.** None of the 35 cases uses a post-quantum signature. The account-readiness
+record reads `SECP256K1` for every case. This records the cases, not a limit of the converter: a
+leanSPHINCS dependency (experiment 49) would show up in the frame facts as a mode-4 frame.
