@@ -343,8 +343,8 @@ depend on the scheme: the check frame is pinned by whatever signature covers the
 4. **What the strong rule needed from the wallet.**
    - $Q$ names exact storage slots and their values after: the two balance slots of the token
      transferred. The runner computed them from the contracts' declared layouts and checked those
-     against the chain first. A wallet would take them from its own simulation, which is
-     R-AI3's job.
+     against the chain first. A wallet would take them from its own simulation, as
+     experiment 58 does.
    - The payer's balance change is allowed whatever its value, since the gas charged is not known
      at signing.
    - No other balance changed in these cases: the coinbase is paid after the check.
