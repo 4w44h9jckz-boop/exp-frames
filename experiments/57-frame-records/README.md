@@ -111,7 +111,7 @@ check that reads it.
 
 | Source | Cases | Records per case |
 |---|---|---|
-| experiment 27, `f3079a0` | 19 | a transfer's destination (17, two have no transfer); a typed-data signature (19); inclusion and account readiness (all). The one approval is `atomic-approve-swap`'s. Its swap uses a placeholder selector, so no swap record |
+| experiment 27, `f3079a0` | 19 | a transfer's destination (15: `atomic-approve-swap`, `blobs`, `many-frames` and `blob-swapped` transfer nothing); a typed-data signature (19); inclusion and account readiness (all). The one approval is `atomic-approve-swap`'s. Its swap uses a placeholder selector, so no swap record |
 | experiment 28 | 12 | an approval and a swap each; D has a second approval, back to 0; inclusion and account readiness |
 | experiment 34 (W3) | 2 | a pool withdrawal; inclusion and account readiness |
 | EIP-8250 pair | 2 | as experiment 27's `key-zero` |
