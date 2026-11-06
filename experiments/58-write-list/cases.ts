@@ -138,6 +138,12 @@ const cases: Case[] = []
     tokenBalances(t, 3, holders, parseEther('1000'))
     layouts[t] = ERC20
   }
+  // Amendment 2: experiment 27's recipient exists with 1 wei and 1 unit of each token, so that a
+  // vector whose transfer frame has no state budget does not need one. On an empty recipient,
+  // with-expiry's token transfer and the value vectors' ether transfers each create state from
+  // nothing and fail for want of state gas (run 1).
+  put(getAddress('0x2700000000000000000000000000000000000013'), { balance: word(1n) })
+  for (const t of ['0x2700000000000000000000000000000000000010', '0x2700000000000000000000000000000000000011'].map(getAddress)) tokenBalances(t, 3, [getAddress('0x2700000000000000000000000000000000000013')], 1n)
   const TOKEN_E = getAddress('0x2700000000000000000000000000000000000010')
   const OTHER_E = getAddress('0x2700000000000000000000000000000000000011')
   const TO_E = getAddress('0x2700000000000000000000000000000000000013')

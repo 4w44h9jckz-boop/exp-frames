@@ -247,7 +247,41 @@ results will report those separately, not count them as catches.
 
   These are the fixtures' verdicts, not a chain's.
 
-## The cases, built
+### Amendment 2, 2026-11-06: after run 1, before run 2
+
+Run 1 is the coordinator's: exp-e2e-frames experiment 29 at `4bc90bc`, on these cases at `a629da4`
+and `write-check` at kohaku-rs `b9713ec`. 34 of 41 verdicts were as predicted, and every B and C
+case among them. All seven others failed closed: no harmful case passed. Run 1's results stand
+as recorded. This amendment says what caused the seven and what run 2 changes. It does not edit
+any prediction above.
+
+- **The two E batches of experiment 28: my prediction was wrong. The case is right.**
+  - Experiment 28 built E to fail: its swap asks for one wei more than it can pay (minimum out
+    $10^{18}+1$ for $10^{18}$ in), the "slippage" row of its README.
+  - The swap reverts, its atomic batch takes the approve with it, and nothing the template expects
+    happens. So `fail` with the writes missing is the correct verdict.
+  - I misread the two amounts as equal when writing the predictions. Run 2 does not repeat them.
+- **with-expiry, keyed-nonces, legacy-nonce-7 and value-and-default: a defect in this genesis.**
+  - Each vector's transfer frame has a state budget of 0. Experiment 27 built them to be checked
+    in `VERIFY`, never executed.
+  - On this genesis the recipient `0x27...13` did not exist, and held no token. So the ether
+    transfers had to create an account, and with-expiry's token transfer had to set a slot from
+    zero. Both need state gas, and the frames ran out.
+  - The genesis now gives `0x27...13` 1 wei and 1 unit of each token. The case transactions are
+    byte for byte the same; only `genesis-alloc.json` changes. The predictions stand: `pass`.
+- **deploy-first: the local chain's validation budget.**
+  - Its validation prefix, a deploy frame then `VERIFY` and the pay frame, needs 115,600 gas.
+    The local chain enforces EIP-8141's `MAX_VERIFY_GAS` of 100,000.
+  - Experiment 27 built the vector for the test network, whose nodes admit 500,000.
+  - Recommended: rerun it alone under 500,000, as a stated deviation from EIP-8141's default that
+    matches the test network. Under 100,000, `not simulated` is the right verdict.
+
+**For run 2:**
+- with-expiry, keyed-nonces, legacy-nonce-7 and value-and-default on the new genesis, each
+  predicted `pass`;
+- deploy-first under a budget of 500,000, predicted `pass`.
+
+
 
 - `npx tsx experiments/58-write-list/cases.ts` writes `cases/`. Its output is deterministic:
   - `genesis-alloc.json`, 41 accounts, for the local chain's genesis. It holds:
