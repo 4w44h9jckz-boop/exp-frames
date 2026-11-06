@@ -97,6 +97,18 @@ tried on the same network, and its outcome is recorded either way.
 The check's own cost: about 3,000 gas per entry for a warm `STATICCALL` to a token, plus the copy
 of `Q`. The account's `VERIFY` cost, about 1,000 more than experiment 27's for the frame checks.
 
+**Amendment, 2026-11-06, before any run.**
+- Case (f) gains two transactions, to tell its two defences apart:
+  - **a fourth copy**: the payer inserts a body frame into the batch, ahead of the check. The
+    check frame still ends the batch, so the account's frame rule passes. Only `E` refuses this
+    copy.
+  - **a control**: the owner signs, over the canonical hash, a body with no check frame. `E` is
+    not involved, so only the account's frame rule refuses it.
+- The `ASSERT` try is also sent from the funder's EOA, with a final frame of mode 3. An EOA's
+  default code does not look at the last frame, so only the network's own rules decide.
+- Predictions: both new (f) transactions are refused before inclusion. The EOA's mode-3
+  transaction is refused as the account's is.
+
 **Post-quantum status.** None. The owner and the payers sign with secp256k1. Nothing here depends
 on the signature scheme: the check frame is pinned by whatever signature covers the frames, so the
 same layout works under EIP-8288's leanSPHINCS dependencies (experiment 49).
