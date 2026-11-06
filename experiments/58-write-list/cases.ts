@@ -335,7 +335,7 @@ async function noise(seq: bigint): Promise<Hex> {
   return serializeFrameTx(await signAll(tx, [NOISE_KEY]))
 }
 
-// ---- fixtures: W3's pair and the EIP-8250 replay pair ----
+// ---- fixtures: experiment 34's pair and the EIP-8250 replay pair ----
 const fixtures: Record<string, unknown> = {}
 {
   const w3 = JSON.parse(readFileSync('experiments/34-concurrent-withdrawals/record.json', 'utf8')) as { pair: { raw: Hex }[] }

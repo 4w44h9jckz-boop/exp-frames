@@ -124,7 +124,7 @@ the environment, the signed transaction carrying the batch form.
 
 ### The cases
 
-**A. R-AI1's 35 cases, from experiment 57.**
+**A. Experiment 57's 35 cases.**
 - **Experiment 27's nineteen at EIP-8250 `f3079a0`.**
   - Each case file holds the genesis allocation (`account` lines) and the signed raw
     transactions. The chain ID is 8141, the local chain's. The keys are derived from public labels.
@@ -146,7 +146,7 @@ the environment, the signed transaction carrying the batch form.
   - All are self-paid. The sponsored batches' pay frames need experiment 09's paymaster, which is
     out of scope, and the calls' writes do not depend on who pays.
   - The template is `approve-and-swap`.
-- **W3's pair (experiment 34).**
+- **Experiment 34's pair.**
   - Two withdrawals of one pool, each to its own recipient.
   - Running them needs experiment 06's pool, a deposit and a proof on the local chain. Here they
     are hand-written fixtures in the documented format, labelled as such, and not a local-chain
@@ -197,7 +197,7 @@ slot. That is the frames analogue, and a write.
 | A, experiment 27's valid cases (11) | `pass` under their template, ten of them. `payer-replaced` passes too: the fee exemption follows the payer. `atomic-approve-swap` fails with its writes missing: its "swap" calls a selector the token lacks, so the atomic batch reverts and nothing the template expects happens. The checker is right to refuse it |
 | A, experiment 27's refused cases (8) | `not simulated`: each is invalid, its `VERIFY` reverts. A pre-signing checker never sees six of them, which are relay copies (experiment 57) |
 | A, experiment 28's twelve | `pass` under `approve-and-swap` |
-| A, W3's pair | `pass`, both. The linkability experiment 34 found is in the pair's shape and timing, not in any write. Recorded as a limit: a harm with no write |
+| A, experiment 34's pair | `pass`, both. The linkability experiment 34 found is in the pair's shape and timing, not in any write. Recorded as a limit: a harm with no write |
 | A, the EIP-8250 pair | `pass` for both, with identical writes. **This is an attack whose writes equal a harmless transaction's.** The claim is predicted to fail here, and the defence is the expiry frame experiment 27's draft recommends |
 | B0 | `pass` |
 | B1 to B4, B6 | `fail`, each naming exactly the one unlisted slot |
@@ -239,7 +239,7 @@ results will report those separately, not count them as catches.
 - **H2, the ether transfer, cannot revert at inclusion in the batch form.** An ether balance has
   no getter that `assert(Q)` can call. Its revert share is predicted to be 0 whatever $p$ is, and
   H1's to follow $p$.
-- **The fixtures** are two `pool-withdrawal`s (W3's pair) and the replay pair, hand-written in the
+- **The fixtures** are two `pool-withdrawal`s (experiment 34's pair) and the replay pair, hand-written in the
   documented format. Each is labelled `fixture` in its file. `write-check` gives:
   - all four `pass`;
   - the replay's writes are the same as a harmless first use of key 0, with the nonce record in
