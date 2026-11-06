@@ -1,0 +1,103 @@
+{
+ "0x2700000000000000000000000000000000000010": {
+  "kind": "erc20",
+  "balanceSlot": 3,
+  "allowanceSlot": 4
+ },
+ "0x2700000000000000000000000000000000000011": {
+  "kind": "erc20",
+  "balanceSlot": 3,
+  "allowanceSlot": 4
+ },
+ "0x8C2c146c8C13c4436B20d7880C07fbeEae304B2a": {
+  "kind": "erc20",
+  "balanceSlot": 3,
+  "allowanceSlot": 4
+ },
+ "0x7f6B1f38F2AE6B5683CDfFED8EF35Bca3349Cc69": {
+  "kind": "erc20",
+  "balanceSlot": 3,
+  "allowanceSlot": 4
+ },
+ "0x773df329eB6E70A52A4adE970D0C34B17cA367f7": {
+  "kind": "dex"
+ },
+ "0x5800000000000000000000000000000000000010": {
+  "kind": "erc20",
+  "balanceSlot": 3,
+  "allowanceSlot": 4
+ },
+ "0x5800000000000000000000000000000000000020": {
+  "kind": "collection",
+  "operatorSlot": 1
+ },
+ "0x5800000000000000000000000000000000000030": {
+  "kind": "erc20",
+  "balanceSlot": 1,
+  "allowanceSlot": 99
+ },
+ "0x5800000000000000000000000000000000000100": {
+  "kind": "account",
+  "ownerSlot": "0x0",
+  "implementationSlot": "0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc"
+ },
+ "0x5800000000000000000000000000000000000101": {
+  "kind": "account",
+  "ownerSlot": "0x0",
+  "implementationSlot": "0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc"
+ },
+ "0x5800000000000000000000000000000000000102": {
+  "kind": "account",
+  "ownerSlot": "0x0",
+  "implementationSlot": "0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc"
+ },
+ "0x5800000000000000000000000000000000000103": {
+  "kind": "account",
+  "ownerSlot": "0x0",
+  "implementationSlot": "0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc"
+ },
+ "0x5800000000000000000000000000000000000104": {
+  "kind": "account",
+  "ownerSlot": "0x0",
+  "implementationSlot": "0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc"
+ },
+ "0x5800000000000000000000000000000000000105": {
+  "kind": "account",
+  "ownerSlot": "0x0",
+  "implementationSlot": "0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc"
+ },
+ "0x5800000000000000000000000000000000000106": {
+  "kind": "account",
+  "ownerSlot": "0x0",
+  "implementationSlot": "0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc"
+ },
+ "0x5800000000000000000000000000000000000107": {
+  "kind": "account",
+  "ownerSlot": "0x0",
+  "implementationSlot": "0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc"
+ },
+ "0x5800000000000000000000000000000000000108": {
+  "kind": "account",
+  "ownerSlot": "0x0",
+  "implementationSlot": "0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc"
+ },
+ "0x5800000000000000000000000000000000000109": {
+  "kind": "account",
+  "ownerSlot": "0x0",
+  "implementationSlot": "0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc"
+ },
+ "0x580000000000000000000000000000000000010A": {
+  "kind": "account",
+  "ownerSlot": "0x0",
+  "implementationSlot": "0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc"
+ },
+ "0x580000000000000000000000000000000000010B": {
+  "kind": "account",
+  "ownerSlot": "0x0",
+  "implementationSlot": "0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc"
+ },
+ "0x73e47a8DA2C83Beb802708Fc473B5B7D094f3eE6": {
+  "kind": "pool",
+  "nullifierSlot": 4
+ }
+}

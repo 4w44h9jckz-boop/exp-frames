@@ -226,6 +226,59 @@ results will report those separately, not count them as catches.
   would not revert. That needs both values in the check: EIP-7906's diff has them, and a named
   read does not. The results will say how much of the share that one choice decides.
 
+### Amendment 1, 2026-11-06, before any case runs
+
+- **Experiment 28's two D batches are predicted `fail`, not `pass`.**
+  - Each approves 1, then swaps 2 with no atomic flag, then approves 0.
+  - The swap reverts for want of allowance, and the allowance ends where it began. So nothing the
+    `approve-and-swap` template expects happens: four writes are missing.
+  - The checker is right to refuse a swap that will not swap. The other ten are still predicted
+    `pass`.
+- **The rebuilt batches' frame budgets are widened**, to at least 100,000 execution and four slots
+  of state, since every slot is fresh on a new chain. Targets, data and flags are as mined.
+- **H2, the ether transfer, cannot revert at inclusion in the batch form.** An ether balance has
+  no getter that `assert(Q)` can call. Its revert share is predicted to be 0 whatever $p$ is, and
+  H1's to follow $p$.
+- **The fixtures** are two `pool-withdrawal`s (W3's pair) and the replay pair, hand-written in the
+  documented format. Each is labelled `fixture` in its file. `write-check` gives:
+  - all four `pass`;
+  - the replay's writes are the same as a harmless first use of key 0, with the nonce record in
+    place of the account nonce, both exempt by kind.
+
+  These are the fixtures' verdicts, not a chain's.
+
+## The cases, built
+
+- `npx tsx experiments/58-write-list/cases.ts` writes `cases/`. Its output is deterministic:
+  - `genesis-alloc.json`, 41 accounts, for the local chain's genesis. It holds:
+    - experiment 27's accounts and sponsors;
+    - `TestToken` at `0x27...10` and `0x27...11`;
+    - experiment 03's Token A, Token B and DEX, at their test-network addresses, the DEX's
+      immutables filled;
+    - the twelve batch users;
+    - `T58`, the collection, the lying token, the probes;
+    - one `ControlAccount` per case, each with slot 0 the owner, 1 ETH and 1,000 `T58`;
+    - H1, H2, the noise sender and the recipient R.
+  - `layouts.json`, the registry `write-check` reads.
+  - `cases.json`: 45 cases, 41 of them runnable on the local chain. Each has:
+    - its raw transaction;
+    - whether that transaction is provisional;
+    - the template and parameters;
+    - the EIP-8250 revision;
+    - the predicted verdict;
+    - for the four fixtures, the fixture's file.
+  - `keys.json`: the local-chain test keys, derived from public labels.
+- **Provisional transactions.** Every `ControlAccount` case ends with an empty `assert(Q)` frame,
+  signed by the owner, so that it simulates valid. On a pass, `write-check --sign` with
+  `SIGNER_KEY` set to `keys.json`'s owner key puts the compiled Q in that frame and signs again.
+- **The revert share.**
+  - `cases.ts honest h1 <seq>` and `cases.ts honest h2 <seq>` print H1's and H2's provisional
+    transaction at nonce `<seq>`.
+  - `cases.ts noise <seq>` prints the noise sender's transfer: 1 `T58` unit and 1 wei to R.
+  - A trial: simulate and sign the honest transaction with `write-check --rpc ... --sign`. With
+    probability $p$ send a noise transfer. Then send the signed honest transaction, and record
+    its status.
+
 **Post-quantum status.** None. Every case is signed with secp256k1. The compiler is
 scheme-agnostic: it reads writes, not signatures, and $Q$ is pinned by whatever signature covers
 the check frame.
