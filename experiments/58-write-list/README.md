@@ -281,7 +281,32 @@ any prediction above.
   predicted `pass`;
 - deploy-first under a budget of 500,000, predicted `pass`.
 
+## Results, runs 1 and 2 (the coordinator's)
 
+- **The runs:** exp-e2e-frames experiment 29, run 1 at `4bc90bc` and run 2 at `593d805`. They
+  used these cases (at `a629da4`, then `83996e9`) and `write-check` at kohaku-rs `b9713ec`, on
+  the local chain with the simulated-writes patch.
+- **The verdicts:** 39 of 41 runnable cases as predicted.
+  - The other two are experiment 28's E batches. Their verdict, `fail` with writes missing, is
+    the correct one, and the prediction was wrong (amendment 2).
+  - deploy-first passed under a validation budget of 500,000, a deviation stated in experiment
+    29's README. Under EIP-8141's 100,000 it is not simulated.
+- **No harmful case passed.**
+  - B1 to B6 and C4 failed, each on the write predicted.
+  - B0, C2 and C3 passed, and were signed in the batch form and mined with status 1.
+  - C2 passing is the predicted limit: a frame that only emits an event makes no write.
+- **The revert share.**
+  - H1, the token transfer, reverted at inclusion exactly when a noise transfer landed in between:
+    0, 1, 4 and 8 of 8 trials at $p$ = 0, 0.25, 0.5 and 1.
+  - H2, the ether transfer, reverted 0 of 32, since the batch form has no getter for an ether
+    balance.
+  - The share is the rate at which state the check names moves. It is not a property of the
+    rule.
+- **The claim's predicted failure, the EIP-8250 replay,** is shown on fixtures only: the replay's
+  writes equal a harmless first use of key 0. Mining both halves needs one chain that changes
+  revision in place.
+
+## The cases, built
 
 - `npx tsx experiments/58-write-list/cases.ts` writes `cases/`. Its output is deterministic:
   - `genesis-alloc.json`, 41 accounts, for the local chain's genesis. It holds:
