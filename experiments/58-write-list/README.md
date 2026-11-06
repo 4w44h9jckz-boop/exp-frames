@@ -309,7 +309,7 @@ any prediction above.
 ## The cases, built
 
 - `npx tsx experiments/58-write-list/cases.ts` writes `cases/`. Its output is deterministic:
-  - `genesis-alloc.json`, 41 accounts, for the local chain's genesis. It holds:
+  - `genesis-alloc.json`, 42 accounts (41 before amendment 2), for the local chain's genesis. It holds:
     - experiment 27's accounts and sponsors;
     - `TestToken` at `0x27...10` and `0x27...11`;
     - experiment 03's Token A, Token B and DEX, at their test-network addresses, the DEX's
