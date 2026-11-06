@@ -68,7 +68,7 @@ twin field by field, and the frame facts that no record carries are listed per c
   - experiment 27's nineteen signed cases, the set for EIP-8250 at `f3079a0` that the Hegota
     testnet follows, each with its verdict;
   - experiment 28's twelve batches, fetched as mined from the testnet;
-  - W3's pair from experiment 34, the two withdrawals of one note;
+  - experiment 34's pair, the two withdrawals of one note;
   - the EIP-8250 replay pair: experiment 27's `key-zero` bytes read under `f3079a0`, where key 0
     is the legacy nonce, and under `1a086d5c`, where it is an ordinary key. One byte string, two
     readings. A mined replay needs a chain that changes revision in place, which no test network
@@ -125,7 +125,7 @@ check that reads it.
 |---|---|---|
 | experiment 27, `f3079a0` | 19 | a transfer's destination (15: `atomic-approve-swap`, `blobs`, `many-frames` and `blob-swapped` transfer nothing); a typed-data signature (19); inclusion and account readiness (all). The one approval is `atomic-approve-swap`'s. Its swap uses a placeholder selector, so no swap record |
 | experiment 28 | 12 | an approval and a swap each; D has a second approval, back to 0; inclusion and account readiness |
-| experiment 34 (W3) | 2 | a pool withdrawal; inclusion and account readiness |
+| experiment 34 | 2 | a pool withdrawal; inclusion and account readiness |
 | EIP-8250 pair | 2 | as experiment 27's `key-zero` |
 
 Nine of the sixteen record types apply to no case, for the reasons in `NOT_APPLICABLE`. Every
@@ -171,7 +171,7 @@ history, the user's intent.
   - So is $E$: `0x06ffc79e...abdacb` under both, since $E$ commits to the nonce keys and not to
     what the chain makes of them.
   - A replay across revisions is invisible to both the records and the signature.
-- **W3's pair.**
+- **Experiment 34's pair.**
   - The two withdrawals' records differ only in the recipient.
   - Experiment 34 found them linkable by their identical shape in one block. The records carry no
     shape, and the withdrawal record has nothing tying one withdrawal to another, so a check reading

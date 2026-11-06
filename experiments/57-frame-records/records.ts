@@ -45,7 +45,7 @@ for (const [, hash, by] of batches) {
   cases.push({ id: `28/${by}`, source: 'experiment 28, mined on the Hegota testnet', verdict: 'mined', note: '', out: recordsFor(frameTxFromJson(tx), { hash: hash as Hex, rules: 'f3079a0', senderHasCode: false, label: `28/${by}` }) })
 }
 
-// 3. W3's pair: experiment 34's two withdrawals of one pool, mined in one block of a local chain.
+// 3. Experiment 34's pair: two withdrawals of one pool, mined in one block of a local chain.
 const w3 = JSON.parse(readFileSync('experiments/34-concurrent-withdrawals/record.json', 'utf8')) as { pair: { hash: Hex; raw: Hex; block: Hex }[] }
 for (const [k, p] of w3.pair.entries()) {
   cases.push({ id: `34/withdrawal-${k + 1}`, source: 'experiment 34, record.json', verdict: `mined, block ${BigInt(p.block)}`, note: 'one of two withdrawals experiment 34 found linkable by shape', out: recordsFor(parseFrameTx(p.raw), { hash: p.hash, senderHasCode: true, label: `34/withdrawal-${k + 1}` }) })
@@ -149,7 +149,7 @@ lines.push('', '## The EIP-8250 pair', '')
 const [kz1, kz2] = cases.filter((c) => c.id.startsWith('8250/'))
 lines.push(`Fields a check reads that differ between \`${kz1.id}\` and \`${kz2.id}\`: ${diff(kz2, kz1).join('; ') || 'none'}.`)
 lines.push(`E under f3079a0: ${kz1.out.frameFacts.e}. E under master: ${kz2.out.frameFacts.e}. ${kz1.out.frameFacts.e === kz2.out.frameFacts.e ? 'The same: E commits to the nonce keys, not to what the chain makes of them.' : 'They differ.'}`)
-lines.push('', '## W3\'s pair', '')
+lines.push('', '## Experiment 34\'s pair', '')
 const [wa, wb] = cases.filter((c) => c.id.startsWith('34/'))
 lines.push(`Fields a check reads that differ: ${diff(wb, wa).join('; ') || 'none'}.`)
 
