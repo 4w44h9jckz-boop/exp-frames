@@ -68,10 +68,7 @@ the user sign without seeing any frame.
 
 ## The runs
 
-Not run yet. The session that wrote this could not install the firmware's pinned toolchain or
-build the emulator: its permission policy refused the Rust nightly install and the Python
-environment's sync, as code from an outside source. The runs wait for that permission, or for a
-session that has it.
+Not run here: the runs are exp-e2e-frames experiment 28, which the coordinator runs.
 
 **Post-quantum status.** None. EIP-712 signatures on the device are secp256k1, and the firmware
 has no post-quantum scheme for Ethereum. $E$ itself does not depend on the scheme. A post-quantum
