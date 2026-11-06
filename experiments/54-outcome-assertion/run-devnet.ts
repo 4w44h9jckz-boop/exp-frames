@@ -185,11 +185,15 @@ async function setup() {
   if (bal < parseEther('0.3')) {
     const c = await claim(funder.address)
     console.log(`faucet: ${c.status} ${c.body.slice(0, 200)}`)
+    // Wait for the faucet's transfer to be mined, not only for a balance, before the first send.
+    const faucetTx = (c.body.match(/0x[0-9a-fA-F]{64}/) ?? [])[0] as Hex | undefined
+    if (faucetTx) await waitReceipt(client, faucetTx)
     for (let i = 0; i < 20 && bal < parseEther('0.3'); i++) {
       await new Promise((r) => setTimeout(r, 3_000))
       bal = await client.getBalance({ address: funder.address })
     }
     if (bal < parseEther('0.3')) throw new Error('the faucet did not fund the funder')
+    await new Promise((r) => setTimeout(r, 6_000)) // one more slot, so the node's view has the funds
   }
   const missing: Frame[] = []
   for (const c of [TOKEN, COLLECTION, LIAR, ACCOUNT]) {
