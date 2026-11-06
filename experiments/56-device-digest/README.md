@@ -30,7 +30,8 @@ see each frame's target, value and data before signing.
   `m/44'/60'/0'/0/0`.
 - **The vectors.** Experiment 27's set for EIP-8250 at `1a086d5c`
   (`experiments/27-execution-digest/erc-assets/vectors.json`), eleven vectors. The set at
-  `f3079a0` differs only in the nonce keys, so it is run second, for the hashes alone.
+  `f3079a0` has ten of the same vectors, differing in which nonce keys select the legacy nonce.
+  It is run second, for the hashes alone.
   - `many-frames` is the twelve-frame vector, with data of 0, 1, 31, 32, 33 and 1,000 bytes.
   - $E$ does not depend on the account's owner: the domain's verifying contract is the sender.
     So each vector's $E$ is signed as it stands, and the signature must recover to the device's
