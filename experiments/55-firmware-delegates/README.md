@@ -148,10 +148,7 @@ In every release the messages that carry an authorization are marked experimenta
 
 ## The runs
 
-Not run yet. The session that wrote this could not install the firmware's pinned toolchain or
-build the emulator: its permission policy refused the Rust nightly install and the Python
-environment's sync, as code from an outside source. The runs wait for that permission, or for a
-session that has it.
+Not run here: the three emulator runs are exp-e2e-frames experiment 28, which the coordinator runs. This README keeps the source half: where the list comes from, its history, and the answer on signed definitions.
 
 **Post-quantum status.** None. EIP-7702 authorizations, and the transactions that carry them, are
 secp256k1 signatures. The device would need a post-quantum scheme for both before any of this
