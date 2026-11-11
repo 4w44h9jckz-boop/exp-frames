@@ -431,6 +431,20 @@ local chain. As its results give it, and as the rerun that accepted this one com
   wiping an account's storage. Here no state is pruned: each spent serial stays as one nonce
   record.
 
+**The trade at epoch end, natively:** exp-e2e-frames experiment 31, part C (results at
+`d0fd502`). As its results give it:
+- Both keys' escrow is one account there too, so a trade moves no ETH.
+- A trade costs 151,950 in its schedule once the old key's serial account exists, against 477,338
+  here, most of it state gas for nonce keys and slots.
+- Its new key's issuer serves each claimant named in the trade's log once, as the issuers do here
+  against the rollover's `Bought`.
+- Its epoch sweep found that linking a payout to its original buyer, through trades at epoch ends,
+  stays at the unconfined one-target formula at every epoch length.
+
+Case (h) was accepted by a rerun under another run label. The trade cost 477,326 there, its
+`VERIFY` 126,944 as here, and the new ticket's payout 551,153. The counts, `outstanding`, the
+surplus and the three refusals were as here.
+
 The rerun that accepted this experiment, under another run label, reproduced every case. Its
 `VERIFY` gas equalled this run's at every size, and its totals were within 50 gas: 550,349 for a
 payout and 1,010,539 for the 5-ticket aggregate.
