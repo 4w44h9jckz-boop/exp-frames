@@ -41,7 +41,7 @@ carry value. The account they draw on keeps one count per key, and the count cap
        at least 60,000.
   2. `SENDER` to the account: `payout(D, epoch, recipient)`. It:
      - raises `minted[chi]`, and reverts if that would pass `burned[chi]`;
-     - sends $D - \mathrm{maxCost}$ to `recipient`, holding back 20,000 gas.
+     - sends $D - \mathrm{maxCost}$ to `recipient`, holding back 20,000 gas (60,000 since amendment 1).
 
      If the send fails, the amount is credited to the recipient, who can take it with `claim()`.
      That is experiment 06's pool's rule.
@@ -121,6 +121,50 @@ mined or refused, with receipts. Every payout's gas is measured, single and aggr
 - The fee is paid from the escrow, so a payout's actual gas is not charged to any key. A refund
   stays in the account. A per-key fee account is out of scope.
 - A key's float is shared among its holders, which is case (c2).
+
+### Amendment 1, 2026-11-11: after two partial runs, before the full run
+
+Run r1 stopped at its first payout, and run r2 completed (a) to (g) with defects of my own. Their
+records are `record-r2.json` and the logs quoted here. They are kept as runs, not results. What
+they showed, and what changes:
+
+1. **`VERIFY` needs state gas for the nonce keys.**
+   - r1's payout was refused: "validation prefix frame reverted". The cause was the same with a
+     `VERIFY` that does nothing but approve.
+   - Any keyed nonce was refused, and the legacy key `[0]` admitted. EIP-8250 charges each keyed
+     nonce's first use, 97,920 state gas, to the frame that approves payment, and the builder gave
+     `VERIFY` none.
+   - The builder now gives it 97,920 per ticket.
+2. **The payout frame ran out of state gas paying a fresh recipient.**
+   - In r2 every payout's `SENDER` frame failed except the one whose recipient already existed. A
+     new account costs 183,600 state gas, on top of the count's slot.
+   - The frame now carries two slots and a new account, 379,440.
+3. **A recipient that burns its gas made the payout frame fail.**
+   - Holding back 20,000 gas was too little once the call's own cost (cold access and value
+     transfer) is taken first. So the credit was never written, and the count never moved.
+   - The contract now holds back 60,000 and requires at least 100,000 execution for the payout
+     frame (it was 60,000). The builder gives 150,000.
+4. **The test network's pool admits one pending transaction per sender.**
+   - A second payout sent while the first is pending is refused: "A pending frame transaction
+     from this sender is already in the pool". So (d)'s "two in one block" cannot be posed
+     through this node.
+   - (d) becomes: the second is sent while the first is pending (refused by the pool), then again
+     once the first is mined (refused by the count).
+   - Every case now waits for its payout to be mined before the next is sent.
+5. **An aggregate carries at most 5 tickets on this network, not 16.**
+   - The prefix's state gas is capped at 500,000 (`MAX_VERIFY_STATE_GAS`). Each ticket's nonce key
+     costs 97,920 of it, so 8 tickets needed 783,360 and were refused.
+   - The prediction for (g) was wrong. (g) becomes aggregates of 2, 4 and 5, and 6 is sent to show
+     the refusal.
+
+What r2 already showed, kept for the record:
+- (a)'s `VERIFY` cost 124,677 gas, against about 125,000 predicted.
+- The aggregates' `VERIFY` cost 140,748 for 2 tickets and 172,891 for 4: about 16,000 per extra
+  ticket, against about 18,000 predicted.
+- (b): the replay was refused on its nonce ("expected 1, got 0"), and sequence 1 by `VERIFY`.
+- (f): the copy that kept the binder's signature was refused by the protocol's signature check.
+  The other two were refused by `VERIFY` in simulation.
+- (e): the reverting recipient was credited `D` less the maximum cost, and the count moved by one.
 
 **Post-quantum status.** None. The tickets are BLS12-381 signatures and the binder is secp256k1.
 A post-quantum version needs a blind signature with no pairing, and a post-quantum binder
