@@ -208,7 +208,7 @@ What r2 already showed, kept for the record:
 | Payout | `VERIFY` execution | `VERIFY` state | Payout frame | Transaction |
 |---|---:|---:|---:|---:|
 | 1 ticket, a fresh recipient (a) | 124,677 | 97,920 | 24,870 execution, 281,520 state | 550,385 |
-| 1 ticket, the recipient exists (c2) | 124,677 | 97,920 | 24,870, 183,600 | 452,465 |
+| 1 ticket, the count's slot already set (c2) | 124,677 | 97,920 | 24,870, 183,600 | 452,465 |
 | 2 tickets | 140,748 | 195,840 | 24,870, 281,520 | 665,372 |
 | 4 tickets | 172,891 | 391,680 | 24,870, 281,520 | 895,483 |
 | 5 tickets | 188,963 | 489,600 | 24,870, 281,520 | 1,010,491 |
