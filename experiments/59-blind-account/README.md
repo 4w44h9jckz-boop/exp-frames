@@ -238,6 +238,30 @@ adds:
 - What does leak is the timing: a rollover marks a holder who did not spend in epoch $e$, and the
   new purchase under $e+1$ is the account's own, not a buyer's.
 
+### Amendment 3, 2026-11-11: no balance in `VERIFY`, before the rollover is mined
+
+- **What happened.** The first try at (h), on version 2, was refused before any rollover was mined:
+  "BannedOpcode(71)". Opcode `0x47` is `SELFBALANCE`, and the test network's validation rules ban
+  it in `VERIFY`. So amendment 2's check, `selfbalance() >= outstanding + maxCost`, cannot run.
+- **The fix: the surplus is counted, not read.**
+  - **`surplus`**, slot `keccak256(0 || 4)`, is raised by every plain transfer to the account.
+  - A rollover's `VERIFY` requires `surplus >= maxCost`, a storage read, which validation allows.
+  - Its `SENDER` frame lowers `surplus` by the maximum cost.
+  - The fee paid is at most the maximum cost, so the balance stays at least
+    `outstanding + surplus`.
+- **What changes from amendment 2.** A payout's unused maximum cost still stays in the account, but
+  is no longer counted as surplus. The account cannot know the fee actually paid, only its bound. So
+  the surplus comes only from explicit transfers, and a rollover's fee is pre-paid by someone.
+  - That someone may be anyone. A transfer to the account names its sender, but not which ticket
+    it pays for.
+  - In this run it is the funder.
+- **Predictions, revised for the surplus:**
+  - the rollover lowers `surplus` by exactly its maximum cost;
+  - the balance falls by the fee actually paid;
+  - `outstanding` is unchanged.
+
+  Every other prediction of amendment 2 stands.
+
 ## Results, run r3, 2026-11-11
 
 - **Where:** the Hegota test network, chain 8141, blocks 776,776 to 776,809.
