@@ -166,6 +166,78 @@ What r2 already showed, kept for the record:
   The other two were refused by `VERIFY` in simulation.
 - (e): the reverting recipient was credited `D` less the maximum cost, and the count moved by one.
 
+### Amendment 2, 2026-11-11: a trade at epoch end, before it runs
+
+The question: a ticket still unspent at its epoch's end is traded for one of the next epoch, not
+lost. Its holder spends the old ticket, and its value buys a ticket of the same denomination under
+$(D, e+1)$, in one transaction.
+
+**The account's version 2, `BlindAccount.yul`.** (a) to (g) stand as run on version 1. Version 2
+adds:
+- **`outstanding`**, slot `keccak256(0 || 3)`: the value the account owes.
+  - `buy` adds $D$.
+  - A payout subtracts $nD$ and adds back what it could only credit.
+  - `claim` subtracts what it sends.
+- **`rollover(D, e, 0, n)`**, `0x0799081a`, in the payout frame's place. The fourth word is zero,
+  where a payout has its recipient. It:
+  - raises `minted[(D, e)]` by $n$;
+  - raises `burned[(D, e+1)]` by $n$;
+  - moves no ETH;
+  - logs `Bought((D, e+1), binder, index)` for each new purchase, the binder read from the
+    `VERIFY` frame's data.
+- **`VERIFY` accepts either call** in the second frame. The two-frame pin, the ticket checks, the
+  nonce keys and the binding are unchanged. For a rollover it also requires:
+  - the fourth word to be zero;
+  - the account's balance to cover what it owes plus this transaction's maximum cost:
+    `selfbalance() >= outstanding + maxCost`.
+- **Where the fee comes from.** The new purchase is a full $D$, so the fee cannot come out of the
+  old ticket. It comes out of the account's surplus, its balance above `outstanding`.
+  - Each payout leaves its unused maximum cost behind, so the surplus grows with every payout.
+  - Anyone can add to it with a plain transfer.
+  - A rollover the surplus cannot pay for is refused, so the balance never falls below what is
+    owed.
+  - Why not another payer: a pay frame by the holder names an address, and links the rollover to
+    it.
+  - Why not a top-up from the holder: it would need a frame that sends ETH from someone other than
+    the account. None exists, so it would be a second transaction, from an address.
+- **Epochs do not expire in this account.** A payout of epoch $e$ stays valid after the epoch
+  ends, so here the rollover is a choice, not a rescue. An account that expires epochs would refuse
+  a payout after $e$'s end plus a grace, and keep the rollover open through that grace. That rule
+  is recorded, not built.
+- **The new ticket.** The issuers admit one blinded request per `Bought` under the new key,
+  authenticated by the binder that signed the rollover. The binder is a one-time key, so what they
+  link is a blinded request to a rollover, as with any purchase.
+
+**Case (h), run on version 2 with a new account:**
+1. Buy one under $(D, e)$, issue a ticket, and do not spend it.
+2. If the surplus is short of the rollover's maximum cost, the funder sends the account a plain
+   transfer, recorded as such.
+3. Send the rollover. Read both keys' counts and `outstanding`.
+4. Issue the new ticket under $(D, e+1)$, against the rollover's `Bought`, and pay it out as in (a).
+5. Try the old ticket again:
+   - its rollover's bytes;
+   - a payout of it under $(D, e)$ at sequence 1;
+   - the old ticket presented as if it were of $(D, e+1)$.
+
+**Predictions:**
+
+| Step | Prediction |
+|---|---|
+| the rollover | mined, with both frames succeeded. $(D, e)$ goes to 1 bought, 1 paid; $(D, e+1)$ to 1 bought, 0 paid. `outstanding` is unchanged. The account's balance falls by the fee alone |
+| the new ticket's payout | mined; $(D, e+1)$ goes to 1, 1; `outstanding` falls by $D$ |
+| the old ticket again | all three refused: the first on its nonce, the second and third by `VERIFY` (sequence; pairing, since its message names $e$) |
+| gas | `VERIFY` as a single payout's, about 125,000 plus the balance check. The rollover frame about 30,000 execution, and one or two fresh slots of state |
+
+**What an observer learns.**
+- The rollover shows a key of epoch $e$ going down by one and $e+1$ going up by one, in one
+  transaction from the blind account, with a one-time binder.
+- It does not name the holder, any address of theirs, or which purchase under $e$ the ticket came
+  from: the issuers signed it blind.
+- The new ticket, when spent, is as unlinkable from the rollover as any ticket is from its
+  purchase.
+- What does leak is the timing: a rollover marks a holder who did not spend in epoch $e$, and the
+  new purchase under $e+1$ is the account's own, not a buyer's.
+
 ## Results, run r3, 2026-11-11
 
 - **Where:** the Hegota test network, chain 8141, blocks 776,776 to 776,809.
