@@ -250,6 +250,26 @@ What r2 already showed, kept for the record:
    - That is a throughput limit, and a fact a holder can observe: a refused send says that someone
      else's payout is pending.
 
+## Beside a native version
+
+exp-e2e-frames experiment 30 (results at `683a574`) builds the same account natively, on a patched
+local chain. As its results give it, and as the rerun that accepted this one compared:
+- **The ticket check costs about the same:** 117,750 in its schedule for one ticket, against
+  124,677 here.
+- **It batched 16 tickets.** Here 5 is the most, because each ticket's single-use nonce key costs
+  97,920 state gas inside the validation prefix's 500,000. The native version has no such prefix
+  cap.
+- **Most of the gap in total gas is state pricing.** The native draft priced a new slot and a new
+  account before EIP-8037. Here a payout to a fresh address pays 97,920 per nonce key and 183,600
+  for the account.
+- **Its whole-epoch prune does not survive block access lists**, since a list cannot express
+  wiping an account's storage. Here no state is pruned: each spent serial stays as one nonce
+  record.
+
+The rerun that accepted this experiment, under another run label, reproduced every case. Its
+`VERIFY` gas equalled this run's at every size, and its totals were within 50 gas: 550,349 for a
+payout and 1,010,539 for the 5-ticket aggregate.
+
 **Post-quantum status.** None. The tickets are BLS12-381 signatures and the binder is secp256k1.
 A post-quantum version needs a blind signature with no pairing, and a post-quantum binder
 (experiment 49's leanSPHINCS dependency).
