@@ -346,6 +346,75 @@ adds:
    - That is a throughput limit, and a fact a holder can observe: a refused send says that someone
      else's payout is pending.
 
+## Results, case (h): a trade at epoch end, 2026-11-11
+
+- **Where:** version 2 (amendments 2 and 3), the test network, chain 8141, blocks 779,350 to
+  779,358.
+- **Runner:** kohaku-rs `experiment/blind-account` at `0849650`:
+
+  ```text
+  CASE=h RUN=h4 RECORD=record-h.json cargo run --release -p kohaku-frame-ticket --example blind_account
+  ```
+
+- **Record:** [`record-h.json`](record-h.json). It holds no key and no blinding factor.
+- **Earlier tries, before any rollover was mined:** runs h1 to h3 stopped in setup. h1 was refused
+  a plain transfer, which version 2 then accepted. h2 hit `SELFBALANCE` banned in `VERIFY`
+  (amendment 3). h3's top-up carried no state gas.
+
+| Step | Outcome |
+|---|---|
+| buy one under $(D, e)$, and a ticket issued for it | block 779,352 |
+| a plain transfer to the surplus, twice the rollover's maximum cost | block 779,354 |
+| **the rollover** | **mined**, block 779,356, both frames succeeded |
+| the counts after it | $(D, e)$: 1 bought, 1 paid. $(D, e+1)$: 1 bought, 0 paid |
+| `outstanding` | 0.001 ETH before and after: unchanged |
+| `surplus` | lowered by 0.000000783528969252 ETH, exactly the maximum cost |
+| the balance | lowered by 0.000000477341341366 ETH, the fee actually paid |
+| **the new ticket**, issued against the rollover's `Bought` and paid out as in (a) | **mined**, block 779,358. $(D, e+1)$: 1, 1. `outstanding` 0 |
+| the rollover's bytes again | **refused**: "Nonce mismatch: expected 1, got 0" |
+| the old ticket paid out at sequence 1 | **refused**: `VERIFY` reverted |
+| the old ticket's signature presented under $e+1$ | **refused**: `VERIFY` reverted, the pairing failing for a message naming $e+1$ |
+
+**Gas:**
+
+| Transaction | `VERIFY` | Second frame | Whole |
+|---|---|---|---:|
+| the rollover | 126,944 execution, 97,920 state | 35,476 execution, 195,840 state (two fresh slots: the old key's `minted`, the new key's `burned`) | 477,338 |
+| the new ticket's payout, version 2 | 124,716 execution, 97,920 state | 37,203 execution, 281,520 state | 551,093 |
+
+On version 2, a single payout's `VERIFY` costs 39 more than on version 1. Its payout frame costs
+12,333 more, for `outstanding`.
+
+**Answers for (h):**
+1. **One frame transaction carries the payout and the purchase.** It is the payout's two-frame
+   shape with `rollover` in the second frame. `VERIFY` accepts either call there, and pins
+   everything else as for a payout.
+2. **Neither key's cap was broken.**
+   - The old key's count rose by one payout, within its purchases.
+   - The new key's purchases rose by one, and its payout came after.
+   - `outstanding` never changed except by a payout.
+3. **The old ticket cannot be spent again**, under either key.
+   - Its serial is spent as a nonce key.
+   - `VERIFY` requires sequence 0.
+   - Its signature is over a message naming epoch $e$.
+4. **The fee comes from a pre-paid surplus.** The new purchase is a full $D$, so the fee is not
+   taken from the old ticket. It comes from `surplus`, which plain transfers raise and each
+   rollover lowers by its maximum cost.
+   - `VERIFY` cannot read the balance (`SELFBALANCE` is banned there), so the surplus is counted.
+   - Whoever tops it up is visible, but not which rollover it pays for.
+   - In this run the funder topped it up.
+5. **What an observer can link.**
+   - A rollover shows one key of epoch $e$ paid and one purchase under $e+1$, by the account
+     itself, with a one-time binder.
+   - It names no address of the holder, and not which purchase under $e$ the ticket came from.
+   - Spending the new ticket is as unlinkable from the rollover as any ticket is from its
+     purchase.
+   - What it does show: that a holder of an epoch-$e$ ticket did not spend in $e$, and the time at
+     which they rolled over.
+6. **Epochs do not expire in this account**, so here the trade is a choice. An account that
+   expires epochs would refuse a payout after $e$'s end plus a grace, and keep the rollover open
+   through it (amendment 2).
+
 ## Beside a native version
 
 exp-e2e-frames experiment 30 (results at `683a574`) builds the same account natively, on a patched
