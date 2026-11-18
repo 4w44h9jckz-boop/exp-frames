@@ -1,0 +1,15 @@
+{
+ "note": "local-chain test keys derived from public labels; not accounts",
+ "owner": {
+  "label": "exp-frames/58/owner",
+  "address": "0xB429d241794e45442EC799b19fEA5d927A3477A9",
+  "key": "0xe311f28b5ba885971f03f960311b6330cbe2449b26f17e77312cbce97a69ccdb"
+ },
+ "noise": {
+  "label": "exp-frames/58/noise",
+  "address": "0x8CD83A6dFE3D661ED5A5d4Cad1d671329DDB7566"
+ },
+ "h1": "0x580000000000000000000000000000000000010A",
+ "h2": "0x580000000000000000000000000000000000010B",
+ "recipient": "0x5800000000000000000000000000000000000013"
+}

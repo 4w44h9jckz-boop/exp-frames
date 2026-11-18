@@ -1,0 +1,7 @@
+{
+ "tx_hash": "0x5ce6a700497946b229178ad77233febfb473584531f58c3ddab93664405d2e52",
+ "withdrawal_address": "0x5f41D384c2D6C35F3EfC1BC75F6222C43Af7FbF2",
+ "pool_id": "0x73e47a8DA2C83Beb802708Fc473B5B7D094f3eE6",
+ "selected_relayer": "none (the pool is its own sender)",
+ "withdrawal_tx_gas_price_gwei": 1e-7
+}
