@@ -1,0 +1,65 @@
+{
+ "hash": "0xe2e65ff9e541e298fbd17fde4eb7b977f3906248eee076f32accbaf8b34bde74",
+ "sigHash": "0xe2e65ff9e541e298fbd17fde4eb7b977f3906248eee076f32accbaf8b34bde74",
+ "chainId": 8141,
+ "sender": "0x73e47a8DA2C83Beb802708Fc473B5B7D094f3eE6",
+ "nonceKeys": [
+  "0x2a330bd98a079973ba276ca40f05094bcb5f290be456e0c900f43d87885cc287"
+ ],
+ "nonceSeq": "0",
+ "frames": [
+  {
+   "i": 0,
+   "mode": "VERIFY",
+   "flags": 0,
+   "scope": 0,
+   "atomic": false,
+   "target": "0x0000000000000000000000000000000000008272",
+   "targetNull": false,
+   "execution": "11973",
+   "state": "0",
+   "value": "0",
+   "selector": "0x602d9dce",
+   "dataBytes": 72
+  },
+  {
+   "i": 1,
+   "mode": "VERIFY",
+   "flags": 3,
+   "scope": 3,
+   "atomic": false,
+   "target": "0x73e47a8DA2C83Beb802708Fc473B5B7D094f3eE6",
+   "targetNull": true,
+   "execution": "311010",
+   "state": "97920",
+   "value": "0",
+   "selector": null,
+   "dataBytes": 0
+  },
+  {
+   "i": 2,
+   "mode": "SENDER",
+   "flags": 0,
+   "scope": null,
+   "atomic": false,
+   "target": "0x73e47a8DA2C83Beb802708Fc473B5B7D094f3eE6",
+   "targetNull": false,
+   "execution": "100000",
+   "state": "183600",
+   "value": "0",
+   "selector": "0x21a0adb6",
+   "dataBytes": 516
+  }
+ ],
+ "payer": "0x73e47a8DA2C83Beb802708Fc473B5B7D094f3eE6",
+ "payerIsSender": null,
+ "signatures": [],
+ "senderSignsE": false,
+ "eUnder": "master",
+ "e": "0x4b78c1b5d5a344f17f8839ba1d03afcad1a027a5878e4511184d1980570e1ea4",
+ "blobVersionedHashes": [],
+ "feeCaps": {
+  "maxFeePerGas": "100",
+  "maxPriorityFeePerGas": "1"
+ }
+}

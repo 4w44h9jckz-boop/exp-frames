@@ -1,0 +1,15 @@
+{
+ "tx_hash": "0x6c5d0038a0c09e444358946f7484a8c4202b7cc625dd5e97f01fff4bfaf15bc1",
+ "user_address": "0x2Ad9f8932194a49d2E764725ABD9baF4ccB68a7E",
+ "spender_address": "0x773df329eB6E70A52A4adE970D0C34B17cA367f7",
+ "token_address": "0x8C2c146c8C13c4436B20d7880C07fbeEae304B2a",
+ "function_selector": "0x095ea7b3",
+ "approval_amount": 0,
+ "is_permit": false,
+ "is_multicall_with_approval": true,
+ "nested_calls": [
+  "0x095ea7b3",
+  "0xd96073cf",
+  "0x095ea7b3"
+ ]
+}

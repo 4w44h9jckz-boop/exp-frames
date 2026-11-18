@@ -1,0 +1,7 @@
+{
+ "tx_hash": "0xbb6962fdc79d08ab939853876ea43bbabcb81faa406ddd6e31943663823f7c58",
+ "user_address": "0x2700000000000000000000000000000000000001",
+ "recipient_address": "0x2700000000000000000000000000000000000013",
+ "signing_chain_id": 8141,
+ "token_being_sent": "ETH"
+}

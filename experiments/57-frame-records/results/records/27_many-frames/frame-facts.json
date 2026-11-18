@@ -1,0 +1,202 @@
+{
+ "hash": "0x1ff916d4cec86fdd07a7e2441aa3bbcbd49ce4964d0123d9134106bc617386a0",
+ "sigHash": "0xb3de464ab83cc7a1fbb163571ee0fdbe81109f392421580cf9a94dac3869068e",
+ "chainId": 8141,
+ "sender": "0x2700000000000000000000000000000000000001",
+ "nonceKeys": [
+  "0x0"
+ ],
+ "nonceSeq": "0",
+ "frames": [
+  {
+   "i": 0,
+   "mode": "VERIFY",
+   "flags": 2,
+   "scope": 2,
+   "atomic": false,
+   "target": "0x2700000000000000000000000000000000000001",
+   "targetNull": true,
+   "execution": "30000",
+   "state": "0",
+   "value": "0",
+   "selector": null,
+   "dataBytes": 0
+  },
+  {
+   "i": 1,
+   "mode": "VERIFY",
+   "flags": 1,
+   "scope": 1,
+   "atomic": false,
+   "target": "0x87761a88398830f371282d2d3e35D227ebfb8777",
+   "targetNull": false,
+   "execution": "10000",
+   "state": "0",
+   "value": "0",
+   "selector": null,
+   "dataBytes": 0
+  },
+  {
+   "i": 2,
+   "mode": "SENDER",
+   "flags": 0,
+   "scope": null,
+   "atomic": false,
+   "target": "0x2700000000000000000000000000000000000020",
+   "targetNull": false,
+   "execution": "20000",
+   "state": "0",
+   "value": "0",
+   "selector": null,
+   "dataBytes": 0
+  },
+  {
+   "i": 3,
+   "mode": "DEFAULT",
+   "flags": 0,
+   "scope": null,
+   "atomic": false,
+   "target": "0x2700000000000000000000000000000000000021",
+   "targetNull": false,
+   "execution": "20001",
+   "state": "0",
+   "value": "0",
+   "selector": null,
+   "dataBytes": 1
+  },
+  {
+   "i": 4,
+   "mode": "SENDER",
+   "flags": 0,
+   "scope": null,
+   "atomic": false,
+   "target": "0x2700000000000000000000000000000000000022",
+   "targetNull": false,
+   "execution": "20002",
+   "state": "0",
+   "value": "0",
+   "selector": "0x5a5a5a5a",
+   "dataBytes": 31
+  },
+  {
+   "i": 5,
+   "mode": "DEFAULT",
+   "flags": 0,
+   "scope": null,
+   "atomic": false,
+   "target": "0x2700000000000000000000000000000000000023",
+   "targetNull": false,
+   "execution": "20003",
+   "state": "0",
+   "value": "0",
+   "selector": "0x5a5a5a5a",
+   "dataBytes": 32
+  },
+  {
+   "i": 6,
+   "mode": "SENDER",
+   "flags": 0,
+   "scope": null,
+   "atomic": false,
+   "target": "0x2700000000000000000000000000000000000024",
+   "targetNull": false,
+   "execution": "20004",
+   "state": "0",
+   "value": "0",
+   "selector": "0x5a5a5a5a",
+   "dataBytes": 33
+  },
+  {
+   "i": 7,
+   "mode": "DEFAULT",
+   "flags": 0,
+   "scope": null,
+   "atomic": false,
+   "target": "0x2700000000000000000000000000000000000025",
+   "targetNull": false,
+   "execution": "20005",
+   "state": "0",
+   "value": "0",
+   "selector": "0x5a5a5a5a",
+   "dataBytes": 1000
+  },
+  {
+   "i": 8,
+   "mode": "SENDER",
+   "flags": 0,
+   "scope": null,
+   "atomic": false,
+   "target": "0x2700000000000000000000000000000000000026",
+   "targetNull": false,
+   "execution": "20006",
+   "state": "0",
+   "value": "0",
+   "selector": null,
+   "dataBytes": 0
+  },
+  {
+   "i": 9,
+   "mode": "DEFAULT",
+   "flags": 0,
+   "scope": null,
+   "atomic": false,
+   "target": "0x2700000000000000000000000000000000000027",
+   "targetNull": false,
+   "execution": "20007",
+   "state": "0",
+   "value": "0",
+   "selector": null,
+   "dataBytes": 1
+  },
+  {
+   "i": 10,
+   "mode": "SENDER",
+   "flags": 0,
+   "scope": null,
+   "atomic": false,
+   "target": "0x2700000000000000000000000000000000000028",
+   "targetNull": false,
+   "execution": "20008",
+   "state": "0",
+   "value": "0",
+   "selector": "0x5a5a5a5a",
+   "dataBytes": 31
+  },
+  {
+   "i": 11,
+   "mode": "DEFAULT",
+   "flags": 0,
+   "scope": null,
+   "atomic": false,
+   "target": "0x2700000000000000000000000000000000000029",
+   "targetNull": false,
+   "execution": "20009",
+   "state": "0",
+   "value": "0",
+   "selector": "0x5a5a5a5a",
+   "dataBytes": 32
+  }
+ ],
+ "payer": "0x87761a88398830f371282d2d3e35D227ebfb8777",
+ "payerIsSender": false,
+ "signatures": [
+  {
+   "scheme": "SECP256K1",
+   "signer": "0xCA17f5f5Ac896C0591899ab457eB57310682757c",
+   "signs": "E (EIP-8250 f3079a0)"
+  },
+  {
+   "scheme": "SECP256K1",
+   "signer": "0x87761a88398830f371282d2d3e35D227ebfb8777",
+   "signs": "canonical signature hash"
+  }
+ ],
+ "senderSignsE": true,
+ "eUnder": "f3079a0",
+ "e": "0x8fd3d6366bb7e085a778476d906bd2f6c835b48ce65fdb608ff5724f24015233",
+ "blobVersionedHashes": [],
+ "feeCaps": {
+  "maxFeePerGas": "2000000000",
+  "maxPriorityFeePerGas": "1000"
+ }
+}

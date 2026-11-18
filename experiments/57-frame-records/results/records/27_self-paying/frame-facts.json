@@ -1,0 +1,57 @@
+{
+ "hash": "0xc887a1e3e125811fdaa9282c2f7f98511d4875d5a397824604cd0e538536de69",
+ "sigHash": "0xc887a1e3e125811fdaa9282c2f7f98511d4875d5a397824604cd0e538536de69",
+ "chainId": 8141,
+ "sender": "0x2700000000000000000000000000000000000001",
+ "nonceKeys": [
+  "0x0"
+ ],
+ "nonceSeq": "0",
+ "frames": [
+  {
+   "i": 0,
+   "mode": "VERIFY",
+   "flags": 3,
+   "scope": 3,
+   "atomic": false,
+   "target": "0x2700000000000000000000000000000000000001",
+   "targetNull": true,
+   "execution": "30000",
+   "state": "0",
+   "value": "0",
+   "selector": null,
+   "dataBytes": 0
+  },
+  {
+   "i": 1,
+   "mode": "SENDER",
+   "flags": 0,
+   "scope": null,
+   "atomic": false,
+   "target": "0x2700000000000000000000000000000000000013",
+   "targetNull": false,
+   "execution": "30000",
+   "state": "0",
+   "value": "1",
+   "selector": null,
+   "dataBytes": 0
+  }
+ ],
+ "payer": "0x2700000000000000000000000000000000000001",
+ "payerIsSender": null,
+ "signatures": [
+  {
+   "scheme": "SECP256K1",
+   "signer": "0xCA17f5f5Ac896C0591899ab457eB57310682757c",
+   "signs": "E (EIP-8250 f3079a0)"
+  }
+ ],
+ "senderSignsE": true,
+ "eUnder": "f3079a0",
+ "e": "0x1f6cdc4df6b23aaf637415c2feca373548d8b24d7d46531ba1d0210ded7b0294",
+ "blobVersionedHashes": [],
+ "feeCaps": {
+  "maxFeePerGas": "2000000000",
+  "maxPriorityFeePerGas": "1000"
+ }
+}

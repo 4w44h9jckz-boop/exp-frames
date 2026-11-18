@@ -1,0 +1,5 @@
+{
+ "address": "0x2700000000000000000000000000000000000002",
+ "is_smart_account": true,
+ "smart_account_validation": "SECP256K1"
+}

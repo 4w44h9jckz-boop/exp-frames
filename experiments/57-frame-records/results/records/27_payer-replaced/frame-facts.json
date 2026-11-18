@@ -1,0 +1,76 @@
+{
+ "hash": "0x245a050d50aad43376cc5382e78ab5e39153ee2233c8df64822288446cf8a7d7",
+ "sigHash": "0x6950a013ab4ab3b3453686797fad091c9c5ecd82151da29314a054a89cef9921",
+ "chainId": 8141,
+ "sender": "0x2700000000000000000000000000000000000001",
+ "nonceKeys": [
+  "0x0"
+ ],
+ "nonceSeq": "0",
+ "frames": [
+  {
+   "i": 0,
+   "mode": "VERIFY",
+   "flags": 2,
+   "scope": 2,
+   "atomic": false,
+   "target": "0x2700000000000000000000000000000000000001",
+   "targetNull": true,
+   "execution": "30000",
+   "state": "0",
+   "value": "0",
+   "selector": null,
+   "dataBytes": 0
+  },
+  {
+   "i": 1,
+   "mode": "VERIFY",
+   "flags": 1,
+   "scope": 1,
+   "atomic": false,
+   "target": "0x4961aee884E101Ee95f4728eaC541841cB9E93C3",
+   "targetNull": false,
+   "execution": "25000",
+   "state": "0",
+   "value": "0",
+   "selector": null,
+   "dataBytes": 2
+  },
+  {
+   "i": 2,
+   "mode": "SENDER",
+   "flags": 0,
+   "scope": null,
+   "atomic": false,
+   "target": "0x2700000000000000000000000000000000000010",
+   "targetNull": false,
+   "execution": "60000",
+   "state": "97920",
+   "value": "0",
+   "selector": "0xa9059cbb",
+   "dataBytes": 68
+  }
+ ],
+ "payer": "0x4961aee884E101Ee95f4728eaC541841cB9E93C3",
+ "payerIsSender": false,
+ "signatures": [
+  {
+   "scheme": "SECP256K1",
+   "signer": "0xCA17f5f5Ac896C0591899ab457eB57310682757c",
+   "signs": "E (EIP-8250 f3079a0)"
+  },
+  {
+   "scheme": "SECP256K1",
+   "signer": "0x4961aee884E101Ee95f4728eaC541841cB9E93C3",
+   "signs": "canonical signature hash"
+  }
+ ],
+ "senderSignsE": true,
+ "eUnder": "f3079a0",
+ "e": "0xce1a8f87949d68098f5f7f678bdeaf9bd3cf1cd82fc9e2789d38671d1580b03e",
+ "blobVersionedHashes": [],
+ "feeCaps": {
+  "maxFeePerGas": "40000000000",
+  "maxPriorityFeePerGas": "20000"
+ }
+}

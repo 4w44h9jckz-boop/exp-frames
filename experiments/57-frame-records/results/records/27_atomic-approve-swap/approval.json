@@ -1,0 +1,14 @@
+{
+ "tx_hash": "0xa09c49017de518d1aad29286f37aedf59192306866f139ecdb78664f7be8b931",
+ "user_address": "0x2700000000000000000000000000000000000001",
+ "spender_address": "0x2700000000000000000000000000000000000011",
+ "token_address": "0x2700000000000000000000000000000000000010",
+ "function_selector": "0x095ea7b3",
+ "approval_amount": 10000000000000000000,
+ "is_permit": false,
+ "is_multicall_with_approval": true,
+ "nested_calls": [
+  "0x095ea7b3",
+  "0x12345678"
+ ]
+}
